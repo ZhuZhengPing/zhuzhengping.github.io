@@ -4,6 +4,9 @@
     font-size:12px;
     font-family:Tahoma;
 }
+#header{
+  padding: 0;
+}
 .header_title{
     color:white;
     text-indent: 20px;
@@ -14,7 +17,7 @@ header,section,footer,aside,nav,article,hgroup{
 }
 body{
     text-align:center;
-    background-color:lightgray;
+    background-color:#dee7de;
 }
 #big_wrapper{
     border:1px solid black;
@@ -26,14 +29,10 @@ body{
     background-color:#9fc5e8;
     padding:10px;
 }
-.hr_blue{
-    height:5px;
-    background-color:blue;
-    border:0;
-}
-.hr_red{
-    height:5px;
-    background-color:green;
+
+.hr_green{
+    height:10px;
+    background-color:#5AB2CE;
     border:0;
 }
 #top_menu{
@@ -45,13 +44,24 @@ body{
 #top_menu li{
     display:inline-block;
     list-style:none;
-    padding:5px;
-    font:bold 14px Tahoma;
+    padding:5px 15px ;
+}
+#top_menu li a {
+  font-size: 12px;
+  display: block;
+  background: #5ab2ce;
+  color: #fff;
+  width: 65px;
+  padding: 4px 0 7px;
+  text-align: center;
+  margin: 0;
+  line-height: 120%;
+  text-decoration:none;
 }
 #main_section{
     float:left;
     width:250px;
-    margin:20px 5px 10px 10px;
+    margin:15px 15px 10px 10px;
     background-color:white;
     padding:10px;
 }
@@ -81,8 +91,8 @@ body{
     background-color:white;
     height:auto;
     float:left;
-    width:950px;
-    margin:20px auto 10px auto;
+    width:940px;
+    margin:15px auto 10px auto;
     padding:50px;
 }
 #side_news h1{
@@ -90,7 +100,7 @@ body{
     font:bold 12px Tahoma;
 }
 #side_news h2{
-    color: #5AB2CE;
+    color:green;
     font-size:14px;
     border-bottom:1px solid #9fc5e8;
 }
