@@ -1,47 +1,65 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="description" content="Zhuzhengping.github.io : ">
-
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>Zhuzhengping.github.io</title>
+    <title>朱正平个人博客</title>
   </head>
-
+        
   <body>
+      <div id="big_wrapper">
+          <header id="top_header">
+              <h1 class="header_title">stay hungry,stay modest</h1>
+          </header>
+          <nav id="top_menu">
+              <ul>
+                  <li>联系</li>
+                  <li>关注</li>
+                  <li>作者</li>
+              </ul>
+          </nav>
+          <hr class="hr_blue" />
+          <hr class="hr_red"/>
+          <section id="main_section">
+              <div>
+                  <h3>随笔分类(333)</h3>
+                  <ul>
+                      <li><a href="#">sql server(1)</a></li>
+                  </ul>
+              </div>
+          </section>
+          <div>
+              <aside id="side_news">
+            <h1>随笔分类 - sql server</h1>
+            <article>
+                <header>使用sql server分割字符串以及插入多条记录</header>
+                <div>
+                    <span>
+                        为公司实现一个排班功能，一次性为多个人排班，并且有排班的规则，例如：周日至周三上早班，周四至周日上晚班，并且是排几个月的班，班次也有多种情况。先上一个数据库表的关系图...
+                    </span>
+                    <span><a href="#">查看更多</a></span>
+                </div>
+                <footer>posted @ 2015-03-21 20:39 Darren Ji </footer>
+            </article>
+        </aside>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/ZhuZhengPing">View on GitHub</a>
-
-          <h1 id="project_title">Zhuzhengping.github.io</h1>
-          <h2 id="project_tagline"></h2>
-
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
-
-<p>hello world</p>
-      </section>
-    </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-
-    
-
+              <!--<aside id="side_news">
+                  <h2><a href="#">随笔分类 - sql server</a></h2>
+                  <p>本文尝试sqlserver分割字符串并且使用事务循环插入的功能,下图是表关系。</p>
+                  <img src="images/schedule.png" />
+                  <p>
+                      <span>一次为多个人排班，如果排一个月的班的话，员工表里面会有一条记录，</span>
+                      <br/>
+                      <span>员工详细表会有多条记录，首先要做的是分割字符串。代码如下：</span>
+                  </p>
+                  <pre class="code_total">
+                  <pre class="code_pe">      <span class="blue">create</span> <span class="blue">function</span> Get_StrArrayLength</pre><pre class="code_pe">      (</pre><pre class="code_pe">            @str <span class="blue">varchar</span>(1024),  <span class="green">--要分割的字符串</span></pre>
+                  </pre>
+              </aside>-->
+          </div>
+      </div>
   </body>
 </html>
