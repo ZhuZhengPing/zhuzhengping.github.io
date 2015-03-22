@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Zhuzhengping.github.io : ">
+    <link rel="stylesheet" type="text/css" media="screen" href="../../stylesheets/stylesheet.css">
+    <title>朱正平个人博客</title>
+</head>
+
+<body>
+    <div id="big_wrapper">
+        <header id="top_header">
+            <h1 class="header_title">stay hungry,stay modest</h1>
+        </header>
+        <nav id="top_menu">
+            <ul>
+                <li>联系</li>
+                <li>关注</li>
+                <li>作者</li>
+            </ul>
+        </nav>
+        <hr class="hr_blue" />
+        <hr class="hr_red" />
+        <section id="main_section">
+            <div>
+                <h3>随笔分类(333)</h3>
+                <ul>
+                    <li><a href="../../list/list_sql_server.html">sql server(1)</a></li>
+                </ul>
+            </div>
+        </section>
+        <div>
+            <aside id="side_news">
+                <h2><a href="#">随笔分类 - sql server</a></h2>
+                <p>本文尝试sqlserver分割字符串并且使用事务循环插入的功能,下图是表关系。</p>
+                <img src="../../images/schedule.png" />
+                <p>
+                    <span>一次为多个人排班，如果排一个月的班的话，员工表里面会有一条记录，</span>
+                    <br />
+                    <span>员工详细表会有多条记录，首先要做的是分割字符串。代码如下：</span>
+                </p>
+                <pre class="code_total">
+                <pre>      <span class="blue">create</span> <span class="blue">function</span> Get_StrArrayLength</pre><pre>      (</pre><pre>            @str <span class="blue">varchar</span>(1024),  <span class="green">--要分割的字符串</span></pre><pre>            @split <span class="blue">varchar(10)</span>  <span class="green">  --分隔符号</span></pre><pre>      )</pre><pre>      <span class="blue">returns</span> <span class="blue">int</span></pre><pre>      <span class="blue">as</span></pre><pre>      <span class="blue">begin</span></pre><pre>        <span class="blue">declare</span> @location <span class="blue">int</span>;</pre><pre>        <span class="blue">declare</span> @start <span class="blue">int</span>;</pre><pre>        <span class="blue">declare</span> @length <span class="blue">int</span>;</pre><pre>        <span class="blue">set</span> @str= <span class="red">ltrim</span>(<span class="red">rtrim</span>(@str));</pre><pre>        <span class="blue">set</span> @location= <span class="red">charindex</span>(@split,@str);</pre><pre>        <span class="blue">set</span> @length= 1;</pre><pre>        <span class="blue">while</span> @location<>0</pre><pre>          <span class="blue">begin</span></pre><pre>            <span class="blue">set</span> @start=@location+1;</pre><pre>            <span class="blue">set</span> @location=<span class="red">charindex</span>(@split,@str,@start);</pre><pre>            <span class="blue">set</span> @length=@length+1;</pre><pre>          <span class="blue">end</span></pre><pre>        <span class="blue">return</span> @length</pre><pre>      <span class="blue">end</span></pre>
+                  </pre>
+                <p>
+                    <span>调用实例：</span><span class="blue">select </span><span>dbo.Get_StrArrayLength('78,1,2,3',',')</span>
+                    <br />
+                    <span>返回值：4</span>
+                </p>
+                <p>
+                    按指定符号分割字符串，返回分割后指定索引的第几个元素，象数组一样方便
+                </p>
+                <pre class="code_total">
+                <pre>      <span class="blue">create</span> <span class="blue">function</span> Get_StrArrayStrOfIndex</pre><pre>      (</pre><pre>            @str <span class="blue">varchar</span>(1024),  <span class="green">--要分割的字符串</span></pre><pre>            @split <span class="blue">varchar(10)</span>,  <span class="green">  --分隔符号</span></pre><pre>            @index <span class="blue">int</span>  <span class="green">  --取第几个元素</span></pre><pre>      )</pre><pre>      <span class="blue">returns</span> <span class="blue">varchar(1024)</span></pre><pre>      <span class="blue">as</span></pre><pre>      <span class="blue">begin</span></pre><pre>        <span class="blue">declare</span> @location <span class="blue">int</span>;</pre><pre>        <span class="blue">declare</span> @start <span class="blue">int</span>;</pre><pre>        <span class="blue">declare</span> @next <span class="blue">int</span>;</pre><pre>        <span class="blue">declare</span> @seed <span class="blue">int</span>;</pre><pre>        <span class="blue">set</span> @str= <span class="red">ltrim</span>(<span class="red">rtrim</span>(@str));</pre><pre>        <span class="blue">set</span> @location= <span class="red">charindex</span>(@split,@str);</pre><pre>        <span class="blue">set</span> @start=1;</pre><pre>        <span class="blue">set</span> @next=1;</pre><pre>        <span class="blue">set  </span>@seed=<span class="red">len</span>(@split);</pre><pre>        <span class="blue">while</span> @location<>0 and @index>@next</pre><pre>          <span class="blue">begin</span></pre><pre>            <span class="blue">set</span> @start=@location+@seed;</pre><pre>            <span class="blue">set</span> @location=<span class="red">charindex</span>(@split,@str,@start);</pre><pre>            <span class="blue">set</span> @next=@next+1;</pre><pre>          <span class="blue">end</span></pre><pre>          <span class="blue">if</span> @location =0 <span class="blue">select</span> @location = <span class="red">len</span>(@str)+1</pre><pre>        <span class="blue">return</span> <span class="red">substring</span>(@str,@start,@location-@start)</pre><pre>      <span class="blue">end</span></pre>
+                  </pre>
+                <p>
+                    <span>调用实例：</span><span class="blue">select </span><span>dbo.Get_StrArrayStrOfIndex('8,9,4',',',2)</span>
+                    <br />
+                    <span>返回值：9</span>
+                </p>
+            </aside>
+        </div>
+    </div>
+</body>
+</html>

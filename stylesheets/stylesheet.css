@@ -79,7 +79,7 @@ body{
 }
 #side_news{
     background-color:white;
-    height:800px;
+    height:auto;
     float:left;
     width:950px;
     margin:20px auto 10px auto;
@@ -135,7 +135,7 @@ body{
     background-color: #f0f0f0;
     margin-top:15px;
 }
-.code_pe {
+.code_total pre {
     font-size: 15px;
     font-family: consolas,'Courier New',courier,monospace;
     width: 100%;
