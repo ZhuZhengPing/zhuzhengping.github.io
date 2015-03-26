@@ -35,11 +35,7 @@
         <div>
             <aside id="side_news">
                 <h2><a href="#">随笔分类 - sql server</a></h2>
-                <p>本文尝试sqlserver分割字符串并且使用事务循环插入的功能,下图是表关系。</p>
-                <img src="../../images/schedule.png" />
-                <p>
-                    首先要做的是分割字符串。代码如下：</span>
-                </p>
+                <p>本文尝试sqlserver分割字符串</p>
                 <pre class="code_total">
                 <pre>      <span class="blue">create</span> <span class="blue">function</span> Get_StrArrayLength</pre><pre>      (</pre><pre>            @str <span class="blue">varchar</span>(1024),  <span class="green">--要分割的字符串</span></pre><pre>            @split <span class="blue">varchar(10)</span>  <span class="green">  --分隔符号</span></pre><pre>      )</pre><pre>      <span class="blue">returns</span> <span class="blue">int</span></pre><pre>      <span class="blue">as</span></pre><pre>      <span class="blue">begin</span></pre><pre>        <span class="blue">declare</span> @location <span class="blue">int</span>;</pre><pre>        <span class="blue">declare</span> @start <span class="blue">int</span>;</pre><pre>        <span class="blue">declare</span> @length <span class="blue">int</span>;</pre><pre>        <span class="blue">set</span> @str= <span class="red">ltrim</span>(<span class="red">rtrim</span>(@str));</pre><pre>        <span class="blue">set</span> @location= <span class="red">charindex</span>(@split,@str);</pre><pre>        <span class="blue">set</span> @length= 1;</pre><pre>        <span class="blue">while</span> @location<>0</pre><pre>          <span class="blue">begin</span></pre><pre>            <span class="blue">set</span> @start=@location+1;</pre><pre>            <span class="blue">set</span> @location=<span class="red">charindex</span>(@split,@str,@start);</pre><pre>            <span class="blue">set</span> @length=@length+1;</pre><pre>          <span class="blue">end</span></pre><pre>        <span class="blue">return</span> @length</pre><pre>      <span class="blue">end</span></pre>
                   </pre>
