@@ -1,63 +1,41 @@
-﻿<!DOCTYPE html>
-<html>
+---
+layout: blog
+index: true
+---
 
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Zhuzhengping.github.io : ">
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-    <title>朱正平个人博客</title>
-  </head>
-        
-  <body>
-      <div id="big_wrapper">
-          <div id="header">
-              <header id="top_header">
-                  <h1 class="header_title">stay hungry,stay modest</h1>
-              </header>
-              <nav id="top_menu">
-                  <ul>
-                      <li><a href="#">联系</a></li>
-                      <li><a href="#">关注</a></li>
-                      <li><a href="xiongkou/xiongkou.html" id="xiongkou">作者</a></li>
-                  </ul>
-              </nav>
-          </div>
-          <hr class="hr_green" />
-          <section id="main_section">
-              <div>
-                  <h3>随笔分类(1)</h3>
-                  <ul>
-                      <li><a href="list/list_sql_server.html">html5(1)</a></li>
-                      <li><a href="list/list_sql_server.html">sql server(1)</a></li>
-                  </ul>
-              </div>
-          </section>
-          <div>
-         <aside id="side_news">
-            <h1>随笔分类</h1>
-             <article>
-                 <header>使用jquery实现漂亮弹出框</header>
-                 <div>
-                     <span>
-                            
-                     </span>
-                     <span><a href="../note/sql_server/sql_schedule.html">查看更多</a></span>
-                 </div>
-                 <footer>posted @ 2015-03-22 20:39 熊叩 </footer>
-             </article>
-            <article>
-                <header>使用sql server分割字符串以及插入多条记录</header>
-                <div>
-                    <span>
-                        为实现一个循环插入多条数据的功能，插入对象中以多个分隔符区分，先上一个数据库表的关系图...
-                    </span>
-                    <span><a href="../note/sql_server/sql_schedule.html">查看更多</a></span>
-                </div>
-                <footer>posted @ 2015-03-22 20:39 熊叩 </footer>
-            </article>
-        </aside>
-          </div>
-      </div>
-  </body>
-</html>
+{% for post in paginator.posts %}
+<div class="posts">
+  <section class="post">
+    <header class="post-header">
+      <h1 class="post-title"><a href="{{ post.url }}">{{ post.title }}</a></h1>
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        {{ post.date | date: "%Y" }}年{{ post.date | date: "%m" }}月{{ post.date | date: "%d" }}日
+        <i class="space"></i>
+        <i class="fa fa-tags"></i>
+        <a class="post-category" href="/page/category.html#{{ post.categories }}">{{ post.categories }}</a>
+      </p>
+    </header>
+    <div class="post-main">
+      {{ post.content | split:'<!-- more -->'| first }}
+      <div class="readall"><a href="{{ post.url }}" id="post-readall">阅读全文&nbsp;<i class="fa fa-chevron-right"></i></a></div>
+    </div>
+  </section>
+</div>
+{% endfor %}
+<div class="pagination">
+  {% if paginator.previous_page %}
+  {% if paginator.page == 2 %}
+  <a class="pagination-item newer" href="/"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;上一页</a>
+  {% else %}
+  <a class="pagination-item newer" href="/page/{{paginator.previous_page}}"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;上一页</a>
+  {% endif %}
+  {% else %}
+  <span class="pagination-item newer"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;上一页</span>
+  {% endif %}  
+  {% if paginator.next_page %}
+  <a class="pagination-item older" href="/page/{{paginator.next_page}}">下一页&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></a>
+  {% else %}
+  <span class="pagination-item older">下一页&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></span>
+  {% endif %}
+</div>
