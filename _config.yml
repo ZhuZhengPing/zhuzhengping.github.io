@@ -20,16 +20,16 @@ blog:
     name: comtu                                          # 博客名称
     description: The time is passing                     # 博客描述
     title: comtu                                         # 网页标题
-    url: http://comtu.github.io/                         # 博客地址
+    url: http://zhuzhengping.github.io/                        # 博客地址
     duoshuo: comtu                                       # 多说ID 
     tongji: e0d9a75a7e53b54cd1e6649facd5906e             # 百度统计ID
     clickiTongJi: 51831					 # Clicki统计ID
     qiniu:                                               # 七牛云地址
 author:
-    name: comtu                                          # 作者名称
+    name: 朱正平                                          # 作者名称
     email: com.tu@139.com                                # 邮箱地址
     weibo: http://weibo.com/comtu                        # 微博地址
-    github: https://github.com/comtu                     # GitHub地址
+    github: https://github.com/ZhuZhengPing                    # GitHub地址
     logo: /res/img/icon.jpg                              # logo地址
     douban:
         name:                                            # 豆瓣地址名称
