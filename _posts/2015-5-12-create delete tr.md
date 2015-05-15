@@ -64,16 +64,69 @@ shTheme: shThemeEclipse # shThemeDefault  shThemeDjango  shThemeEclipse  shTheme
 |\\nml|当 n 是八进制数 (0-3)，m 和 l 是八进制数 (0-7) 时，匹配八进制转义码 nml。
 |\\un|匹配 n，其中 n 是以四位十六进制数表示的 Unicode 字符。例如，\\u00A9 匹配版权符号 (©)。
 
-文本框只能输入数字
+---
 
-{% highlight c linenos %}
-//只能输入数字
+###检查输入手机号码
+{% highlight javascript %}
+function checkMobile(s){
+var regu =/^[1][3|5|8][0-9]{9}$/;
+var re = new RegExp(regu);
+	if (re.test(s)) {
+		return true;
+	}else{
+		return false;
+	}
+}
+
+// 示例
+checkMobile('13555555555'); checkMobile('15444444444'); 
+{% endhighlight %}
+###只能输入数字，一般用于textbox的onkeypress
+{% highlight javascript %}
 function JustNumberText(){
 	if (event.keyCode < 48 || event.keyCode > 57)
         event.returnValue = false;
 }
-{% endhighlight %}
 
+// 示例 <input type='text' onkeypress='JustNumberText();'/>;
+{% endhighlight %}
+###检查输入的身份证号是否正确
+{% highlight javascript %}
+function checkCard(str) {
+    //15位数身份证正则表达式
+    var arg1 = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$/;
+    //18位数身份证正则表达式
+    var arg2 = /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[A-Z])$/;
+    if (str.match(arg1) == null && str.match(arg2) == null) {
+        return false;
+    }
+    else {
+        return true;
+    }
+	
+	//示例
+	checkCard('42102319850414444X');  checkCard('130503670401001'); 
+}
+{% endhighlight %}
+###检查输入的字符是否具有特殊字符
+{% highlight javascript %}
+function checkQuote(str) {
+    var items = new Array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "{", "}", "[", "]", "(", ")");
+    items.push(":", ";", "'", "|", "\\", "<", ">", "?", "/", "<<", ">>", "||", "//");
+    items.push("admin", "administrators", "administrator", "管理员", "系统管理员");
+    items.push("select", "delete", "update", "insert", "create", "drop", "alter", "trancate");
+    str = str.toLowerCase();
+    for (var i = 0; i < items.length; i++) {
+        if (str.indexOf(items[i]) >= 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// 示例 有特殊字符 return true
+var str = '~!@#||'; checkQuote(str);  
+{% endhighlight %}
 
 
 

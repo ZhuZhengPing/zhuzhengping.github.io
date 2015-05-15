@@ -161,7 +161,25 @@
 			   <span class="k">when</span> <span class="o">@</span><span class="n">m</span> <span class="k">between</span> <span class="mi">7</span>  <span class="k">and</span> <span class="mi">9</span> <span class="k">then</span> <span class="mi">7</span> 
 			   <span class="k">else</span> <span class="mi">10</span> <span class="k">end</span>
 <span class="k">select</span> <span class="o">@</span><span class="n">time</span><span class="o">=</span><span class="n">datename</span><span class="p">(</span><span class="k">year</span><span class="p">,</span><span class="n">getdate</span><span class="p">())</span><span class="o">+</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="k">convert</span><span class="p">(</span><span class="nb">varchar</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span><span class="o">@</span><span class="n">m</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;-01&#39;</span> 
-<span class="k">select</span> <span class="n">datediff</span><span class="p">(</span><span class="k">day</span><span class="p">,</span><span class="o">@</span><span class="n">time</span><span class="p">,</span><span class="n">dateadd</span><span class="p">(</span><span class="n">mm</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="o">@</span><span class="n">time</span><span class="p">))</span> <span class="c1">--返回92</span></code></pre></div>
+<span class="k">select</span> <span class="n">datediff</span><span class="p">(</span><span class="k">day</span><span class="p">,</span><span class="o">@</span><span class="n">time</span><span class="p">,</span><span class="n">dateadd</span><span class="p">(</span><span class="n">mm</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="o">@</span><span class="n">time</span><span class="p">))</span> <span class="c1">--返回92</span>
+
+<span class="c1">--当月最后一天</span>
+<span class="k">declare</span> 
+<span class="o">@</span><span class="n">tmpstr</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> 
+<span class="o">@</span><span class="n">mm</span> <span class="nb">int</span><span class="p">,</span> 
+<span class="o">@</span><span class="n">premm</span> <span class="nb">int</span><span class="p">,</span> 
+<span class="o">@</span><span class="n">curmmlastday</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> 
+<span class="k">begin</span> 
+<span class="k">select</span> <span class="o">@</span><span class="n">mm</span><span class="o">=</span><span class="n">datepart</span><span class="p">(</span><span class="k">month</span><span class="p">,</span><span class="n">getdate</span><span class="p">())</span><span class="c1">--当月 </span>
+<span class="k">select</span> <span class="o">@</span><span class="n">premm</span><span class="o">=</span><span class="n">datepart</span><span class="p">(</span><span class="k">month</span><span class="p">,</span><span class="n">dateadd</span><span class="p">(</span><span class="k">month</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">getdate</span><span class="p">()))</span> <span class="c1">--上个月 </span>
+<span class="n">if</span> <span class="p">(</span><span class="o">@</span><span class="n">mm</span><span class="o">&gt;=</span><span class="mi">1</span> <span class="k">and</span> <span class="o">@</span><span class="n">mm</span><span class="o">&lt;=</span><span class="mi">8</span><span class="p">)</span> 
+<span class="k">select</span> <span class="o">@</span><span class="n">tmpstr</span><span class="o">=</span><span class="k">convert</span><span class="p">(</span><span class="nb">char</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span><span class="n">datepart</span><span class="p">(</span><span class="k">year</span><span class="p">,</span><span class="n">getdate</span><span class="p">()))</span><span class="o">+</span><span class="s1">&#39;.0&#39;</span><span class="o">+</span><span class="k">convert</span><span class="p">(</span><span class="nb">char</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="n">datepart</span><span class="p">(</span><span class="k">month</span><span class="p">,</span><span class="n">dateadd</span><span class="p">(</span><span class="k">month</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">getdate</span><span class="p">())))</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="s1">&#39;01&#39;</span>
+<span class="k">else</span> <span class="n">if</span> <span class="p">(</span><span class="o">@</span><span class="n">mm</span><span class="o">&gt;=</span><span class="mi">9</span> <span class="k">and</span> <span class="o">@</span><span class="n">mm</span><span class="o">&lt;=</span><span class="mi">11</span><span class="p">)</span> 
+<span class="k">select</span> <span class="o">@</span><span class="n">tmpstr</span><span class="o">=</span><span class="k">convert</span><span class="p">(</span><span class="nb">char</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span><span class="n">datepart</span><span class="p">(</span><span class="k">year</span><span class="p">,</span><span class="n">getdate</span><span class="p">()))</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="k">convert</span><span class="p">(</span><span class="nb">char</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="n">datepart</span><span class="p">(</span><span class="k">month</span><span class="p">,</span><span class="n">dateadd</span><span class="p">(</span><span class="k">month</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">getdate</span><span class="p">())))</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="s1">&#39;01&#39;</span>
+<span class="k">else</span> 
+<span class="k">select</span> <span class="o">@</span><span class="n">tmpstr</span><span class="o">=</span><span class="k">convert</span><span class="p">(</span><span class="nb">char</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span><span class="n">datepart</span><span class="p">(</span><span class="k">year</span><span class="p">,</span><span class="n">dateadd</span><span class="p">(</span><span class="k">year</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">getdate</span><span class="p">())))</span><span class="o">+</span><span class="s1">&#39;.0&#39;</span><span class="o">+</span><span class="k">convert</span><span class="p">(</span><span class="nb">char</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="n">datepart</span><span class="p">(</span><span class="k">month</span><span class="p">,</span><span class="n">dateadd</span><span class="p">(</span><span class="k">month</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">getdate</span><span class="p">())))</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="s1">&#39;01&#39;</span>
+<span class="k">select</span> <span class="o">@</span><span class="n">curmmlastday</span><span class="o">=</span><span class="k">convert</span><span class="p">(</span><span class="nb">char</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span><span class="n">dateadd</span><span class="p">(</span><span class="k">day</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">@</span><span class="n">tmpstr</span><span class="p">),</span><span class="mi">102</span><span class="p">)</span> <span class="c1">--当月最后一天 </span>
+<span class="k">end</span></code></pre></div>
 
 <hr />
 
@@ -458,13 +476,68 @@
   </tbody>
 </table>
 
-<p>文本框只能输入数字</p>
+<hr />
 
-<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="lineno">1</span> <span class="c1">//只能输入数字</span>
-<span class="lineno">2</span> <span class="n">function</span> <span class="nf">JustNumberText</span><span class="p">(){</span>
-<span class="lineno">3</span> 	<span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">keyCode</span> <span class="o">&lt;</span> <span class="mi">48</span> <span class="o">||</span> <span class="n">event</span><span class="p">.</span><span class="n">keyCode</span> <span class="o">&gt;</span> <span class="mi">57</span><span class="p">)</span>
-<span class="lineno">4</span>         <span class="n">event</span><span class="p">.</span><span class="n">returnValue</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-<span class="lineno">5</span> <span class="p">}</span></code></pre></div>
+<h3 id="section">检查输入手机号码</h3>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">checkMobile</span><span class="p">(</span><span class="nx">s</span><span class="p">){</span>
+<span class="kd">var</span> <span class="nx">regu</span> <span class="o">=</span><span class="sr">/^[1][3|5|8][0-9]{9}$/</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">re</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="nx">regu</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">re</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">s</span><span class="p">))</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+	<span class="p">}</span><span class="k">else</span><span class="p">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 示例</span>
+<span class="nx">checkMobile</span><span class="p">(</span><span class="s1">&#39;13555555555&#39;</span><span class="p">);</span> <span class="nx">checkMobile</span><span class="p">(</span><span class="s1">&#39;15444444444&#39;</span><span class="p">);</span></code></pre></div>
+
+<h3 id="textboxonkeypress">只能输入数字，一般用于textbox的onkeypress</h3>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">JustNumberText</span><span class="p">(){</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">&lt;</span> <span class="mi">48</span> <span class="o">||</span> <span class="nx">event</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">&gt;</span> <span class="mi">57</span><span class="p">)</span>
+        <span class="nx">event</span><span class="p">.</span><span class="nx">returnValue</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 示例 &lt;input type=&#39;text&#39; onkeypress=&#39;JustNumberText();&#39;/&gt;;</span></code></pre></div>
+
+<h3 id="section-1">检查输入的身份证号是否正确</h3>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">checkCard</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//15位数身份证正则表达式</span>
+    <span class="kd">var</span> <span class="nx">arg1</span> <span class="o">=</span> <span class="sr">/^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$/</span><span class="p">;</span>
+    <span class="c1">//18位数身份证正则表达式</span>
+    <span class="kd">var</span> <span class="nx">arg2</span> <span class="o">=</span> <span class="sr">/^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[A-Z])$/</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">str</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">arg1</span><span class="p">)</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="nx">str</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">arg2</span><span class="p">)</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+	
+	<span class="c1">//示例</span>
+	<span class="nx">checkCard</span><span class="p">(</span><span class="s1">&#39;42102319850414444X&#39;</span><span class="p">);</span>  <span class="nx">checkCard</span><span class="p">(</span><span class="s1">&#39;130503670401001&#39;</span><span class="p">);</span> 
+<span class="p">}</span></code></pre></div>
+
+<h3 id="section-2">检查输入的字符是否具有特殊字符</h3>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">checkQuote</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">items</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">,</span> <span class="s2">&quot;`&quot;</span><span class="p">,</span> <span class="s2">&quot;!&quot;</span><span class="p">,</span> <span class="s2">&quot;@&quot;</span><span class="p">,</span> <span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="s2">&quot;$&quot;</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">,</span> <span class="s2">&quot;^&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;{&quot;</span><span class="p">,</span> <span class="s2">&quot;}&quot;</span><span class="p">,</span> <span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="s2">&quot;]&quot;</span><span class="p">,</span> <span class="s2">&quot;(&quot;</span><span class="p">,</span> <span class="s2">&quot;)&quot;</span><span class="p">);</span>
+    <span class="nx">items</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="s2">&quot;\\&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;||&quot;</span><span class="p">,</span> <span class="s2">&quot;//&quot;</span><span class="p">);</span>
+    <span class="nx">items</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="s2">&quot;administrators&quot;</span><span class="p">,</span> <span class="s2">&quot;administrator&quot;</span><span class="p">,</span> <span class="s2">&quot;管理员&quot;</span><span class="p">,</span> <span class="s2">&quot;系统管理员&quot;</span><span class="p">);</span>
+    <span class="nx">items</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">&quot;select&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="s2">&quot;insert&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">,</span> <span class="s2">&quot;drop&quot;</span><span class="p">,</span> <span class="s2">&quot;alter&quot;</span><span class="p">,</span> <span class="s2">&quot;trancate&quot;</span><span class="p">);</span>
+    <span class="nx">str</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">items</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">str</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">items</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 示例 有特殊字符 return true</span>
+<span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s1">&#39;~!@#||&#39;</span><span class="p">;</span> <span class="nx">checkQuote</span><span class="p">(</span><span class="nx">str</span><span class="p">);</span></code></pre></div>
 
 
       <div class="readall"><a href="/blog/2014/10/18/create%20delete%20tr.html" id="post-readall">阅读全文&nbsp;<i class="fa fa-chevron-right"></i></a></div>
