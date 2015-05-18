@@ -1,36 +1,23 @@
-markdown: kramdown
-highlighter: pygments
-permalink: blog/:year/:month/:day/:title.html
-paginate: 6	
-paginate_path: page/:num
+# Site settings
+title: HyG
+email: gaohaoyang126@126.com
+description: 浩阳的博客 前端爱好者
+# > # this means to ignore newlines until "baseurl:"
+#   Write an awesome description for your new site here. You can edit this
+#   line in _config.yml. It will appear in your document head meta (for
+#   Google search results) and in your feed.xml site description.
+
+# baseurl: "" # the subpath of your site, e.g. /blog/
+# url: "http://yourdomain.com" # the base hostname & protocol for your site
+# twitter_username: jekyllrb
+github_username:  Gaohaoyang
+permalink: /:year/:month/:day/:title/
 
 # Build settings
-# markdown: redcarpet
-# redcarpet:
-#     extensions: ["fenced_code_blocks", "tables", "highlight", "strikethrough"]
+markdown: kramdown
 
-#SyntaxHihglighter config start
-
-SyntaxHihglighter: false
-shTheme: shThemeDefault # shThemeDefault  shThemeDjango  shThemeEclipse  shThemeEmacs  shThemeFadeToGrey  shThemeMidnight  shThemeRDark
-
-#SyntaxHihglighter config end
-
-blog:
-    name: comtu                                          # 博客名称
-    description: The time is passing                     # 博客描述
-    title: comtu                                         # 网页标题
-    url: http://zhuzhengping.github.io/                        # 博客地址
-    duoshuo: comtu                                       # 多说ID 
-    tongji: e0d9a75a7e53b54cd1e6649facd5906e             # 百度统计ID
-    clickiTongJi: 51831					 # Clicki统计ID
-    qiniu:                                               # 七牛云地址
-author:
-    name: 朱正平                                          # 作者名称
-    email: com.tu@139.com                                # 邮箱地址
-    weibo: http://weibo.com/comtu                        # 微博地址
-    github: https://github.com/ZhuZhengPing                    # GitHub地址
-    logo: /res/img/icon.jpg                              # logo地址
-    douban:
-        name:                                            # 豆瓣地址名称
-        key:                                             # 豆瓣API Key
+# highlight
+# 本地用rouge, github上用pygments
+# highlighter: pygments
+# highlighter: rouge
+# highlighter: false

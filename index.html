@@ -1,41 +1,64 @@
 ---
-layout: blog
-index: true
+layout: default
 ---
-
-{% for post in paginator.posts %}
-<div class="posts">
-  <section class="post">
-    <header class="post-header">
-      <h1 class="post-title"><a href="{{ post.url }}">{{ post.title }}</a></h1>
-      <p class="post-meta">
-        <i class="fa fa-calendar"></i>
-        {{ post.date | date: "%Y" }}年{{ post.date | date: "%m" }}月{{ post.date | date: "%d" }}日
-        <i class="space"></i>
-        <i class="fa fa-tags"></i>
-        <a class="post-category" href="/page/category.html#{{ post.categories }}">{{ post.categories }}</a>
+<div id="index" class="row">
+  <div class="col-sm-9">
+    <div class="post-area">
+      <!-- small button -->
+      <p class="pull-right visible-xs">
+        <button>toggle</button>
       </p>
-    </header>
-    <div class="post-main">
-      {{ post.content | split:'<!-- more -->'| first }}
-      <div class="readall"><a href="{{ post.url }}" id="post-readall">阅读全文&nbsp;<i class="fa fa-chevron-right"></i></a></div>
+      <div class="post-list-header">
+        Posts
+      </div>
+      <div class="post-list-body">
+        
+        <div class="all-posts" post-cate="All">
+          {% for post in site.posts %}
+            <a class="post-list-item" href="{{ post.url | prepend: site.baseurl }}">
+              <h2>
+              {{ post.title }}
+              </h2>
+              <span class="">{{ post.date | date: "%b %-d, %Y" }}</span>
+            </a>
+          {% endfor %}
+        </div>
+        <!-- <div class="posts-in-categories"> -->
+        {% for category in site.categories %}
+          <div post-cate="{{category | first}}">
+            {% for posts in category  %}
+              {% for post in posts %}
+                {% if post.url %}
+                  <a href="{{ post.url }}" class="post-list-item">
+                    <h2>
+                    {{ post.title }}
+                    </h2>
+                    <span class="">{{ post.date | date: "%b %-d, %Y" }}</span>
+                  </a>
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+          </div>
+        {% endfor %}
+        
+        <!-- </div> -->
+      </div>
     </div>
-  </section>
-</div>
-{% endfor %}
-<div class="pagination">
-  {% if paginator.previous_page %}
-  {% if paginator.page == 2 %}
-  <a class="pagination-item newer" href="/"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;上一页</a>
-  {% else %}
-  <a class="pagination-item newer" href="/page/{{paginator.previous_page}}"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;上一页</a>
-  {% endif %}
-  {% else %}
-  <span class="pagination-item newer"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;上一页</span>
-  {% endif %}  
-  {% if paginator.next_page %}
-  <a class="pagination-item older" href="/page/{{paginator.next_page}}">下一页&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></a>
-  {% else %}
-  <span class="pagination-item older">下一页&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></span>
-  {% endif %}
+  </div>
+  <div class="col-sm-3">
+    <div class="shadow-corner-curl hidden-xs">
+      <div class="categories-list-header">
+        Categories
+      </div>
+      
+      <a href="javascript:;" class="categories-list-item" cate="All">
+        All<span class="my-badge"> {{site.categories | size}}</span>
+      </a>
+      {% for category in site.categories %}
+        <a href="javascript:;" class="categories-list-item" cate="{{ category | first }}">
+          {{ category | first }} <span class="my-badge">{{ category | last | size }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
 </div>
