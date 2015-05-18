@@ -7,7 +7,7 @@ date : 2015-5-18
 
 ---
 
-####学习笔记 地址: http://www.zhuzhengping.github.io/static/koukou/2015-5-18.html
+####学习笔记 
 	
 	<html>
 		<head>
@@ -28,6 +28,7 @@ date : 2015-5-18
 			<a href="www.baidu.com.cn">百度</a>
 		</body>
 	</html>
+
 
 	
 
