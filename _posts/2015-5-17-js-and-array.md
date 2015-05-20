@@ -67,6 +67,68 @@ date : 2015-5-13
 		}
 	}
 	
+####js构造函数 使用new来调用 ，首字母大写
+	function work(){
+		return 'koukou';
+	}
+	
+	function Box(username,age){
+		this.username=name;    //实例属性
+		this.age=age;
+		this.run=function(){	// 实例方法
+			return this.username+this.age+"运行中...";
+		};
+		this.work=work;
+	};
+	var box1 = new Box('Lee',100);    // 实例化后地址为1
+	var box2 = new Box('Jack',200);   // 实例化后地址为2
+	var box3 = new Desk('kkk',300);
+	
+	alert(box1 instanceof Box); // true
+	alert(box2 instanceof Box); // true
+	alert(box3 instanceof Box); // false
+	alert(box1.run() == box1.run()); // true
+	alert(box1.run()( == box2.run()); // false 引用类型
+	alert(box1.work == box2.work); // true
+	alert(box1.name); // Lee
+	
+####js 对象工厂
+	function createObj(username,age){
+		var box = new Object);
+		box.username='Lee';
+		box.age = 100;
+		box.run=function(){
+			return this.username+this.age+'运行中';
+		}
+		return box;
+	};
+	var box1 = createObj('koukou',1);
+	var box2 = createObj('zhuzhengping',2);
+	var o = new Object();
+	Box.call(o,'Lee',100);  //对象冒充
+	alert(o.run());
+
+####prototype 共享属性和方法
+	
+	function Box(){}   // 构造函数不放东西
+	Box.prototype.name = 'Lee';  // 原型属性
+	Box.prototype.age = 100;     // 原型属性
+	Box.prototype.run = function(){ //原型方法
+		return this.name + this.age + '运行中...';
+	};
+	
+####如果是实例方法，不同的实例化，他们的方法地址是不一样的
+
+####如果是原型方法，那么他们的地址是共享的，大家都一样
+
+	var box1 = new Box();
+	var box2 = new Box();
+	alert(box1.prototype);  // 这是一个属性，访问不到
+	alert(box1.run == box2 .run);  //true
+	alert(box1.constructor);
+	
+	
+	
 	
 	
 	

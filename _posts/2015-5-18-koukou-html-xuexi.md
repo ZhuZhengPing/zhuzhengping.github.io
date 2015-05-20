@@ -26,6 +26,8 @@ date : 2015-5-18
 			第一天学习好慢，好多，还有平哥到旁边唠叨<br>
 			<img src="koukou.pmg" />
 			<a href="www.baidu.com.cn">百度</a>
+			size的意思是hr的宽度，size越大，宽度越大。
+			<hr size="1" noshade color="green">
 		</body>
 	</html>
 
