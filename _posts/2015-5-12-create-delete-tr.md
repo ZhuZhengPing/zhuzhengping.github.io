@@ -9,7 +9,7 @@ excerpt: 正则表达式，常用的正则，JavaScript 语法检查校验，Jav
 
 ####1.检查输入手机号码
 	function checkMobile(s){
-		var regu =/^[1][3|5|8][0-9]{9}$/;
+		var regu =/(^[0-9]{3,4}\-[0-9]{7,8}$)|(^[0-9]{7,8}$)|(^\([0-9]{3,4}\)[0-9]{3,8}$)|(^0{0,1}13[0-9]{9}$)|(13\d{9}$)|(15[0135-9]\d{8}$)|(18[267]\d{8}$)|(1\d{10}$)/;
 		var re = new RegExp(regu);
 		if (re.test(s)) {
 			return true;
@@ -90,7 +90,25 @@ excerpt: 正则表达式，常用的正则，JavaScript 语法检查校验，Jav
 			return false;
 	}
 
+####获得当前URL的参数
 
+	function GetRequest(url) {
+		var theRequest = new Object();
+		if (url.indexOf("?") != -1) {
+			var str = url.substr(1);
+			strs = str.split("&");
+			for (var i = 0; i < strs.length; i++) {
+				theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+			}
+		}
+		return theRequest;
+	}
 
+####带参数的正则表达式验证
+	function GetRequest(className){
+		var res = 'a b c';
+		// 匹配 ' a' 'a' 'a ' 'b' ' b' 'b '
+		return res.match(new RegExp('(\\s|^)'+className+'(\\s|$)'));
+	}
 
 
