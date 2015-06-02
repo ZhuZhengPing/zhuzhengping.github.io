@@ -19,10 +19,8 @@ date : 2015-5-18
 	 $("li:gt(2)");    // 大于2
 	 $("li:lt(2)");    // 小于2
 	 $(":header");     // h1,h2,h3 
-	 
 	 $("input").get(0).focus();
 	 $("input:focus");      // 当前关注，加载可用
-	 
 	 $("li").first();	//第一个
 	 $("li").last();	//最后一个
 	 $("li").not(".red"); // 非
@@ -36,7 +34,6 @@ date : 2015-5-18
 	 $("li").parents();  //祖先节点
 	 $('p:visible')   // 显示的元素
 	 $('p:hidden');   //隐藏的元素
-	 
 	 $("li:first-child"); // 先返回到父元素，然后找到子元素
 	 $("li:last-child");   // 子元素包含class
 	 $("li:only-child");   // 只有一个子元素
@@ -57,11 +54,46 @@ date : 2015-5-18
 		// 注意，必须使用$(this)来表示判断的元素，否则，不管function里面返回的是true或者false,就和判断的无
 		return $(this).attr('title') == '列表3';
 	});
-	
 	 $('li').eq(2).hasClass('.red'); // 是否含有
-	 $('li').slice(2,4);     //从第二个位置开始
-	  
-	 
+	 $('li').slice(2,4);     //从第二个位置开始,选到第4个位置
+	 $("#box").find('li').end().get(0);  // end表示元素前一个状态，这里找到ul
+	 $('div:first').clildren().size(); // 标签元素
+	 $('div:first').contains().size(); // 包含标签元素和文本元素
+	 $('li').filter('.red,:first,:last'); // 过滤
+	 $('li').filter('.red,:first-child,:last-child');
+	 $('li').filter(function(){
+		return $(this).attr('class')=='red' 
+		&& $(this).attr('title') == '列表3';
+	 });
+
+#### jquery 常规选择器
+
+	<form>
+		<input type='text' name='user' value='123' />
+		<input type='password' name='pass' value='123' />
+		<textarea></textarea>
+		<select name='city'></select>
+		<button></button>
+	</form>
+	$('input[type=password]');  // 属性选择器
+	$('input[type=text][name=user]');  // 属性选择器
+	$(':input[name=city]') // select下拉菜单，input选中所有表单
+	$(':text');  // 单行文本框
+	$(':password'); // 密码框
+	$(':password[name=pass]);  // 速度更快
+	$(':radio');
+	$(':checkbox');
+	$(':submit');
+	$(':reset');
+	$(':image');
+	$(':button');
+	$('form:hidden'); // 限定范围
+	$(':file');
+	$('form:enable');
+	$('form:disabled');
+	$('form:checked');
+	$('form:selected');
+	
 	 
 	 
 	
