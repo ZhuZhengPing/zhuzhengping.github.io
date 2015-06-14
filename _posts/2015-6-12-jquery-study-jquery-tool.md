@@ -95,7 +95,8 @@ date : 2015-6-7
 在 `jQuery` 中，数据有着各种类型和状态。有时，我们希望能通过判断数据的类型和状
 态做相应的操作。`jQuery` 提供了五组测试用的工具函数。
 
-|函数名　　　　　|说明　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+|函数名　　　　　|说明　
+|:-------------|:-------------　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
 |`$.isArray(obj)`|判断是否为数组对象，是返回 `true`
 |`$.isFunction(obj)`|判断是否为函数，是返回 `true`
 |`$.isEmptyObject(obj)`|判断是否为空对象，是返回 `true`
@@ -171,7 +172,8 @@ webkit，一般验证 Chrome 就用 webkit。*
 还有一种浏览器检测，是对浏览器内容的检测。比如：W3C 的透明度为 opacity，而 IE
 的透明度为 alpha。这个对象是$.support。
 
-|属性名　　　　　|说明　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+|属性名　　　　　|说明
+|:-------------|:-------------　
 |`hrefNormalized`|如果浏览器从 getAttribute("href")返回的是原封不动的结果，则返回 `true`。在 `IE` 中会返回 `false`，因为他的 URLs 已经常规化了
 |`htmlSerialize`|如果浏览器通过 innerHTML 插入链接元素的时候会序列化这些链接，则返回 true，目前 IE 中返回 false
 |`leadingWhitespace`|如果在使用 innerHTML 的时候浏览器会保持前导空白字符，则返回 true，目前在 IE 6-8 中返回 false

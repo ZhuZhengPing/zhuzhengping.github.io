@@ -19,9 +19,11 @@ pre code{
 }
 
 table{
-	border-top:2px solid #777;
-	border-bottom: 2px solid #777;
-	margin: 8px 0;
+	color:#333333;
+	border-width: 1px;
+	border-color: #666666;
+	border-collapse: collapse;
+	width:100%;
 }
 table thead{
 	border-bottom: 1px dashed #777;
@@ -29,14 +31,21 @@ table thead{
 	color:#fff;
 }
 table th{
-	padding: 2px 10px;
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #dedede;
 }
 table tr:nth-child(2n){
 	background-color: #E5EAED;
 }
 table td{
-	padding: 2px 10px;
-	vertical-align: top;
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #ffffff;
 }
 
 
