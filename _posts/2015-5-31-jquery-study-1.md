@@ -27,11 +27,14 @@ date : 2015-5-18
 	$('#box').css('color', 'red'); //获取 DOM 节点对象，并添加行为
 
 那么除了 `ID` 选择器之外，还有两种基本的选择器，分别为：元素标签名和类(`class`)：
+
 |选择器 |`CSS` 模式| `jQuery` 模式| 描述
-|------|------|------|------
-|元素名| `div {}| $('div')| 获取所有 `div` 元素的 `DOM`对象
-|ID| #box {}| $('#box')| 获取一个 ID 为 `box` 元素的 `DOM` 对象
-|类(class)| .box{}| $('.box')| 获取所有 `class` 为 `box` 的所有 `DOM` 对象
+|:------|:------|:------|:------
+|元素名 | `div {}`| `$('div')`| 获取所有 `div` 元素的 `DOM`对象
+|`ID` | `#box {}`| `$('#box')`| 获取一个 ID 为 `box` 元素的 `DOM` 对象
+|类(`class`)| `.box{}`| `$('.box')`| 获取所有 `class` 为 `box` 的所有 `DOM` 对象
+
+---
 
 	$('div').css('color', 'red'); //元素选择器，返回多个元素
 	$('#box').css('color', 'red'); //ID 选择器，返回单个元素
@@ -528,24 +531,63 @@ jQuery 为 nextAll 选择器提供了一个等价的方法 nextAll()：
 虽然可以使用常规选择器来对表单的元素进行定位， 但有时还是不能满足开发者灵活多
 变的需求。所以，`jQuery` 为表单提供了专用的选择器。
 
-方法名 描述 返回
-:input 选取所有 input、textarea、select 和 button 元素 集合元素
-:text 选择所有单行文本框，即 type=text 集合元素
-:password 选择所有密码框，即 type=password 集合元素
-:radio 选择所有单选框，即 type=radio 集合元素
-:checkbox 选择所有复选框，即 type=checkbox 集合元素
-:submit 选取所有提交按钮，即 type=submit 集合元素
-:reset 选取所有重置按钮，即 type=reset 集合元素
-:image 选取所有图像按钮，即 type=image 集合元素
-:button 选择所有普通按钮，即 button 元素 集合元素
-:file 选择所有文件按钮，即 type=file 集合元素
-:hidden 选择所有不可见字段，即 type=hidden 集合元素
+|方法名 |描述 |返回
+|:----|:----|:----
+|`:input` |选取所有 input、textarea、select 和 button 元素 |集合元素
+|`:text` |选择所有单行文本框，即 type=text |集合元素
+|`:password`| |选择所有密码框，即 type=password |集合元素
+|`:radio`| 选择所有单选框，即 type=radio |集合元素
+|`:checkbox` |选择所有复选框，即 type=checkbox |集合元素
+|`:submit`| 选取所有提交按钮，即 type=submit| 集合元素
+|`:reset`| 选取所有重置按钮，即 type=reset |集合元素
+|`:image`| 选取所有图像按钮，即 type=image| 集合元素
+|`:button`| 选择所有普通按钮，即 button 元素| 集合元素
+|`:file`| 选择所有文件按钮，即 type=file| 集合元素
+|`:hidden`| 选择所有不可见字段，即 type=hiddenv 集合元素
 
+	$(':input').size(); //获取所有表单字段元素
+	$(':text).size(); //获取单行文本框元素
+	$(':password').size(); //获取密码栏元素
+	$(':radio).size(); //获取单选框元素
+	$(':checkbox).size(); //获取复选框元素
+	$(':submit).size(); //获取提交按钮元素
+	$(':reset).size(); //获取重置按钮元素
+	$(':image).size(); //获取图片按钮元素
+	$(':file).size(); //获取文件按钮元素
+	$(':button).size(); //获取普通按钮元素
+	$(':hidden).size(); //获取隐藏字段元素
 
+*注意：这些选择器都是返回元素集合，如果想获取某一个指定的元素，最好结合一下属
+性选择器。*
 
+	$(':text[name=user]).size(); //获取单行文本框 name=user 的元素
 
+####九. 表单过滤器
+	
+`jQuery` 提供了四种表单过滤器，分别在是否可以用、是否选定来进行表单字段的筛选过
+滤。	
 
-
-
-
+|方法名| 描述| 返回
+|`:enabled` |选取所有可用元素 |集合元素
+|`:disabled` |选取所有不可用元素 |集合元素
+|`:checked` |选取所有被选中的元素，单选和复选字段 |集合元素
+|`:selected` |选取所有被选中的元素，下拉列表 |集合元素
+    			
+	$(':enabled').size(); //获取可用元素
+	$(':disabled).size(); //获取不可用元素
+	$(':checked).size(); //获取单选、复选框中被选中的元素
+	$(':selected).size(); //获取下拉列表中被选中的元素	
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
