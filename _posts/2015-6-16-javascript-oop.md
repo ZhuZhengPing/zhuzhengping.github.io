@@ -79,12 +79,12 @@ date : 2015-6-16
 2. 直接将属性和方法赋值给`this`对象；
 3. 没有`renturn`语句。
 
-构造函数的方法有一些规范：
+构造函数的方法有一些规范
 
 1. 函数名和实例化构造名相同且大写，(PS：非强制，但这么写有助于区分构造函数和普通函数)
 2. 通过构造函数创建对象，必须使用`new`运算符。
 
-既然通过构造函数可以创建对象，那么这个对象是哪里来的，`new Object()`在什么地方执行了？执行的过程如下：
+既然通过构造函数可以创建对象，那么这个对象是哪里来的，`new Object()`在什么地方执行了？执行的过程如下
 
 1. 当使用了构造函数，并且`new` 构造函数()，那么就后台执行了`new Object()`
 2. 将构造函数的作用域给新对象，(即`new Object()`创建出的对象)，而函数体内的`this`就代表`new Object()`出来的对象。
@@ -249,14 +249,14 @@ PS：字面量方式为什么`constructor`会指向`Object`？因为`Box.prototy
 	var box = new Box();						//在这里声明
 	alert(box.run());							//box只是最初声明的原型
 
-原型对象不仅仅可以在自定义对象的情况下使用，而`ECMAScript`内置的引用类型都可以使用这种方式，并且内置的引用类型本身也使用了原型。	
+原型对象不仅仅可以在自定义对象的情况下使用，而`ECMAScript`内置的引用类型都可以使用这种方式，
+并且内置的引用类型本身也使用了原型。
+
 	alert(Array.prototype.sort);					//sort就是Array类型的原型方法
 	alert(String.prototype.substring);				//substring就是String类型的原型方法
-
 	String.prototype.addstring = function () {		//给String类型添加一个方法
 		return this + '，被添加了！';				//this代表调用的字符串
 	};
-
 	alert('Lee'.addstring());						//使用这个方法
 
 PS：尽管给原生的内置引用类型添加方法使用起来特别方便，但我们不推荐使用这种方法。因为它可能会导致命名冲突，不利于代码维护。	
