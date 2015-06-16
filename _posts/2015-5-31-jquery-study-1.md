@@ -19,7 +19,7 @@ date : 2015-5-18
 随后，我们就可以对这个获取到的 `DOM` 节点进行行为操作了。
 
 	#box { //使用 ID 选择器的 CSS 规则
-	color:red; //将 ID 为 box 的元素字体颜色变红
+		color:red; //将 ID 为 box 的元素字体颜色变红
 	} 
 	
 在`jQuery` 选择器里，我们使用如下的方式获取同样的结果：
@@ -61,7 +61,7 @@ alert($('#box').length); //1 个，后面失明了
 不必为此烦恼。
 
 	#box > p { //CSS 子选择器，IE6 不支持
-	color:red;
+		color:red;
 	}
 	
 	$('#box > p').css('color','red'); //jQuery 子选择器，兼容了 IE6
@@ -102,6 +102,8 @@ alert($('#box').length); //1 个，后面失明了
 |群组选择器 |`span,em,.box {}` |`$('span,em,.box')`| 获取多个选择器的 `DOM` 对象
 |后代选择器 |`ul li a {}`| `$('ul li a')`| 获取追溯到的多个 `DOM` 对象
 |通配选择器 |`* {}` |`$('*')`| 获取所有元素标签的 `DOM` 对象
+
+---
 
 	//群组选择器
 	span, em, .box { //多种选择器添加红色字体
@@ -186,9 +188,11 @@ jQuery 为后代选择器提供了一个等价 find()方法
 |选择器 |`CSS` 模式 |`jQuery` 模式 |描述
 |------|------|-------|------
 |后代选择器 |`ul li a {}`| `$('ul li a')`| 获取追溯到的多个 `DOM` 对象
-|子选择器| |`div > p {}`| `$('div p')`| 只获取子类节点的多个 `DOM` 对象
+|子选择器| `div > p {}`| `$('div p')`| 只获取子类节点的多个 `DOM` 对象
 |`next` 选择器| `div + p {}`| `$('div + p')`| 只获取某节点后一个同级 `DOM`对象
 |`nextAll` 选择器| `div ~ p {}`| `$('div ~ p')`| 获取某节点后面所有同级 `DOM`对象
+
+---
 
 	//next 选择器(下一个同级节点)
 	#box + p { //IE6 不支持
@@ -283,15 +287,15 @@ jQuery 为 nextAll 选择器提供了一个等价的方法 nextAll()：
 
 |CSS 模式 |jQuery 模式 |描述
 |------|------|------
-|a[title]| $('a[title]')| 获取具有这个属性的 DOM 对象
-|a[title=num1]| $('a[title=num1]')|获取具有这个属性=这个属性值的 DOM对象
-|a[title^=num]| $('a[title^=num]')|获取具有这个属性且开头属性值匹配的DOM 对象
-|a[title\|=num]| $('a[title\|=num]')|获取具有这个属性且等于属性值或开头属性值匹配后面跟一个“-”号的 DOM 对象
-|a[title$=num]| $('a[title$=num]')|获取具有这个属性且结尾属性值匹配的DOM 对象
-|a[title!=num]| $('a[title!=num]')|获取具有这个属性且不等于属性值的DOM 对象
-|a[title~=num]| $('a[title~=num]')|获取具有这个属性且属性值是以一个空格分割的列表，其中包含属性值的 DOM 对象
-|a[title*=num]| $('a[title*=num]')获取具有这个属性且属性值含有一个指定字串的 DOM 对象
-|a[bbb][title=num1]| $('a[bbb][title=num1]')获取具有这个属性且属性值匹配的 DOM对象
+|`a[title]`| `$('a[title]')`| 获取具有这个属性的 DOM 对象
+|`a[title=num1]`| `$('a[title=num1]'`)|获取具有这个属性=这个属性值的 DOM对象
+|`a[title^=num]`|` $('a[title^=num]')`|获取具有这个属性且开头属性值匹配的DOM 对象
+|`a[title\|=num]`| `$('a[title\|=num]'`)|获取具有这个属性且等于属性值或开头属性值匹配后面跟一个“-”号的 DOM 对象
+|`a[title$=num]`| `$('a[title$=num]'`)|获取具有这个属性且结尾属性值匹配的DOM 对象
+|`a[title!=num]`| `$('a[title!=num]'`)|获取具有这个属性且不等于属性值的DOM 对象
+|`a[title~=num]`|` $('a[title~=num]')`|获取具有这个属性且属性值是以一个空格分割的列表，其中包含属性值的 DOM 对象
+|`a[title*=num]`| `$('a[title*=num]')`|获取具有这个属性且属性值含有一个指定字串的 DOM 对象
+|`a[bbb][title=num1]`| `$('a[bbb][title=num1]')`|获取具有这个属性且属性值匹配的 DOM对象
 
 属性选择器也不支持 `IE6`， 所以在 `CSS` 界如果要兼容低版本， 那么也是非主流。 但 `jQuery`
 却不必考虑这个问题。
@@ -350,7 +354,198 @@ jQuery 为 nextAll 选择器提供了一个等价的方法 nextAll()：
 	}
 	$('a[bbb][title=num1]').css('color','red'); //兼容 IE6
 
+####四．基本过滤器	
+
+过滤器主要通过特定的过滤规则来筛选所需的 `DOM` 元素，和 `CSS` 中的伪类的语法类
+似：使用冒号(:)开头。
+
+|过滤器名 |jQuery 语法 |说明| 返回
+|:----|:----|:----|:----
+|`:first` |`$('li:first')` |选取第一个元素 |单个元素
+|`:last `|`$('li:last')` |选取最后一个元素 |单个元素
+|`:not(selector)`| `$('li:not(.red)')` |选取 `class` 不是 `red` 的 `li` 元素 |集合元素
+|`:even` |`$('li.even')` |选择索引(0 开始)是偶数的所有元素 |集合元素
+|`:odd` |`$('li:odd')`| 选择索引(0 开始)是奇数的所有元素 |集合元素
+|`:eq(index)`| `$('li:eq(2)')` |选择索引(0 开始)等于 `index` 的元素 |单个元素
+|`:gt(index)`| `$('li:gt(2)')`|选择索引(0 开始)大于 `index` 的元素|集合元素
+|`:lt(index)`| `$('li.lt(2)')`| 选择索引(0 开始)小于 `index` 的元素|集合元素
+|`:header` |`$(':header')`|选择标题元素，`h1 ~ h6` |集合元素
+|`:animated` |`$(':animated')` |选择正在执行动画的元素| 集合元素
+|`:focus`| `$(':focus')` |选择当前被焦点的元素 |集合元素
+
+---
+
+	$('li:first').css('background', '#ccc'); //第一个元素
+	$('li:last).css('background', '#ccc'); //最后一个元素
+	$('li:not(.red)).css('background', '#ccc'); //非 class 为 red 的元素
+	$('li:even').css('background', '#ccc'); //索引为偶数的元素
+	$('li:odd).css('background', '#ccc'); //索引为奇数的元素
+	$('li:eq(2)).css('background', '#ccc'); //指定索引值的元素
+	$('li:gt(2)').css('background', '#ccc'); //大于索引值的元素
+	$('li:lt(2)').css('background', '#ccc'); //小于索引值的元素
+	$(':header').css('background', '#ccc'); //页面所有 h1 ~ h6 元素
+
+*注意： `:focus` 过滤器，必须是网页初始状态的已经被激活焦点的元素才能实现元素获取。
+而不是鼠标点击或者 `Tab` 键盘敲击激活的。*
+
+	$('input').get(0).focus(); //先初始化激活一个元素焦点
+	$(':focus').css('background', 'red'); //被焦点的元素
+
+`jQuery` 为最常用的过滤器提供了专用的方法，已达到提到性能和效率的作用：
 	
+	$('li').eq(2).css('background', '#ccc'); //元素 li 的第三个元素，负数从后开始
+	$('li').first().css('background', '#ccc'); //元素 li 的第一个元素
+	$('li').last().css('background', '#ccc'); //元素 li 的最后一个元素
+	$('li').not('.red').css('background', '#ccc'); //元素 li 不含 class 为 red 的元素
+	
+*注意：`:first`、`:last` 和 `first()`、`last()`这两组过滤器和方法在出现相同元素的时候，`first` 会
+实现第一个父元素的第一个子元素，`last` 会实现最后一个父元素的最后一个子元素。所以，
+如果需要明确是哪个父元素，需要指明：*	
+	
+	$('#box li:last').css('background', '#ccc'); //#box 元素的最后一个 li
+	//或
+	$('#box li).last().css('background', '#ccc'); //同上
+	
+####五. 内容过滤器	
+	
+	内容过滤器的过滤规则主要是包含的子元素或文本内容上。
+	
+|过滤器名| jQuery| 语法| 说明| 返回
+|:----|:----|:----|:----
+|`:contains(text)`|`$(':contains("ycku.com")')`|选取含有`"ycku.com"`文本的元素| 元素集合
+|`:empty` |`$(':empty')`| 选取不包含子元素或空文本的元素 |元素集合
+|`:has(selector)` |`$(':has(.red)')` |选取含有 `class` 是 `red `的元素 |元素集合
+|`:parent` |`$(':parent')` |选取含有子元素或文本的元素 |元素集合	
+
+---
+	
+	//选择元素文本节点含有 ycku.com 文本的元素
+	$('div:contains("ycku.com")').css('background', '#ccc');
+	$('div:empty').css('background', '#ccc'); //选择空元素
+	$('ul:has(.red)').css('background', '#ccc'); //选择子元素含有 class 是 red 的元素
+	$(':parent').css('background', '#ccc'); //选择非空元素
+	
+`jQuery` 提供了一个 `has()`方法来提高`:has` 过滤器的性能：	
+	
+	$('ul').has('.red').css('background', '#ccc'); //选择子元素含有 class 是 red 的元素	
+	
+`jQuery` 提供了一个名称和`:parent` 相似的方法， 但这个方法并不是选取含有子元素或文本
+的元素，而是获取当前元素的父元素，返回的是元素集合。	
+	
+	$('li').parent().css('background', '#ccc'); //选择当前元素的父元素
+	$('li').parents().css('background', '#ccc'); //选择当前元素的父元素及祖先元素
+	$('li').parentsUntil('div').css('background', '#ccc'); //选择当前元素遇到 div 父元素停止
+
+####六. 可见性过滤器	
+	
+	可见性过滤器根据元素的可见性和不可见性来选择相应的元素。
+	
+|过滤器名| `jQuery` 语法 |说明 |返回
+|:----|:----|:----|:----
+|`:hidden` |`$(':hidden')` |选取所有不可见元素 |集合元素
+|`:visible` |`$(':visible')` |选取所有可见元素 |集合元素	
+
+---	
+	
+	$('p:hidden).size(); //元素 p 隐藏的元素
+	$('p:visible').size(); //元素 p 显示的元素		
+	
+*注意：`:hidden` 过滤器一般是包含的内容为：`CSS` 样式为 `display:none`、`input` 表单类型为
+`type="hidden"`和 `visibility:hidden` 的元素。*	
+	
+####七. 子元素过滤器	
+	
+	子元素过滤器的过滤规则是通过父元素和子元素的关系来获取相应的元素。
+	
+|过滤器名| jQuery 语法 |说明|返回
+|:----|:----|:----|:----
+|`:first-child` |`$('li:first-child')` |获取每个父元素的第一个子元素 |集合元素
+|`:last-child` |`$('li:last-child')` |获取每个父元素的最后一个子元素 |集合元素
+|`:only-child`| `$('li:only-child')`| 获取只有一个子元素的元素 |集合元素
+|`:nth-child(odd/even/eq(index))`|`$('li:nth-child(even)')`|获取每个自定义子元素的元素(索引值从 1 开始计算) |集合元素	
+
+---
+	
+	$('li:first-child').css('background', '#ccc'); //每个父元素第一个 li 元素
+	$('li:last-child').css('background', '#ccc'); //每个父元素最后一个 li 元素
+	$('li:only-child').css('background', '#ccc'); //每个父元素只有一个 li 元素
+	$('li:nth-child(odd)').css('background', '#ccc'); //每个父元素奇数 li 元素
+	$('li:nth-child(even)').css('background', '#ccc'); //每个父元素偶数 li 元素
+	$('li:nth-child(2)').css('background', '#ccc'); //每个父元素第三个 li 元素
+	
+####八. 其他方法	
+	
+	`jQuery` 在选择器和过滤器上，还提供了一些常用的方法，方便我们开发时灵活使用。
+	
+|方法名| jQuery 语法| 说明| 返回
+|:----|:----|:----|:----
+|`is(s/o/e/f)` |`$('li').is('.red')`| 传递选择器、`DOM`、`jquery` 对象| 集合元素
+|`hasClass(class)`|`$('li').eq(2).hasClass('red')`|其实就是 `is("." + class)` |集合元素
+|`slice(start, end)`| `$('li').slice(0,2)`|选择从 `start` 到 `end` 位置的元素，<br />如果是负数，则从后开始 |集合元素
+|`filter(s/o/e/f)` |`$('li').filter('.red')`||
+|`end()`|`$('div').find('p').end()`|获取当前元素前一次状态 |集合元素
+|`contents()` |`$('div').contents()`|获取某元素下面所有元素节点，包括文本节点，<br />如果是 `iframe`，则可以查找文本内容集合元素	
+	
+---	
+	
+	$('.red').is('li'); //true，选择器，检测 class 为是否为 red
+	$('.red').is($('li')); //true，jQuery 对象集合，同上
+	$('.red').is($('li').eq(2)); //true，jQuery 对象单个，同上
+	$('.red').is($('li').get(2)); //true，DOM 对象，同上
+	$('.red').is(function () { //true，方法，同上
+		return $(this).attr('title') == '列表 3'; //可以自定义各种判断
+	}));
+	$('li').eq(2).hasClass('red'); //和 is 一样，只不过只能传递 class
+	$('li').slice(0,2).css('color', 'red'); //前三个变成红色
+	
+*注意：这个参数有多种传法和 `JavaScript` 的 `slice` 方法是一样的比如：`slice(2)`，从第三个
+开始到最后选定；`slice(2,4)`，第三和第四被选定；`slice(0,-2)`，从倒数第三个位置，向前选定
+所有；`slice(2,-2)`，前两个和末尾两个未选定。*	
+	
+	$("div").find("p").end().get(0); //返回 div 的原生 DOM
+	$('div').contents().size(); //返回子节点(包括文本)数量
+	$('li').filter('.red').css('background','#ccc'); //选择 li 的 class 为 red 的元素
+	$('li').filter('.red, :first, :last').css('background','#ccc'); //增加了首尾选择
+	//特殊要求函数返回
+	$('li').filter(function () {
+	return $(this).attr('class') == 'red' && $(this).attr('title') == '列表 3';
+	}).css('background', '#ccc');
+	
+####九. 表单常规选择器
+
+我们可以使用 `id`、 类(`class`)和元素名来获取表单字段， 如果是表单元素， 都必须含有 `name`
+属性，还可以结合属性选择器来精确定位。	
+	
+	$('input').val(); //元素名定位，默认获取第一个
+	$('input').eq(1).val(); //同上，获取第二个
+	$('input[type=password]').val(); //选择 type 为 password 的字段
+	$('input[name=user]').val(); //选择 name 为 user 的字段
+
+那么对于 `id` 和类(`class`)用法比较类似，也可以结合属性选择器来精确的定位，在这里我
+们不在重复。对于表单中的其他元素名比如：`textarea`、`select` 和 `button` 等，原理一样，不在
+重复。
+
+虽然可以使用常规选择器来对表单的元素进行定位， 但有时还是不能满足开发者灵活多
+变的需求。所以，`jQuery` 为表单提供了专用的选择器。
+
+方法名 描述 返回
+:input 选取所有 input、textarea、select 和 button 元素 集合元素
+:text 选择所有单行文本框，即 type=text 集合元素
+:password 选择所有密码框，即 type=password 集合元素
+:radio 选择所有单选框，即 type=radio 集合元素
+:checkbox 选择所有复选框，即 type=checkbox 集合元素
+:submit 选取所有提交按钮，即 type=submit 集合元素
+:reset 选取所有重置按钮，即 type=reset 集合元素
+:image 选取所有图像按钮，即 type=image 集合元素
+:button 选择所有普通按钮，即 button 元素 集合元素
+:file 选择所有文件按钮，即 type=file 集合元素
+:hidden 选择所有不可见字段，即 type=hidden 集合元素
+
+
+
+
+
+
 
 
 
