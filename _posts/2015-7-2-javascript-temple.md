@@ -1,7 +1,7 @@
 ---
 layout : post
-title : "HTML5 手机APP 模板"
-category : html5
+title : "javascript 封装类"
+category : javascript
 duoshuo: true
 date : 2015-7-2
 
