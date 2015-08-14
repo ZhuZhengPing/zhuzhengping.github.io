@@ -44,7 +44,7 @@ date : 2015-8-13
 	public string appid { get; set; }
     public string nonceStr { get; set; }
 	public string time { get; set; }
-	public string nonceStr { get; set; }
+	public string signature { get; set; }
 	
 	// 加载事件获得参数
 	protected void Page_Load(object sender, EventArgs e)
