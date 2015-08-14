@@ -42,7 +42,7 @@ date : 2015-8-13
 
 	// 定义wx.config参数
 	public string appid { get; set; }
-	public string token { get; set; }
+    public string nonceStr { get; set; }
 	public string time { get; set; }
 	public string nonceStr { get; set; }
 	
