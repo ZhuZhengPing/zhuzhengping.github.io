@@ -22,6 +22,10 @@ date : 2015-9-1
 
     -webkit-tap-highlight-color: rgba(0,0,0,0);
 
+#### 元素高度 = 元素高度， 不加上 padding
+
+	box-sizing:border-box;
+	
 #### 搜索框样式
 	
 	// html
