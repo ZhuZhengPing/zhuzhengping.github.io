@@ -14,9 +14,29 @@ date : 2015-9-1
 	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,initial-scale=1.0" />
 
 #### css 倾斜,只对区块有用
-
-	transform:rotate(45deg);
-	display:block;
+	img:hover{
+		transform:rotate(45deg);
+		
+		// 也可以向右向下移动,向右向下移动600像素
+		transform:translate(600px,600px);
+		
+		background:green;
+		display:block;
+	}
+	// 2秒内完成旋转 transition参数：过度属性，例如可以是transform
+	img{
+		transition: transform 2s
+		//1.也可以这样, 旋转2秒，背景转换3秒
+		transition: transform 2s,background 3s;
+		//2.全部5秒完成
+		transition: all 5s;
+		//3.塞北尔曲线
+		 transition:2s cubic-bezier(0.6,0.1,0.1,0.7);
+		//4.第四个参数,匀速运动，还有 ease-out,ease-in,ease-in-out
+		transition:2s linear;
+		//5.分3步到达
+		transition:2s steps(3s,start);
+	}
 
 #### 按钮按下无样式
 

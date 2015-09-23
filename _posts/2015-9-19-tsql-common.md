@@ -1,7 +1,7 @@
 ---
 layout : post
 title : "常用的tsql"
-category : sql
+category : sqlserver
 duoshuo: true
 date : 2015-9-19
 
