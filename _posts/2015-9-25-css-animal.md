@@ -1,17 +1,11 @@
 ---
 layout : post
-title : "常用的css样式"
+title : "css动画"
 category : css
 duoshuo: true
-date : 2015-9-1
+date : 2015-9-25
 
 ---
-
-有时候感觉自己记性太差了，一些经常用到的知识，也会经常忘记，所以现在试着记下一些防止再次忘记
-
-####手机自适应
-
-	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,initial-scale=1.0" />
 
 #### css 倾斜,只对区块有用
 	img:hover{
@@ -23,6 +17,7 @@ date : 2015-9-1
 		background:green;
 		display:block;
 	}
+	
 	// 2秒内完成旋转 transition参数：过度属性，例如可以是transform
 	img{
 		transition: transform 2s
@@ -101,67 +96,7 @@ date : 2015-9-1
 		-webkit-animation:myball-1 5s linear infinite,myball-2 5s linear infinite;
 	}
 
-####css3 背景
 
-	div{
-		width:400px;
-		height:400px;
-		border:1px solid #000000;
-		// 先定义的显示在前面，后定义的显示在后面
-		background-image:url(bg1.png),url(bg2.png);
-		background-position:top left; center right;
-		background-repeat:no-repeat,no-repeat;
-		//1. 定义宽度和高度
-		background-size:250px 200px;
-		//2. 定义百分比
-		background-size:50% 50%;
-		//3. 关键字(1.cover 刚好覆盖，保存比例 2.contain 缩小完全显示在div内部)
-		background-size:cover;
-		// 1.border-box 背景图片以边框为基准定位
-		// 2.padding-box 默认值，背景图片在padding区域定位
-		// 3.content-box 背景图片在内容区域定位
-		background-origin:border-box;
-		// 可以定义背景图片的剪裁区域
-		// 1.border-box 默认值 背景图片以边框为基准定位
-		// 2.padding-box 剪裁超出padding-box的区域
-		// 3.content-box 剪裁超出内容区域的背景图片
-		background-clip:border-box;
-		// 完整显示
-		background:pink url('xx.png') no-repeat center/contain border-box padding-box;
-		
-	}
-	
-#### 按钮按下无样式
-
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-
-#### 元素高度 = 元素高度， 不加上 padding
-
-	box-sizing:border-box;
-	
-#### 搜索框样式
-	
-	// html
-	<input type="search" id="txtSearch" placeholder="搜索" />
-	
-	// css
-	-webkit-appearance:textfield;
-	-moz-appearance:textfield;
-	
-#### div float 清除浮动
-
-	.contant ul li:after{
-		clear:both;
-		display:block;
-		content:"";
-	}
-
-#### css截取字符串
-
-	overflow: hidden;
-    white-space: nowrap;
-    -o-text-overflow: ellipsis;
-    text-overflow: ellipsis;
 
 
 
