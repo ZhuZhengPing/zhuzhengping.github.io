@@ -11,11 +11,19 @@ date : 2015-9-19
 
 #### 多条记录合成一条记录
 
-	select * from (select * from someTable) A 
-	OUTER APPLY(
-	SELECT [DeptName]= STUFF(REPLACE(REPLACE((
-	select DeptName from otherTable N where referenceId = someTable.ID
-	from XML AUTO),'<N DeptName=\"', ','), '\"/>', ''), 1, 1, ''))B
+	select * from
+	( 
+		select FloorName,Sort,ID from p_Floor  
+	)A
+	OUTER APPLY
+	(
+		SELECT [RoomInfo]= STUFF(REPLACE(REPLACE 
+		(
+			(
+				select RoomName from p_Room N where FloorID = A.id FOR XML AUTO 
+			), '<N RoomName="', '_'), '"/>', ''), 1, 1, ''
+		)  
+	)B  where RoomInfo is not null
 
 #### 获得权限查询
 
