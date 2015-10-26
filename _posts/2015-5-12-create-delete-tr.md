@@ -111,4 +111,4 @@ excerpt: 正则表达式，常用的正则，JavaScript 语法检查校验，Jav
 		return res.match(new RegExp('(\\s|^)'+className+'(\\s|$)'));
 	}
 
-
+	
