@@ -39,7 +39,9 @@ date : 2015-9-19
 
     update someTable set status = abs(isnull(status,0)-1) where ID = 'XXX'
 
+#### 集合函数防止重复的另外一种方法
 
+	select sum(case when area in ('北京','上海','深圳') then '大城市' else area end) area from table group by (case when area in ('北京','上海','深圳') then '大城市' else area end)
 
 
 
