@@ -1,7 +1,7 @@
 ---
 layout : post
 title : "javascript 日期计算"
-category : mvc
+category : javascript
 duoshuo: true
 date : 2015-10-23
 
