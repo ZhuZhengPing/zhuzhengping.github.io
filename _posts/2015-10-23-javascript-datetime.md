@@ -136,4 +136,19 @@ date : 2015-10-23
 		WeixinJSBridge.call('hideOptionMenu');
 	}
 	
+####获得白天晚上数据
+
+	var hour = new Date().getHours();
+	if (hour >= 7 && hour <= 19) {
+		alert('现在是白天');
+	} else {
+		alert('晚上了，该休息了');
+	}
+	
+	
+	
+	
+	
+	
+	
 	
