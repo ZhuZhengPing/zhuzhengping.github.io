@@ -43,7 +43,9 @@ date : 2015-9-19
 
 	select sum(case when area in ('北京','上海','深圳') then '大城市' else area end) area from table group by (case when area in ('北京','上海','深圳') then '大城市' else area end)
 
+#### 表添加字段
 
+	alter table TABLE add [COLUMN] varchar(50)
 
 	
 	
