@@ -47,5 +47,17 @@ date : 2015-9-19
 
 	alter table TABLE add [COLUMN] varchar(50)
 
+#### 多张表求总数，求和加入筛选条件
+
+	select (select count(*) from XXX where DATEDIFF(day,touch,getdate()) = 0) as ReceiveCount,isnull(sum(case when ISGenJinID = 'Y'and DATEDIFF(day,touch,getdate()) = 0  then 1 else 0 end),0) FollowCount,  sum(ISNULL(b.renSum,0)) FromCount
+	from XXX p left join  (
+	select custid,count(*) as renSum from YYY b  where b.ISbzf=1  group by custid
+	) b  on p.ID= b.CustID
+
+	
+	
+	
+	
+	
 	
 	
