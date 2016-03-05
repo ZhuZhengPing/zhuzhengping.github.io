@@ -7,34 +7,6 @@ date : 2015-5-13
 
 ---
 
-####常用的日期方法(下面的GetDate() = '2006-11-08 13:37:56.233')
-
-	-- 返回表示指定日期的指定日期部分的字符串。Datepart详见下面的列表.
-	select DATENAME (datepart,date )
-
-	-- 返回表示指定日期的指定日期部分的整数。
-	SELECT DATEPART(year,Getdate()) -- 返回2006
-
-	-- 返回给指定日期加上一个时间间隔后的新datetime 值。
-	SELECT DATEADD(week,1,GetDate()) --当前日期加一周后的日期
-
-	-- 返回跨两个指定日期的日期边界数和时间边界数。
-	SELECT DATEDIFF(month,'2006-10-11','2006-11-01') --返回1
-
-	-- 返回一个整数，表示指定日期的天datepart 部分。
-	SELECT day(GetDate()) -- 返回8
-
-	-- 以datetime 值的SQL Server 2005 标准内部格式返回当前系统日期和时间。
-	SELECT GetDate()   -- 返回2006-11-08 13:37:56.233
-
-	-- 返回表示指定日期的“月”部分的整数。
-	SELECT MONTH(GETDATE()) -- 返回11
-
-	-- 返回表示指定日期的“年”部分的整数。
-	SELECT YEAR(GETDATE()) -- 返回2006
-
----
-
 ####取特定日期
 
 	-- dateadd  在向指定日期加上一段时间的基础上，返回新的 datetime 值 例如：向日期加上2天 
