@@ -42,7 +42,26 @@ date : 2015-10-30
 |User   | IPrincipal    | Authentication information about the loggedin user
 |TempData   | TempDataDictionary    |Temporary data items stored for the current user 	
 	
+模拟`ActionResult`
+
+	CustomRedirectResult : ActionResult { 
+        public string Url { get; set; } 
+        public override void ExecuteResult(ControllerContext context) {             
+			string fullUrl = UrlHelper.GenerateContentUrl(Url, context.HttpContext); 
+            context.HttpContext.Response.Redirect(fullUrl); 
+        } 
+    } 
 	
-	
-	
+Table 15-2. Built-in ActionResult Types	
+
+|Type  |Description  | Helper Methods
+|:------|:------|:------
+|ViewResult   | Renders the specified or default view template | View 
+|PartialViewResult | Renders the specified or default partial view template  | PartialView  
+|RedirectToRouteResult | Issues an HTTP 301 or 302 redirection to an action method or specific route entry, generating a URL according to your routing configuration | RedirectToAction RedirectToActionPermanent RedirectToRoute RedirectToRoutePermanent  
+|RedirectResult  | Issues an HTTP 301 or 302 redirection to a specific URL   | Redirect RedirectPermanent  	
+|HttpUnauthorizedResult  | Sets the response HTTP status code to 401 (meaning “not authorized”), which causes the active authentication mechanism (forms authentication or Windows authentication) to ask the visitor to log in   | None  	
+|HttpNotFoundResult  | Returns a HTTP 404—Not found error   | HttpNotFound 	
+|HttpStatusCodeResult   | Returns a specified HTTP code   | None  	
+|EmptyResult  | Does nothing   | None 	
 	
