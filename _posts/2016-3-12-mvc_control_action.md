@@ -94,10 +94,40 @@ throw exception
 		return new HttpUnauthorizedResult(); 
 	}
 
+SessionState 
+	
+	|Value  |Description 
+	|:------|:------
+	|Default    | Use the default ASP.NET behavior, which is to determine the session state configuration from the HttpContext. 
+	|Required | Full read-write session state is enabled. 
+	|ReadOnly  | Read-only session state is enabled. 
+	|Disabled  | Session state is disabled entirely. 
 
+Asynchronous Controller
 
-
-
+	// Action代码
+	public class RemoteDataController : AsyncController { 
+        public async Task<ActionResult> Data() { 
+            string data = await Task<string>.Factory.StartNew(() => {                 
+				return new RemoteService().GetRemoteData(); 
+            });  
+            return View((object)data); 
+        } 
+    } 
+	
+	// 服务代码
+	 public class RemoteService { 
+        public string GetRemoteData() { 
+            Thread.Sleep(2000); 
+            return "Hello from the other side of the world"; 
+        } 
+        public async Task<string> GetRemoteDataAsync() {             
+			return await Task<string>.Factory.StartNew(() => { 
+                Thread.Sleep(2000); 
+                return "Hello from the other side of the world"; 
+            }); 
+        } 
+    } 
 
 
 
