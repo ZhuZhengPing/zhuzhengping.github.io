@@ -3,7 +3,7 @@ layout : post
 title : "view"
 category : mvc
 duoshuo: true
-date : 2016-4-6
+date : 2016-4-16
 
 ---
 

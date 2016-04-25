@@ -3,7 +3,7 @@ layout : post
 title : "control"
 category : mvc
 duoshuo: true
-date : 2015-10-30
+date : 2015-10-31
 
 ---
 
