@@ -1,9 +1,9 @@
 ---
 layout : post
 title : "url routing"
-category : mvc
+category : 'mvc'
 duoshuo: true
-date : 2015-10-30
+date : 2015-4-27
 
 ---
 
@@ -76,6 +76,42 @@ date : 2015-10-30
             new { id = "myAnchorID", @class = "myCSSClass"}) 
 	<a class="myCSSClass"  
     href="https://myserver.mydomain.com/Home/Index/MyId#myFragmentName" id="myAnchorID">This is an outgoing URL</a>
+	
+从后台获得URL
+
+	string myActionUrl = Url.Action("Index", new { id = "MyID" }); 
+    string myRouteUrl = Url.RouteUrl(new { controller = "Home", action = "Index" });  
+
+RouteLink 
+
+	@Html.RouteLink("Click me", "MyOtherRoute","Index", "Customer") 
+
+自定义Route处理
+	
+	public class CustomRouteHandler : IRouteHandler
+    {
+        public IHttpHandler GetHttpHandler(RequestContext requestContext)
+        {
+            return new CustomHttpHandler(); 
+        }
+        public class CustomHttpHandler : IHttpHandler
+        {
+            public bool IsReusable
+            {
+                get { return false; }
+            }
+            public void ProcessRequest(HttpContext context)
+            {
+                context.Response.Write("Hello");
+            }
+        } 
+    }
+	
+	
+	
+	
+	
+	
 	
 	
 	
