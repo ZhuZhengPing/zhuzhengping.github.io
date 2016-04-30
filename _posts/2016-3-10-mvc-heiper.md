@@ -1,9 +1,9 @@
 ﻿---
 layout : post
 title : "helper"
-category : 'mvc'
+category : mvc
 duoshuo: true
-date : 2015-10-31
+date : 2015-5-18
 
 ---
 
