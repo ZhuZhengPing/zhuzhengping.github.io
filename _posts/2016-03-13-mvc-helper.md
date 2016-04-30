@@ -14,6 +14,12 @@ author: Zhengping Zhu
 
 `HtmlHelper`用来在视图中呈现 `HTML` 控件。以下列表显示了当前可用的一些 `HTML` 帮助器。 本主题演示所列出的带有星号 (*) 的帮助器。
 
+
+
+
+
+
+
 Helper    		|Example    						|Description
 Display    		|Html.Display("FirstName")   		|Renders a read-only view of the specified model property, choosing an HTML element according to the property’s type and metadata 
 DisplayFor 		|Html.DisplayFor(x => x.FirstName) 	|Strongly typed version of the previous helper
