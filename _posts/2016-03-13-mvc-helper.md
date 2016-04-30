@@ -1,4 +1,4 @@
-﻿---
+---
 layout: post
 title:  "MVC helper"
 date:   2016-04-30 16:32:18 +0800
