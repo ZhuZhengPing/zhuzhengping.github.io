@@ -1,6 +1,6 @@
 ï»¿---
 layout: post
-title:  "MVC helperÓÃ·¨´óÈ«"
+title:  "MVC helper"
 date:   2016-04-30 16:32:18 +0800
 categories: mvc
 tags: mvc
@@ -10,14 +10,14 @@ author: Zhengping Zhu
 * content
 {:toc}
 
-##¸ÅÄî
+##æ¦‚å¿µ
 
-`HtmlHelper`ÓÃÀ´ÔÚÊÓÍ¼ÖÐ³ÊÏÖ `HTML` ¿Ø¼þ¡£ÒÔÏÂÁÐ±íÏÔÊ¾ÁËµ±Ç°¿ÉÓÃµÄÒ»Ð© `HTML` °ïÖúÆ÷¡£ ±¾Ö÷ÌâÑÝÊ¾ËùÁÐ³öµÄ´øÓÐÐÇºÅ (*) µÄ°ïÖúÆ÷¡£
+`HtmlHelper`ç”¨æ¥åœ¨è§†å›¾ä¸­å‘ˆçŽ° `HTML` æŽ§ä»¶ã€‚ä»¥ä¸‹åˆ—è¡¨æ˜¾ç¤ºäº†å½“å‰å¯ç”¨çš„ä¸€äº› `HTML` å¸®åŠ©å™¨ã€‚ æœ¬ä¸»é¢˜æ¼”ç¤ºæ‰€åˆ—å‡ºçš„å¸¦æœ‰æ˜Ÿå· (*) çš„å¸®åŠ©å™¨ã€‚
 
 Helper    		|Example    						|Description
-Display    		|Html.Display("FirstName")   		|Renders a read-only view of the specified model property, choosing an HTML element according to the property¡¯s type and metadata 
+Display    		|Html.Display("FirstName")   		|Renders a read-only view of the specified model property, choosing an HTML element according to the propertyâ€™s type and metadata 
 DisplayFor 		|Html.DisplayFor(x => x.FirstName) 	|Strongly typed version of the previous helper
-Editor     		|Html.Editor("FirstName") 			|Renders an editor for the specified model property, choosing an HTML element according to the property¡¯s type and metadata 
+Editor     		|Html.Editor("FirstName") 			|Renders an editor for the specified model property, choosing an HTML element according to the propertyâ€™s type and metadata 
 EditorFor		|Html.EditorFor(x => x.FirstName) 	|Strongly typed version of the previous helper
 Label 			|Html.Label("FirstName") 		  	|Renders an HTML `<label>` element referring to the specified model property 
 LabelFor		|Html.LabelFor(x => x.FirstName)  	|Strongly typed version of the previous 
@@ -52,7 +52,7 @@ Html 			|Renders the value in a single-line textbox input element. |Renders a li
 MultilineText 	|Renders an HTML textarea element that contains the data value. |Renders the data value. 
 Number			|Renders an input element whose type attribute is set to number. |Renders the data value 
 Object			|See explanation after this table. |See explanation after this table. 
-Password		|Renders the value in a single-line textbox input element so that the characters are not displayed but can be edited. |Renders the data value¡ªthe characters are not obscured. 
+Password		|Renders the value in a single-line textbox input element so that the characters are not displayed but can be edited. |Renders the data valueâ€”the characters are not obscured. 
 String 			|Renders the value in a single-line textbox input element. |Renders the data value. 
 Text 			|Identical to the String template. |Identical to the String template
 Tel 			|Renders an input element whose type attribute is set to tel. |Renders the data value 
@@ -60,13 +60,13 @@ Time 			|Renders an input element whose type attribute is time and which contain
 
 Creating a Custom Editor Template
 
->1. The template passed to the helper¡ªfor example, Html.EditorFor(m => m.SomeProperty, "MyTemplate") would lead to MyTemplate being used.
+>1. The template passed to the helperâ€”for example, Html.EditorFor(m => m.SomeProperty, "MyTemplate") would lead to MyTemplate being used.
 >2. Any template that is specified by metadata attributes, such as UIHint. 
 >3. The template associated with any data type specified by metadata, such as the DataType attribute.
 >4. Any template that corresponds to the.NET class name of the data type being processed.
 >5. The built-in String template if the data type being processed is a simple type.
 >6. Any template that corresponds to the base classes of the data type.
->7. If the data type implements IEnumerable, then the built-in Collection template will be used.If all else fails, the Object template will be used¡ªsubject to the rule that scaffolding is not recursive.
+>7. 
 
 
 
