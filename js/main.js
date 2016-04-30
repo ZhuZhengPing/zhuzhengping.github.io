@@ -1,4 +1,4 @@
-/**
+﻿/**
  * some JavaScript code for this blog theme
  */
 /* jshint asi:true */
