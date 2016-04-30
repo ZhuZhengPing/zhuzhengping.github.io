@@ -56,4 +56,3 @@ excerpt_separator: "\n\n\n\n"
 # paginate
 gems: [jekyll-paginate]
 paginate: 5
-encoding:"utf-8"
