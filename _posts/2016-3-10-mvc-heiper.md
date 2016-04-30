@@ -1,11 +1,12 @@
 ﻿---
-layout:post
-title:"mvc helper"
-category:'mvc'
-duoshuo:true
-date:2016-3-28
+layout : post
+title : "helper"
+category : 'mvc'
+duoshuo: true
+date : 2015-10-31
 
 ---
+
 Creating an Inline Helper Method
 
 	@helper ListArrayItems(string[] items) { 
