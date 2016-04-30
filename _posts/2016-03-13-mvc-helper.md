@@ -10,7 +10,7 @@ author: Zhengping Zhu
 * content
 {:toc}
 
-##概念
+## 概念
 
 `HtmlHelper`用来在视图中呈现 `HTML` 控件。以下列表显示了当前可用的一些 `HTML` 帮助器。 本主题演示所列出的带有星号 (*) 的帮助器。
 
