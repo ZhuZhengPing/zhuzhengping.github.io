@@ -1,9 +1,9 @@
 ---
 layout : post
-title : "view"
-category : mvc
+title : "mvc view"
+category : 'mvc'
 duoshuo: true
-date : 2016-4-16
+date : 2016-3-13
 
 ---
 

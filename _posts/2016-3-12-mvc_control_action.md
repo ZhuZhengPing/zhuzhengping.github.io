@@ -1,7 +1,7 @@
 ---
 layout : post
 title : "control"
-category : mvc
+category : 'mvc'
 duoshuo: true
 date : 2015-10-31
 

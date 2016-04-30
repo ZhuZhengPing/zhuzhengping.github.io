@@ -1,7 +1,7 @@
 ---
 layout : post
 title : "filter"
-category : mvc
+category : 'mvc'
 duoshuo: true
 date : 2016-3-13
 
