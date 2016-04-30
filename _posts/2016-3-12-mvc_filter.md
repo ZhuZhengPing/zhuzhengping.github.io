@@ -14,8 +14,8 @@ date : 2016-3-13
 |Result   | IResultFilter| ActionFilterAttribute  |Runs before and after the action result is executed + 
 |Exception  | IExceptionFilter | HandleErrorAttribute  |Runs only if another filter, the action method, or the action result throws an exception 
 	
-Exception filter
-
+####Exception filter
+ 
 	public class RangeExceptionAttribute : FilterAttribute, IExceptionFilter { 
         public void OnException(ExceptionContext filterContext) { 
             if (!filterContext.ExceptionHandled && 
