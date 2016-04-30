@@ -1,4 +1,4 @@
-﻿/* jshint asi:true */
+/* jshint asi:true */
 
 /**
  * [fixSidebar description]

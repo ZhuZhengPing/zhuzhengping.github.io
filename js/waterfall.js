@@ -1,4 +1,4 @@
-﻿/* jshint asi:true */
+/* jshint asi:true */
 //先等图片都加载完成
 //再执行布局函数
 

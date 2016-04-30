@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * Masonry PACKAGED v4.0.0
  * Cascading grid layout library
  * http://masonry.desandro.com
