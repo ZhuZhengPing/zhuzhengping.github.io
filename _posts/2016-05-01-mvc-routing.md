@@ -46,7 +46,97 @@ URL模式的匹配行为
 >* URL模式都是比较保守的，只会匹配和URL相同的变量
 >* 如果URL的数量和变量相同的话，routing会提取变量的值
 
-###创建注册一个简单的路由
+### 创建有默认值的路由
+
+```js   
+public class RouteConfig { 
+	public static void RegisterRoutes(RouteCollection routes) { 
+		routes.MapRoute("MyRoute", "{controller}/{action}",                 
+		new { controller = "Home", action = "Index" }); 
+	} 
+} 
+```
+
+#### `controller`和`action`都提供了默认值,可以匹配带有1个、2个、3个的URL
+
+变量数量		|示例							|匹配
+0				|mydomain.com					|controller = Home  action = Index  
+1				|mydomain.com/Customer			|controller = Customer  action = Index  
+2				|mydomain.com/Customer/List 	|controller = Customer  action = List 
+3				|mydomain.com/Customer/List/All	|没匹配-变量太多
+
+#### 使用静态的URL变量
+
+URL不是所有的部分都需要变量，你也可以在URL上面创建一个静态的变量，就像下面使用静态变量`Public`一样
+
+```
+http://mydomain.com/Public/Home/Index 
+```
+
+#### 创建自定义的部分变量
+
+Routing不仅仅是接收URL的变量，我们也可以定义自己的变量
+
+```js
+public static void RegisterRoutes(RouteCollection routes) { 
+	routes.MapRoute("MyRoute", "{controller}/{action}/{id}",                 
+	new { controller = "Home", action = "Index",  
+	id = "DefaultId" }); 
+} 
+```
+
+我们可以根据Routing的部分变量访问`RouteData.Values`属性，为了验证这一点，下面创建了一个action
+
+```js
+public ActionResult CustomVariable() { 
+	ViewBag.Controller = "Home"; 
+	ViewBag.Action = "CustomVariable"; 
+	ViewBag.CustomVariable = RouteData.Values["id"]; 
+	return View(); 
+} 
+```
+
+`RouteData.Values["id"]` 可以获取到`RouteCollection`里面的自定义参数`id`
+
+### 创建选择性的部分变量
+
+一个选择性的部分变量不需要再`RouteCollection`里面指定，并且没有默认值，下面创建了一个选择性变量的示例，我们设置部分变量为选择性变量的语法为：`UrlParameter.Optional`
+
+```js
+public static void RegisterRoutes(RouteCollection routes) { 
+	routes.MapRoute("MyRoute", "{controller}/{action}/{id}",    
+	new { controller = "Home", action = "Index",  
+			id = UrlParameter.Optional }); 
+}
+```
+
+这个route匹配URL 不管id有没有提供，下面的表格列出URL匹配项
+
+变量			|示例URL								|匹配
+0				|mydomain.com 							|controller = Home  action = Index 
+1				|mydomain.com/Customer					|controller = Customer  action = Index 
+2				|mydomain.com/Customer/List				|controller = Customer  action = List 
+3				|mydomain.com/Customer/List/All 		|controller = Customer  action = List id = All 
+4				|mydomain.com/Customer/List/All/Delete 	|匹配失败-太多变量
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
