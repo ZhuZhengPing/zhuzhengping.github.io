@@ -106,7 +106,7 @@ public ActionResult CustomVariable() {
 public static void RegisterRoutes(RouteCollection routes) { 
 	routes.MapRoute("MyRoute", "{controller}/{action}/{id}",    
 	new { controller = "Home", action = "Index",  
-			id = UrlParameter.Optional }); 
+	id = UrlParameter.Optional }); 
 }
 ```
 
@@ -119,10 +119,36 @@ public static void RegisterRoutes(RouteCollection routes) {
 3				|mydomain.com/Customer/List/All 		|controller = Customer  action = List id = All 
 4				|mydomain.com/Customer/List/All/Delete 	|匹配失败-太多变量
 
+创建一个action来验证选择性的变量是否有值
 
+```js
+public ActionResult CustomVariable(string id) { 
+	ViewBag.Controller = "Home"; 
+	ViewBag.Action = "CustomVariable"; 
+	ViewBag.CustomVariable = id == null ? "<no value>" : id; 
+	return View(); 
+}
+```
 
+###创建可变长度的Routes
 
+Routes可接受数量变化的部分变量，定义一个支持可变长度的URL变量`catchall`，通过加上一个前缀(*),下面定义了一个为Callchall的变量
 
+```js
+public static void RegisterRoutes(RouteCollection routes) { 
+	routes.MapRoute("MyRoute", "{controller}/{action}/{id}/{*catchall}",                
+	new { controller = "Home", action = "Index",  
+	id = UrlParameter.Optional }); 
+} 
+```
+
+上面的RouteCollection添加了一个`catchall`变量，这个route将匹配任何URL，开始的三个参数分别是controller,action和id变量，特别说明的是，最后一个参数catchall将匹配所有
+
+*使用catchall匹配URL*
+
+变量			|示例URL			|匹配
+0				|/					|controller = Home  action = Index  
+1				|Customer 			|controller = Customer  action = Index 
 
 
 
