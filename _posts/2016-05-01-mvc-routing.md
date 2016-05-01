@@ -77,7 +77,7 @@ http://mydomain.com/Public/Home/Index
 
 Routing不仅仅是接收URL的变量，我们也可以定义自己的变量
 
-```js
+```
 public static void RegisterRoutes(RouteCollection routes) { 
 	routes.MapRoute("MyRoute", "{controller}/{action}/{id}",                 
 	new { controller = "Home", action = "Index",  
@@ -87,7 +87,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 我们可以根据Routing的部分变量访问`RouteData.Values`属性，为了验证这一点，下面创建了一个action
 
-```js
+```
 public ActionResult CustomVariable() { 
 	ViewBag.Controller = "Home"; 
 	ViewBag.Action = "CustomVariable"; 
@@ -102,7 +102,7 @@ public ActionResult CustomVariable() {
 
 一个选择性的部分变量不需要再`RouteCollection`里面指定，并且没有默认值，下面创建了一个选择性变量的示例，我们设置部分变量为选择性变量的语法为：`UrlParameter.Optional`
 
-```js
+```
 public static void RegisterRoutes(RouteCollection routes) { 
 	routes.MapRoute("MyRoute", "{controller}/{action}/{id}",    
 	new { controller = "Home", action = "Index",  
@@ -121,7 +121,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 创建一个action来验证选择性的变量是否有值
 
-```js
+```
 public ActionResult CustomVariable(string id) { 
 	ViewBag.Controller = "Home"; 
 	ViewBag.Action = "CustomVariable"; 
@@ -134,7 +134,7 @@ public ActionResult CustomVariable(string id) {
 
 Routes可接受数量变化的部分变量，定义一个支持可变长度的URL变量`catchall`，通过加上一个前缀(*),下面定义了一个为Callchall的变量
 
-```js
+```
 public static void RegisterRoutes(RouteCollection routes) { 
 	routes.MapRoute("MyRoute", "{controller}/{action}/{id}/{*catchall}",                
 	new { controller = "Home", action = "Index",  
@@ -158,7 +158,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 当一个URL匹配route,MVC框架根据控制器的名称来访问，例如当`controller`的值为`Home`,MVC 框架会查找`HomeController`控制器，如果项目里面有多个`HomeController`控制器在不同的命名空间下，则会出现错误，这时我们需要指定命名空间。
 
-```js
+```
 routes.MapRoute("MyRoute", "{controller}/{action}/{id}/{*catchall}", 
 	new { controller = "Home", action = "Index",id = UrlParameter.Optional}, 
 	new[] { "URLsAndRoutes.AdditionalControllers", "UrlsAndRoutes.Controllers" }); 
@@ -173,7 +173,7 @@ routes.MapRoute("MyRoute", "{controller}/{action}/{id}/{*catchall}",
 
 *使用正则表达式添加约束*
 
-```js
+```
 public static void RegisterRoutes(RouteCollection routes) { 
     routes.MapRoute("MyRoute", "{controller}/{action}/{id}/{*catchall}",         
 	new { controller = "Home", action = "Index", id = UrlParameter.Optional }, 
@@ -188,7 +188,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 我们可以约束一个URL ，指定它只能是以Get或者Post访问的
 
-```js
+```
 public static void RegisterRoutes(RouteCollection routes) { 
     routes.MapRoute("MyRoute", "{controller}/{action}/{id}/{*catchall}",         
 	new { controller = "Home", action = "Index", id = UrlParameter.Optional }, 
@@ -202,7 +202,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 如果上面的route功能都不满足你的需求，你可以实现`IRouteConstraint`接口创建一个自定义的约束，我们添加一个新类`UserAgentConstraint`
 
-```js
+```
 public class UserAgentConstraint : IRouteConstraint
 {
 	private string requiredUserAgent;
@@ -221,7 +221,7 @@ public class UserAgentConstraint : IRouteConstraint
 
 `IRouteConstraint`创建匹配的方法，`Match`方法提供客户端访问请求,下面创建了一个浏览器约束，只能在谷歌浏览器中访问。
 
-```js
+```
 routes.MapRoute("ChromeRoute", "{*catchall}", 
 	new { controller = "Home", action = "Index" }, 
 	new{customConstraint = new UserAgentConstraint("Chrome")},
@@ -233,7 +233,7 @@ routes.MapRoute("ChromeRoute", "{*catchall}",
 
 不是所有的MVC请求都是请求的controller和action，我们还是需要请求一些其他的内容，例如图片，HTML页面，javascript类库等等。设置`RouteCollection`的`RouteExistingFiles`属性为true
 
-```js
+```
 public static void RegisterRoutes(RouteCollection routes) { 
 	routes.RouteExistingFiles = true; 
 }
@@ -245,15 +245,17 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 *使用`IgnoreRoute`方法*
 
+```
 public static void RegisterRoutes(RouteCollection routes) {
 	routes.IgnoreRoute("Content/{filename}.html");
 }
+```
 
 ### 使用Routing system 生成外部链接
 
 使用`Html.ActionLink`是最简单的生成外部链接的方式
 
-```js
+```
 @Html.ActionLink("This is an outgoing URL", "CustomVariable") 
 ```
 
