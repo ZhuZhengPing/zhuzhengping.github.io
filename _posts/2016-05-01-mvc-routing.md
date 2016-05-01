@@ -249,12 +249,13 @@ public static void RegisterRoutes(RouteCollection routes) {
 public static void RegisterRoutes(RouteCollection routes) {
 	routes.IgnoreRoute("Content/{filename}.html");
 }
+```
 
 ### 使用Routing system 生成外部链接
 
 使用`Html.ActionLink`是最简单的生成外部链接的方式
 
-```js
+```php
 @Html.ActionLink("This is an outgoing URL", "CustomVariable")
 @Html.ActionLink("This targets another controller", "Index", "Admin")  
 @Html.ActionLink("This is an outgoing URL","CustomVariable", new { id = "Hello" })  
