@@ -286,7 +286,7 @@ public ViewResult MyActionMethod() {
 
 *跳转到另外一个`action`*
 
-```js
+```ruby
 public RedirectToRouteResult MyActionMethod() { 
     return RedirectToAction("Index"); 
 } 
