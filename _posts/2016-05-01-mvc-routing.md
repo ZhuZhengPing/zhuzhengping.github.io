@@ -258,6 +258,59 @@ public static void RegisterRoutes(RouteCollection routes) {
 @Html.ActionLink("This is an outgoing URL", "CustomVariable")
 @Html.ActionLink("This targets another controller", "Index", "Admin")  
 @Html.ActionLink("This is an outgoing URL","CustomVariable", new { id = "Hello" })  
+@Html.ActionLink("This is an outgoing URL", "Index", "Home", null, new{ id = "myAnchorID", @class = "myCSSClass"}) 
+@Html.ActionLink("This is an outgoing URL", "Index", "Home","https", "myserver.mydomain.com", " myFragmentName", new { id = "MyId" },new { id = "myAnchorID", @class = "myCSSClass" }) 
 ```
+
+### 生成URL，没有超链接
+
+`HTML.ActionLink`生成了一个a标签的元素，可是有时候我们只想显示URL，不显示超链接。
+
+```js
+@Url.Action("Index", "Home", new { id = "MyId" }) 
+```
+
+### 在Action 方法里面生成URL
+
+通常我们会在`view`里面生成URL，有些时候我们也想在action方法里面生成URL
+
+```js
+public ViewResult MyActionMethod() { 
+    string myActionUrl = Url.Action("Index", new { id = "MyID" }); 
+    string myRouteUrl = Url.RouteUrl(new { controller = "Home", action = "Index" });  
+    return View(); 
+}
+```
+
+另一个常用的功能是跳转到另外一个`action`,我们可以返回一个`RedirectToAction`类型
+
+*跳转到另外一个`action`*
+
+```js
+public RedirectToRouteResult MyActionMethod() { 
+    return RedirectToAction("Index"); 
+} 
+```
+
+`RedirectToAction` 是 `RedirectToRouteResult`的子类，如果你想一个url重定向，你可以使用`RedirectToRoute`方法
+
+*重定向URL生成匿名类型的属性*
+
+```python
+public RedirectToRouteResult MyActionMethod() { 
+	return RedirectToRoute(new{controller = "Home",action = "Index",id = "MyID" }); 
+} 
+```
+
+### 生成一个特定的URL
+
+之前我们使用`Html.ActionLink`生成URL或者Link,我们将显示选择一个指定的URL，首先在`RouteConfig.cs`文件中定义route
+
+```js
+
+```
+
+
+
 
 
