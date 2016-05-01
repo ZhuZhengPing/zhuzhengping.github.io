@@ -275,7 +275,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 通常我们会在`view`里面生成URL，有些时候我们也想在action方法里面生成URL
 
-```c
+```html
 public ViewResult MyActionMethod() { 
     string myActionUrl = Url.Action("Index", new { id = "MyID" }); 
     string myRouteUrl = Url.RouteUrl(new { controller = "Home", action = "Index" });  
