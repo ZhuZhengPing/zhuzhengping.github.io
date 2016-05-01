@@ -257,7 +257,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 ```js
 @Html.ActionLink("This is an outgoing URL", "CustomVariable")
 @Html.ActionLink("This targets another controller", "Index", "Admin")  
-@Html.ActionLink("This is an outgoing URL","CustomVariable", new { id = "Hello" }) 
+@Html.ActionLink("This is an outgoing URL","CustomVariable", new { id = "Hello" })  
 ```
 
 
