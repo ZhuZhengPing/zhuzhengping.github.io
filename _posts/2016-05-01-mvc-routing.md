@@ -146,27 +146,115 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 *使用catchall匹配URL*
 
-变量			|示例URL			|匹配
-0				|/					|controller = Home  action = Index  
-1				|Customer 			|controller = Customer  action = Index 
+变量					|示例URL						|匹配
+0						|/								|controller = Home  action = Index  
+1						|Customer 						|controller = Customer  action = Index 
+2						|/Customer/List 				|controller = Customer  action = List 
+3						|/Customer/List/All 			|controller = Customer  action = List id = All  
+4						|/Customer/List/All/Delete 		|controller = Customer  action = List id = All catchall = Delete
+5						|/Customer/List/All/Delete/Perm |controller = Customer  action = List id = All catchall = Delete/Perm 
 
+### 指定控制器的命名空间
 
+当一个URL匹配route,MVC框架根据控制器的名称来访问，例如当`controller`的值为`Home`,MVC 框架会查找`HomeController`控制器，如果项目里面有多个`HomeController`控制器在不同的命名空间下，则会出现错误，这时我们需要指定命名空间。
 
+```js
+routes.MapRoute("MyRoute", "{controller}/{action}/{id}/{*catchall}", 
+	new { controller = "Home", action = "Index",id = UrlParameter.Optional}, 
+	new[] { "URLsAndRoutes.AdditionalControllers", "UrlsAndRoutes.Controllers" }); 
+} 
+```
 
+当设置了命名空间后，MVC框架会在 `URLsAndRoutes.AdditionalControllers` 下找对应的controller和action
 
+### 路由约束
 
+设置限制url路由匹配
 
+*使用正则表达式添加约束*
 
+```js
+public static void RegisterRoutes(RouteCollection routes) { 
+    routes.MapRoute("MyRoute", "{controller}/{action}/{id}/{*catchall}",         
+	new { controller = "Home", action = "Index", id = UrlParameter.Optional }, 
+    new { controller = "^H.*", action = "^Index$|^About$"}, 
+    new[] { "URLsAndRoutes.Controllers"}); 
+} 
+```
 
+在上面的示例中，我们使用正则表达式的约束匹配只能以H开头的URL，并且action 只能是Index和About
 
+### 使用Http (get 或者 post)请求约束
 
+我们可以约束一个URL ，指定它只能是以Get或者Post访问的
 
+```js
+public static void RegisterRoutes(RouteCollection routes) { 
+    routes.MapRoute("MyRoute", "{controller}/{action}/{id}/{*catchall}",         
+	new { controller = "Home", action = "Index", id = UrlParameter.Optional }, 
+    new { controller = "^H.*", action = "Index|About",             
+			httpMethod = new HttpMethodConstraint("GET") }, 
+    new[] { "URLsAndRoutes.Controllers" }); 
+}
+```
 
+### 创建一个自定义约束
 
+如果上面的route功能都不满足你的需求，你可以实现`IRouteConstraint`接口创建一个自定义的约束，我们添加一个新类`UserAgentConstraint`
 
+```js
+public class UserAgentConstraint : IRouteConstraint
+{
+	private string requiredUserAgent;
+	public UserAgentConstraint(string agentParam)
+	{
+		requiredUserAgent = agentParam;
+	} 
+	public bool Match(HttpContextBase httpContext, Route route, string parameterName, 
+		RouteValueDictionary values, RouteDirection routeDirection)
+	{
+		return httpContext.Request.UserAgent != null && 
+			httpContext.Request.UserAgent.Contains(requiredUserAgent); 
+	}
+}
+```
 
+`IRouteConstraint`创建匹配的方法，`Match`方法提供客户端访问请求,下面创建了一个浏览器约束，只能在谷歌浏览器中访问。
 
+```js
+routes.MapRoute("ChromeRoute", "{*catchall}", 
+	new { controller = "Home", action = "Index" }, 
+	new{customConstraint = new UserAgentConstraint("Chrome")},
+	new[] { "UrlsAndRoutes.AdditionalControllers" }
+);
+```
 
+### 路由访问磁盘文件
 
+不是所有的MVC请求都是请求的controller和action，我们还是需要请求一些其他的内容，例如图片，HTML页面，javascript类库等等。设置`RouteCollection`的`RouteExistingFiles`属性为true
+
+```js
+public static void RegisterRoutes(RouteCollection routes) { 
+	routes.RouteExistingFiles = true; 
+}
+```
+
+### 绕过routing系统
+
+在`RouteCollection`集合里调用`IgnoreRoute`方法，可以绕过routing系统
+
+*使用`IgnoreRoute`方法*
+
+public static void RegisterRoutes(RouteCollection routes) {
+	routes.IgnoreRoute("Content/{filename}.html");
+}
+
+### 使用Routing system 生成外部链接
+
+使用`Html.ActionLink`是最简单的生成外部链接的方式
+
+```js
+@Html.ActionLink("This is an outgoing URL", "CustomVariable") 
+```
 
 
