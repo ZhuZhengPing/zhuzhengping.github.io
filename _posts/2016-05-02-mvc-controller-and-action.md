@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "MVC Controller 和 Action"
-date:   2016-05-03 16:32:18 +0800
+date:   2016-05-02 16:32:18 +0800
 categories: mvc
 tags: mvc controller action
 author: Zhengping Zhu
