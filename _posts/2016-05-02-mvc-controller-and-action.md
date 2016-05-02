@@ -117,7 +117,7 @@ public ActionResult ProduceOutput() {
 类型					|描述							|方法
 ViewResult				|视图							|View 
 PartialViewResult		|部分视图						|PartialView 
-RedirectToRouteResult	|跳转到路由配置的地址			|RedirectToAction,RedirectToActionPermanent,RedirectToRoute,RedirectToRoutePermanent 
+RedirectToRouteResult	|跳转到路由配置的地址			|RedirectToAction <br />,RedirectToActionPermanent<br />,RedirectToRoute<br />,RedirectToRoutePermanent 
 RedirectResult			|重定向到一个特定的URL			|Redirect，RedirectPermanent
 HttpUnauthorizedResult	|返回状态为401的错误			|None
 HttpNotFoundResult		|返回404错误					|HttpNotFound 
