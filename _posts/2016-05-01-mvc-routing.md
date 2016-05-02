@@ -249,6 +249,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 public static void RegisterRoutes(RouteCollection routes) {
 	routes.IgnoreRoute("Content/{filename}.html");
 }
+```
 
 ### 使用Routing system 生成外部链接
 
@@ -321,13 +322,164 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 如果你不喜欢直接使用route匹配URL,或者实现一些特殊的东西，你可以继承`RouteBase`实现自己的新功能
 
+```js
 public class LegacyController : Controller { 
 	public ActionResult GetLegacyURL(string legacyURL) { 
 		return View((object)legacyURL); 
 	} 
 } 
+```
 
+前台显示action的信息
 
+```html
+@model string 
+@{ 
+    ViewBag.Title = "GetLegacyURL"; 
+    Layout = null; 
+} 
+<h2>GetLegacyURL</h2> 
+The URL requested was: @Model
+```
 
+这个示例非常简单，我们只是显示自定义route的行为，创建一个`LegacyRoute`类处理action行为
+
+```js
+public class LegacyRoute : RouteBase { 
+	private string[] urls; 
+	
+	public LegacyRoute(params string[] targetUrls) { 
+		urls = targetUrls;         
+	}
+	
+	public override RouteData GetRouteData(HttpContextBase httpContext) {             
+		RouteData result = null; 
+		string requestedURL = httpContext.Request.AppRelativeCurrentExecutionFilePath;             
+		if (urls.Contains(requestedURL, StringComparer.OrdinalIgnoreCase)) { 
+			result = new RouteData(this, new MvcRouteHandler()); 
+			// 跳转到 Legacy/GetLegacyURL/legacyURL
+			result.Values.Add("controller", "Legacy");                 
+			result.Values.Add("action", "GetLegacyURL");                 
+			result.Values.Add("legacyURL", requestedURL); 
+		} 
+		return result;         
+	}
+	
+	public override VirtualPathData GetVirtualPath(RequestContext requestContext,RouteValueDictionary values) { 
+		VirtualPathData result = null;
+		if (values.ContainsKey("legacyURL") && urls.Contains((string)values["legacyURL"], StringComparer.OrdinalIgnoreCase))
+		{
+			result = new VirtualPathData(this, new UrlHelper(requestContext)
+					.Content((string)values["legacyURL"]).Substring(1));
+		}
+		return result; 
+	} 
+} 
+```
+
+创建了一个自定义的路由以后，我们把这个创建的路由注册到`RouteCollection`类里面去
+
+```
+public static void RegisterRoutes(RouteCollection routes) { 
+    routes.Add(new LegacyRoute( 
+            "~/articles/Windows_3.1_Overview.html", 
+            "~/old/.NET_1.0_Class_Library")); 
+    routes.MapRoute("MyRoute", "{controller}/{action}"); 
+    routes.MapRoute("MyOtherRoute", "App/{action}", new { controller = "Home" }); 
+}
+```
+
+### 创建route handler
+
+之前创建的自定义route 使用了`MvcRouteHandler`,可以继承`IRouteHandler`创建自己的route handler，下面创建一个`CustomRouteHandler`来演示
+
+```js
+public class CustomRouteHandler : IRouteHandler
+{
+	public IHttpHandler GetHttpHandler(RequestContext requestContext)
+	{
+		return new CustomHttpHandler(); 
+	}
+	public class CustomHttpHandler : IHttpHandler
+	{
+		public bool IsReusable
+		{
+			get { return false; } 
+		}
+		public void ProcessRequest(HttpContext context)
+		{
+			context.Response.Write("Hello"); 
+		}
+	}
+}
+```
+
+创建好之后，在`RouteCollection`里面注册这个route handler
+
+```js
+public static void RegisterRoutes(RouteCollection routes) { 
+     routes.Add(new Route("SayHello", new CustomRouteHandler())); \
+}
+```
+
+完成之后我们直接访问网站 `http://localhost:10905/SayHello`， 就会出现Hello.
+
+### Route 区域
+
+MVC框架支持区域	，在大型项目中，很多的coltroller，model，view，这个时候会变得难以管理，所以需要用到区域.
+
+创建一个区域，在MVC项目中点右键，添加`Area`，新建Area后，你可以看到一个缩小版的MVC项目。不同的是，Area 文件夹会生成一个`类`
+
+访问后的URL会变成 `http://domain/Admin/Home/Index`
+
+```js
+public class AdminAreaRegistration : AreaRegistration
+{
+	public override string AreaName
+	{
+		get
+		{
+			return "Admin";
+		}
+	}
+
+	public override void RegisterArea(AreaRegistrationContext context)
+	{
+		context.MapRoute(
+			"Admin_default",
+			"Admin/{controller}/{action}/{id}",
+			new { action = "Index", id = UrlParameter.Optional }
+		);
+	}
+}
+```
+
+#### 解决模糊控制器的问题
+
+如果你现在访问`http://localhost:10905/Home/Index`，有可能会出现错误，这是因为Route会找到多个Home控制器，我们可以在`RouteCollection`里面添加命名空间来解决这个问题
+
+```js
+public static void RegisterRoutes(RouteCollection routes)
+{
+	routes.MapRoute(
+		name: "Default",
+		url: "{controller}/{action}/{id}/{*catchall}",
+		defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
+		namespaces: new[] { "TestForMVC.Areas.Admin.Controllers" }
+	);
+}
+```
+
+#### 在`Areas`里面生成`Actions`
+
+在区域内使用 `@Html.ActionLink("Click me", "About")` 生成的链接会带上区域 `<a href="/Admin/Home/About">Click me</a>`
+
+还可以跳转到另外一个区域
+
+```js
+@Html.ActionLink("Click me to go to another area", "Index", new { area = "customer" })
+```
+
+上面的代码会生成 `<a href="/Support/Home">Click me to go to another area</a>` 跳转到另外一个`areas`
 
 
