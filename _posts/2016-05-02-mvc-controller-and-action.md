@@ -46,9 +46,7 @@ public class BasicController : IController {
 控制器一个主要的功能就是接收从页面过来的参数，例如 string类型的参数，form参数，以及路由parameters的参数，下面有3种获取参数的方法
 
 > 从一组上下文对象中提取
-
 > 数据作为参数传递到 action 方法
-
 > 显示地调用框架模型绑定的功能
 
 下面是用`Context`对象中取参数
