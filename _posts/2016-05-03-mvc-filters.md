@@ -3,7 +3,7 @@ layout: post
 title:  "MVC filters"
 date:   2016-05-03 16:32:18 +0800
 categories: mvc
-tags: mvc controller action
+tags: mvc filter
 author: Zhengping Zhu
 ---
 
