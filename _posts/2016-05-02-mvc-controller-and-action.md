@@ -84,7 +84,7 @@ public class CustomRedirectResult:ActionResult
 }
 ```
 
-下面使用自定义的`ActionResult`来实现简单的页面跳转
+### 下面使用自定义的`ActionResult`来实现简单的页面跳转
 
 ```js
 public ActionResult Index()
@@ -101,7 +101,7 @@ public ActionResult Index()
 }
 ```
 
-现在你已经看到了 `ActionResult`是怎样工作的，MVC框架还提供页面跳转的功能
+### 现在你已经看到了 `ActionResult`是怎样工作的，MVC框架还提供页面跳转的功能
 
 *使用`RedirectResult`对象*
 
@@ -150,6 +150,92 @@ public ViewResult Index() {
 <h2>Index</h2> 
 The day is: @Model.DayOfWeek  
 ```
+
+### controller地址重定向
+```js
+public RedirectResult Redirect() {             
+	return Redirect("/Example/Index"); 
+}
+```
+
+### 永久性的跳转
+
+```js
+public RedirectResult Redirect() { 
+    return RedirectPermanent("/Example/Index"); 
+} 
+```
+
+### 也可以根据路由地址来跳转链接
+
+```js
+public RedirectToRouteResult Redirect()
+{
+	return RedirectToRoute(new
+	{
+		controller = "Example",
+		action = "Index",
+		ID = "MyID"
+	}); 
+} 
+```
+
+### 跳转到某个`controller`的`action`
+
+```js
+public RedirectToRouteResult RedirectToRoute() { 
+    return RedirectToAction("Index"); 
+}
+
+public RedirectToRouteResult Redirect() {     
+	return RedirectToAction("Index", "Basic"); 
+}
+```
+
+### `TempData` 和 `ViewBag`
+
+`TempData`和`session`比较类似，不同的是`TempData`访问后就被删除了，并且当访问执行后数据就被删除了
+
+```js
+public RedirectToRouteResult RedirectToRoute() { 
+    TempData["Message"] = "Hello"; 
+    TempData["Date"] = DateTime.Now;     
+	return RedirectToAction("Index"); 
+}
+```
+
+取数据的时候应该这样
+
+```js
+public ViewResult Index() { 
+    ViewBag.Message = TempData["Message"]; 
+    ViewBag.Date = TempData["Date"]; 
+    return View(); 
+} 
+```
+
+使用`TempData`，你可以强制它不自动移除，`DateTime time = (DateTime)TempData.Peek("Date"); `
+
+保持一个临时的值，使用`TempData.Keep("Date")`
+
+#### 返回http状态信息
+
+```js
+public HttpStatusCodeResult StatusCode() { 
+	return new HttpStatusCodeResult(404, "URL cannot be serviced"); 
+}
+```
+
+#### 发送401用户验证失败信息
+
+```js
+public HttpStatusCodeResult StatusCode() {     
+	return new HttpUnauthorizedResult(); 
+}
+``` 
+
+
+
 
 
 
