@@ -79,10 +79,46 @@ public class HomeController : Controller {
 Users		|string			|一个以逗号分隔的允许访问`action`的一组用户名
 Roles		|string			|一个以逗号分隔的允许访问`action`的一组角色名
 
+*使用内置的`filter`* 
 
+```js
+[Authorize(Users = "adam, steve, jacqui", Roles = "admin")]
+public ActionResult Index()
+{
+	return View();
+}
+```		
 
+### 使用 `Exception filters`
 
+当你运行一个`action`抛出异常后，`Exception filters`就会运行,·Exception`会从下面这些地方生成
 
+>* 另外一种`filter` (`authorization`,`action`或者`result filter`)
+>* `action`本身
+>* 当`action result`执行的时候
+
+#### 创建一个`Exception filter`
+
+`Exception filters`必须实现`IExceptionFilter`接口
+
+*`ControllerContext`属性`
+
+名称			|类型				|描述
+Controller		|ControllerBase		|返回控制器对象
+HttpContextBase	|HttpContextBase	|`request`的访问详细以及`response`的详细
+IsChlidAction	|bool				|如果是`child action`,返回true
+RequestContext	|RequestContext		|能够访问`HttpContext`和`Route Data`
+RouteData		|RouteData			|为`Request`提供`Routing data`
+
+`ExceptionContext`定义了一些有用的属性
+
+*`ExceptionContext`属性*
+
+名称			|类型				|描述
+ActionDescriptor|ActionResult		|提供`action`方法的详细信息
+Result			|ActionResult		|`action`方法的`result`，一个`filter`设置这个属性值为`non-null`取消请求
+Exception		|Exception			|未处理的`Exception`
+ExceptionHandled|bool				|如果其它`filter`标记这个`Exception·为已处理，则返回true
 
 
 
