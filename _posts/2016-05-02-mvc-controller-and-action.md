@@ -21,7 +21,7 @@ author: Zhengping Zhu
 
 控制器实现了`IController`接口，可以自己重写控制器
 
-```js
+```c#
 public class BasicController : IController { 
 	public void Execute(RequestContext requestContext) { 
 		string controller = (string)requestContext.RouteData.Values["controller"];             
@@ -72,7 +72,7 @@ TempData				|TempDataDictionary			|临时存储
 
 `action` 返回一个对象 `ActionResult`,而不是直接使用 `Response`返回，调用一个视图，或者跳转到另外的`action‘，我们演示定义自己的`ActionResult`
 
-```js
+```c#
 public class CustomRedirectResult:ActionResult
 {
 	public string Url { get; set; } 
@@ -86,7 +86,7 @@ public class CustomRedirectResult:ActionResult
 
 ### 下面使用自定义的`ActionResult`来实现简单的页面跳转
 
-```js
+```c#
 public ActionResult Index()
 {
 	if (Server.MachineName != "TINY")
@@ -105,7 +105,7 @@ public ActionResult Index()
 
 *使用`RedirectResult`对象*
 
-```js
+```c#
 public ActionResult ProduceOutput() {     
 	return new RedirectResult("/Basic/Index");
 	// return Redirect("/Basic/Index");
@@ -125,7 +125,7 @@ HttpStatusCodeResult	|返回Http状态					|None
 
 如果你需要访问一个特定的视图，你可以向下面这样
 
-```js
+```c#
 public ViewResult Index() { 
 	return View("~/Views/Other/Index.cshtml"); 
 }
@@ -133,7 +133,7 @@ public ViewResult Index() {
 
 绑定模型到视图
 
-```js
+```c#
 public ViewResult Index() { 
     DateTime date = DateTime.Now;     
 	return View(date); 
@@ -142,7 +142,7 @@ public ViewResult Index() {
 
 在当前在视图访问的时候，可以取出模型
 
-```js
+```html
 @model DateTime 
 @{ 
     ViewBag.Title = "Index"; 
@@ -152,7 +152,7 @@ The day is: @Model.DayOfWeek
 ```
 
 ### controller地址重定向
-```js
+```c#
 public RedirectResult Redirect() {             
 	return Redirect("/Example/Index"); 
 }
@@ -160,7 +160,7 @@ public RedirectResult Redirect() {
 
 ### 永久性的跳转
 
-```js
+```c#
 public RedirectResult Redirect() { 
     return RedirectPermanent("/Example/Index"); 
 } 
@@ -168,7 +168,7 @@ public RedirectResult Redirect() {
 
 ### 也可以根据路由地址来跳转链接
 
-```js
+```c#
 public RedirectToRouteResult Redirect()
 {
 	return RedirectToRoute(new
@@ -182,7 +182,7 @@ public RedirectToRouteResult Redirect()
 
 ### 跳转到某个`controller`的`action`
 
-```js
+```c#
 public RedirectToRouteResult RedirectToRoute() { 
     return RedirectToAction("Index"); 
 }
@@ -196,7 +196,7 @@ public RedirectToRouteResult Redirect() {
 
 `TempData`和`session`比较类似，不同的是`TempData`访问后就被删除了，并且当访问执行后数据就被删除了
 
-```js
+```c#
 public RedirectToRouteResult RedirectToRoute() { 
     TempData["Message"] = "Hello"; 
     TempData["Date"] = DateTime.Now;     
@@ -206,7 +206,7 @@ public RedirectToRouteResult RedirectToRoute() {
 
 取数据的时候应该这样
 
-```js
+```c#
 public ViewResult Index() { 
     ViewBag.Message = TempData["Message"]; 
     ViewBag.Date = TempData["Date"]; 
@@ -220,7 +220,7 @@ public ViewResult Index() {
 
 #### 返回http状态信息
 
-```js
+```c#
 public HttpStatusCodeResult StatusCode() { 
 	return new HttpStatusCodeResult(404, "URL cannot be serviced"); 
 }
@@ -228,7 +228,7 @@ public HttpStatusCodeResult StatusCode() {
 
 #### 发送401用户验证失败信息
 
-```js
+```c#
 public HttpStatusCodeResult StatusCode() {     
 	return new HttpUnauthorizedResult(); 
 }
