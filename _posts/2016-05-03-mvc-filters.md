@@ -438,6 +438,88 @@ public class FilterConfig
 }
 ```
 
+### `Filter`执行顺序
+
+`filter`根据类型来执行的，一次的循序为:`authorization filters`,`action filters`,`result filters`,当任何`filter`出现错误的时候，
+并且未处理的时候执行`exception filter`,下面创建`SimpleMessageAttribute`做一个示范
+
+```c#
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)] 
+public class SimpleMessageAttribute : FilterAttribute, IActionFilter
+{
+	public string Message { get; set; } 
+	public void OnActionExecuted(ActionExecutedContext filterContext)
+	{
+		filterContext.HttpContext.Response.Write(string.Format("<div>[After Action: {0}]<div>", Message));
+	}
+
+	public void OnActionExecuting(ActionExecutingContext filterContext)
+	{
+		filterContext.HttpContext.Response.Write(string.Format("<div>[Before Action: {0}]<div>", Message)); 
+	}
+}
+```
+
+当`Action`调用的时候，会执行`OnActionExecuted`和`OnActionExecuting`,设置`AllowMultiple=true`可以多吃指定这个`filter`
+设置`filter`的`Order`功能指定排序，但是只能设置`OnActionExecuting`的执行次序，全局`filter`最先执行
+
+```c#
+[SimpleMessage(Message = "A",Order=2)]
+[SimpleMessage(Message = "B",Order=1)]
+public ActionResult Index()
+{
+	return View();
+}
+```
+
+### 使用内置的`filters`
+
+*内置的`filters`*
+
+Filter														|描述
+RequireHttps												|强制使用`https`协议进行操作
+OutputCache													|缓存`action`方法的返回值
+ValidateInput和ValidationAntiForgeryToken，AsyncTimeout 	|授权与安全相关的过滤器
+NoAsyncTimeout												|使用异步的控制器
+ChildActionOnlyAttribute									|一种授权的`filter`,支持`Html.Action`和`Html.RenderAction`
+
+### 使用`OutputCache Filter`
+
+`OutputCache filter`告诉MVC框架缓存`action`方法返回的信息，
+
+*`OutputCache filter`参数*
+
+参数					|类型				|描述
+Duration				|int				|指定保存数据的时间
+VaryByParam				|string				|根据`Reuqest.QueryString`和`Reuqest.Form`指定不同的缓存，默认值为不随参数变化而变化，另外的选项是*，意思是根据请求的参数变化而变化，如果不指定，则为默认值none
+VaryByHeader			|string				|根据Header信息获取不同的`cachhe`
+VaryByCustom			|string				|如果指定，ASP.NET在`Global.asax`里访问`GetVaryByCustomString`，你可以生成你的`cache key`
+VaryByContentEncoding	|string				|为每个浏览器编码创建一个缓存
+Location				|OutputCacheLocation|指定缓存的地址
+NoStore					|bool				|如果为true，告诉asp.net发送一个`CacheColtrol:no-store`请求头给浏览器，只用于保护敏感数据
+CacheProfile			|string				|如果指定，命令`asp.net`从`web.config`中取`<outputCacheSettings>`参数信息
+SqlDependency			|string				|缓存数据在数据库表内容发生改变时，重新设置新缓存
+
+*`SelectiveCache Controller`*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
