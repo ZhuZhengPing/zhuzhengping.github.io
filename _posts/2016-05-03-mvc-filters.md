@@ -426,7 +426,7 @@ public class ControllerTestController : Controller
 
 在项目中，如果所有控制器都需要`Filter`，你可以设置全局的`Filter`，在`App_Start/FilterConfig.cs`文件中设置
 
-```C#
+```c#
 public class FilterConfig
 {
 	public static void RegisterGlobalFilters(GlobalFilterCollection filters)
