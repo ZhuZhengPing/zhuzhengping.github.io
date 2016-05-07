@@ -66,7 +66,7 @@ public class HomeController : Controller {
 } 
 ```
 
-上面传递一个布尔类型的参数`false`给`CustomAuth`，这个`filter`最后返回`false`给`CustomAuth`，这个`filter`最后返回`f
+上面传递一个布尔类型的参数`false`给`CustomAuth`，这个`filter`最后返回`false`给`CustomAuth`，这个`filter`最后返回`false`
 ，页面会出现401身份验证未通过错误
 
 ### 使用内置的`Authorization Filter`类型
@@ -91,7 +91,7 @@ public ActionResult Index()
 
 ### 使用 `Exception filters`
 
-当你运行一个`action`抛出异常后，`Exception filters`就会运行,·Exception`会从下面这些地方生成
+当你运行一个`action`抛出异常后，`Exception filters`就会运行,`Exception`会从下面这些地方生成
 
 >* 另外一种`filter` (`authorization`,`action`或者`result filter`)
 >* `action`本身
@@ -118,7 +118,7 @@ RouteData		|RouteData			|为`Request`提供`Routing data`
 ActionDescriptor|ActionResult		|提供`action`方法的详细信息
 Result			|ActionResult		|`action`方法的`result`，一个`filter`设置这个属性值为`non-null`取消请求
 Exception		|Exception			|未处理的`Exception`
-ExceptionHandled|bool				|如果其它`filter`标记这个`Exception·为已处理，则返回true
+ExceptionHandled|bool				|如果其它`filter`标记这个`Exception`为已处理，则返回true
 
 创建一个示例的`Exception filter`
 
@@ -129,7 +129,8 @@ public class RangeExceptionAttribute:FilterAttribute,IExceptionFilter
 {
 	public void OnException(ExceptionContext filterContext)
 	{
-		if (!filterContext.ExceptionHandled && filterContext.Exception is ArgumentOutOfRangeException)
+		if (!filterContext.ExceptionHandled 
+		&& filterContext.Exception is ArgumentOutOfRangeException)
 		{
 			filterContext.Result = new RedirectResult("~/Content/RangeErrorPage.html");
 			filterContext.ExceptionHandled = true;
@@ -175,9 +176,11 @@ public class RangeExceptionAttribute:FilterAttribute,IExceptionFilter
 {
 	public void OnException(ExceptionContext filterContext)
 	{
-		if (!filterContext.ExceptionHandled && filterContext.Exception is ArgumentOutOfRangeException)
+		if (!filterContext.ExceptionHandled && 
+		filterContext.Exception is ArgumentOutOfRangeException)
 		{
-			int val = (int)(((ArgumentOutOfRangeException)filterContext.Exception).ActualValue); filterContext.Result = new ViewResult
+			int val = (int)(((ArgumentOutOfRangeException)filterContext.Exception).ActualValue); 
+			filterContext.Result = new ViewResult
 			{
 				ViewName = "RangeError",
 				ViewData = new ViewDataDictionary<int>(val)
