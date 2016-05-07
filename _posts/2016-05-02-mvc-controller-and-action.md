@@ -70,7 +70,7 @@ TempData				|TempDataDictionary			|临时存储
 
 ### 明白 `Action Result`
 
-`action` 返回一个对象 `ActionResult`,而不是直接使用 `Response`返回，调用一个视图，或者跳转到另外的`action‘，我们演示定义自己的`ActionResult`
+`action` 返回一个对象 `ActionResult`,而不是直接使用 `Response`返回，调用一个视图，或者跳转到另外的`action`，我们演示定义自己的`ActionResult`
 
 ```c#
 public class CustomRedirectResult:ActionResult

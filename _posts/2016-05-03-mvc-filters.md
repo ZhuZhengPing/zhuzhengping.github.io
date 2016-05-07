@@ -241,7 +241,7 @@ Master			|string			|`filter`对应的`View` 的模板
       <add namespace="System.Web.Mvc.Html" /> 
       <add namespace="System.Web.Routing" />       
 	  <add namespace="System.Web.WebPages" />     
-	 </namespaces> 
+	</namespaces> 
   </pages>   
   <customErrors mode="On"  defaultRedirect="/Content/RangeErrorPage.html"/> 
 </system.web>
@@ -463,7 +463,7 @@ public class SimpleMessageAttribute : FilterAttribute, IActionFilter
 }
 ```
 
-当`Action`调用的时候，会执行`OnActionExecuted`和`OnActionExecuting`,设置`AllowMultiple=true`可以多吃指定这个`filter`
+当`Action`调用的时候，会执行`OnActionExecuted`和`OnActionExecuting`,设置`AllowMultiple=true`可以多次指定这个`filter`
 设置`filter`的`Order`功能指定排序，但是只能设置`OnActionExecuting`的执行次序，全局`filter`最先执行
 
 ```c#
@@ -494,7 +494,7 @@ ChildActionOnlyAttribute									|一种授权的`filter`,支持`Html.Action`和
 
 参数					|类型				|描述
 Duration				|int				|指定保存数据的时间
-VaryByParam				|string				|根据`Reuqest.QueryString`和`Reuqest.Form`指定不同的缓存，默认值为不随参数变化而变化，另外的选项是*，意思是根据请求的参数变化而变化，如果不指定，则为默认值none
+VaryByParam				|string				|根据`Reuqest.QueryString`和`Reuqest.Form`指定不同的缓存，默认值不随参数变化而变化，另外的选项是*，意思是根据请求的参数变化而变化，如果不指定，则为默认值none
 VaryByHeader			|string				|根据Header信息获取不同的`cachhe`
 VaryByCustom			|string				|如果指定，ASP.NET在`Global.asax`里访问`GetVaryByCustomString`，你可以生成你的`cache key`
 VaryByContentEncoding	|string				|为每个浏览器编码创建一个缓存
