@@ -63,6 +63,7 @@ public class CustomControllerFactory : IControllerFactory
 		} 
 	}
 }
+```
 
 最重要的方法为`CreateController`，当一个请求需要一个`Controller`为它服务的时候调用，
 这个方法的参数为`RequestContext`
@@ -151,7 +152,8 @@ public class CustomControllerActivator : IControllerActivator
 }
 ```
 
-
+我们的`IControllerActivator`功能非常简单，如果`ControllerTestController`被
+请求了，它返回一个`CustomerController`的实例
 
 
 
