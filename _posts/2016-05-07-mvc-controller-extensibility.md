@@ -3,7 +3,6 @@ layout: post
 title:  "controller 扩展性"
 date:   2016-05-07 16:32:18 +0800
 categories: mvc
-duoshuo: true
 tags: mvc controller
 author: Zhengping Zhu
 ---
