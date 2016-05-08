@@ -14,4 +14,4 @@ author: Zhengping Zhu
 
 在这一章，我们介绍`controller`的高级特性
 
-![image1](http://img2.ph.126.net/2i1eO8hfU7TxRqkyF2gusw==/6598096710578598344.png)
+<img src="http://img2.ph.126.net/2i1eO8hfU7TxRqkyF2gusw==/6598096710578598344.png" width="100%"/>
