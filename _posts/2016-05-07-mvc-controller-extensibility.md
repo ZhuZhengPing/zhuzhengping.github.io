@@ -286,7 +286,7 @@ public class ControllerTestController : Controller
 
 我们上面的控制器里面会出现2个`Index action`，当调用时，会抛出以下错误
 
-<img src="http://img2.ph.126.net/-loi-HyXW51qkwdOs3GUdQ==/1994250210096713081.png" alt="action error" width="100%" />
+<img src="http://img2.ph.126.net/-loi-HyXW51qkwdOs3GUdQ==/1994250210096713081.png"  width="100%"/>
 
 解决这个错误的方法是，给其中一个`action`打上`[Local]`标签
 
