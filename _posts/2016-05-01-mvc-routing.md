@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "MVC 路由"
+title:  "route"
 date:   2016-04-30 16:32:18 +0800
 categories: mvc
 tags: mvc routing

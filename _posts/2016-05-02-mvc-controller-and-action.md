@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "MVC Controller 和 Action"
+title:  "controller 和 action"
 date:   2016-05-02 16:32:18 +0800
 categories: mvc
 tags: mvc controller action

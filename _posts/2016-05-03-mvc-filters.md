@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "MVC filters"
+title:  "filters"
 date:   2016-05-03 16:32:18 +0800
 categories: mvc
 tags: mvc filter
