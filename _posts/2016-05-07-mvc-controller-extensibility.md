@@ -370,4 +370,72 @@ asp.net平台底层维护一个拥有.net线程池的客户端用户请求进程
 当请求可以在很短的时间内处理，`worker thread pool`性能最好，如果你有依赖其它的服务
 并且需要处理很久的`action`，性能会最慢
 
+#### 创建一个异步的控制器
+
+有2种方法创建异步的控制器，一种是实现`System.Web.Mvc.Async.IAsyncController`接口，
+相当于实现了异步的`IController`,异步的`controller`需要4.5框架,我们创建一个这样的示例
+
+*创建异步的`Controller`*
+
+```c#
+public class RemoteDataController : AsyncController
+{
+	public async Task<ActionResult> Data()
+	{
+		string data = await Task<string>.Factory.StartNew(() =>
+		{
+			return new RemoteService().GetRemoteData();
+		});
+		return View((object)data);
+	}
+	
+	// 调用异步的方法
+	public async Task<ActionResult> ConsumeAsyncMethod()
+	{
+		string data = await new RemoteService().GetRemoteDataAsync(); 
+		return View("Data", (object)data);
+	}
+}
+````
+
+### 使用异步的`controller`方法
+
+你也可以使用一个异步的控制器来执行一个异步的方法
+
+*`RemoteService`类*
+
+```c#
+public class RemoteDataController : AsyncController
+{
+	public async Task<ActionResult> Data()
+	{
+		string data = await Task<string>.Factory.StartNew(() =>
+		{
+			return new RemoteService().GetRemoteData();
+		});
+
+		return View((object)data);
+	}
+
+	public async Task<ActionResult> ConsumeAsyncMethod()
+	{
+		string data = await new RemoteService().GetRemoteDataAsync(); 
+		return View("Index", (object)data);
+	}
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
