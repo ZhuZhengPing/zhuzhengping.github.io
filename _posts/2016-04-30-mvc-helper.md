@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "MVC helper"
+title:  "helper"
 date:   2016-04-30 16:32:18 +0800
 categories: mvc
 tags: mvc model
