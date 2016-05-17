@@ -14,7 +14,7 @@ author: Zhengping Zhu
 
 在这一章，我们介绍`controller`的高级特性，下面的图是基本组件之间的控制流程。
 
-<img src='http://img2.ph.126.net/2i1eO8hfU7TxRqkyF2gusw==/6598096710578598344.png' width="100%"/>
+<img src='http://ww2.sinaimg.cn/mw690/006dag38gw1f3mz7fovnbj30f903n3yr.jpg' width="100%"/>
 
 
 
