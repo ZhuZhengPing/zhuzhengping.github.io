@@ -12,9 +12,208 @@ author: Zhengping Zhu
 
 ## 概念
 
-`HtmlHelper`用来在视图中呈现 `HTML` 控件。以下列表显示了当前可用的一些 `HTML` 帮助器。
+在这一章我们关注`helper`方法，你可以在整个mvc框架项目中运用
 
 
+
+
+
+
+
+### 创建`inline helper`方法
+
+```html
+@model string
+
+@{
+    Layout = null;
+}
+
+@helper ListArrayItems(string[] items)
+{     foreach (string str in items)
+    {
+    <b>@str </b>
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <div>
+        Here are the fruits: @ListArrayItems(ViewBag.Fruits)
+    </div>
+    <div>
+        Here are the cities: @ListArrayItems(ViewBag.Cities)
+    </div>
+    <div>
+        Here is the message:
+        <p>@Model</p>
+    </div>
+</body>
+</html> 
+```
+
+`inline helpers`和`c#`代码类似，在上面的例子中，我们定义了一个`ListArrayItems`，带有一个`string[]`参数，
+虽然`inline helpers`像方法，但是它没有返回值
+
+`inline helpers`语句需要`@`字符串前缀，下面的`helper`例子包含`html`标签
+
+```html
+@helper ListArrayItems(string[] items) { 
+    <ul> 
+        @foreach(string str in items) {             
+			<li>@str</li>    
+        } 
+    </ul> 
+}
+```
+
+结果如下图所示
+
+<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f40zfnv8ibj30g308idgl.jpg" style="width:100%" />
+
+### 创建外部的`helper`方法
+
+`inline helpers`虽然方便，但是如果太复杂，写在视图里面会很难阅读，另一种选择是创建一个外部`HTML`辅助方法，
+它们就是`c#`的扩展方法，外部的`helper`方法应用非常广泛
+
+```c#
+public class CustomHelpers
+{
+	public static MvcHtmlString ListArrayItems(this HtmlHelper html, string[] list)
+	{
+
+		TagBuilder tag = new TagBuilder("ul");
+
+		foreach (string str in list)
+		{
+			TagBuilder itemTag = new TagBuilder("li");
+			itemTag.SetInnerText(str);
+			tag.InnerHtml += itemTag.ToString();
+		}
+
+		return new MvcHtmlString(tag.ToString());
+	}
+}
+```
+
+`helper`方法和之前的`inline helper`拥有同样的功能，它带有一个`string`数组，并生成`ul`元素，
+下面是属性介绍
+
+属性			|描述
+RouteCollection	|返回`application`的`routes`
+ViewBag			|返回该`view`对应的`action`方法里面的`ViewBag`
+ViewContext		|返回`ViewContext`实体，它包含`request`的详细信息
+
+`ViewContext` 的一些有用的属性如下图
+
+属性			|描述
+Controller		|返回控制器处理的请求
+HttpContext		|返回描述当前请求的`HttpContext`对象
+IsChildAction 	|如果`view`调用的`helper`调用`child action`，返回`true`
+RouteData		|为当前请求返回`routing data`
+View			|返回被`helper`方法调用的实现`IView`的视图
+
+下面是`TagBuilder`的一些属性
+
+成员								|描述
+InnerHtml							|一个属性,可以让你设置HTML元素的内容，分配给此属性的值不会被编码
+SetInnerText(string)				|设置元素的文本值，`string`参数会设置编码确保安全
+AddCssClass(string)					|给`html`添加`css`
+MergeAttribute(string,string,bool)　|将一个属性添加到`HTML`元素。第一个参数是属性的名称,和第二个是价值。bool参数指定如果现有的属性相同的名称应该取代
+
+返回的结果是`MvcHtmlString`对象，内容直接写到客户端
+
+```c#
+return new MvcHtmlString(tag.ToString());
+```
+
+### 使用自定义的外部`helper`方法
+
+使用自定义的`helper`方法和`inline helper`有一点不同，下面创建`/Views/Home/Index.cshtml`
+
+```html
+@using MvcApplication2.Infrastructure
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <div>
+        Here are the fruits: @Html.ListArrayItems((string[])ViewBag.Fruits)
+    </div>
+    <div>
+        Here are the cities: @Html.ListArrayItems((string[])ViewBag.Cities)
+    </div>
+    <div>
+        Here is the message:
+        <p>@Model</p>
+    </div>
+</body>
+</html>
+```
+
+### 管理字符串编码`helper`方法
+
+MVC框架通过自动编码努力保护你免受恶意数据攻击,以便它可以被添加到一个Web页面，你可以在我们的示例应用程序中看到一个这样的例子。
+
+后台代码还是之前的`HomeController`
+
+```c#
+public class HomeController : Controller { 
+	public ActionResult Index() { 
+		ViewBag.Fruits = new string[] { "Apple", "Orange", "Pear" };             ViewBag.Cities = new string[] { "New York", "London", ViewBag.Cities = new string[] { "New York", "London", "Paris" };  
+		string message = "This is an HTML element: <input>"; 
+		return View((object)message); 
+	} 
+}
+```
+
+后台代码包含`html`标签，前台代码会直接显示出`html`标签
+
+```html
+<div>     
+	Here is the message: 
+    <p>This is an HTML element: &lt;input&gt;</p> 
+</div> 
+```
+
+#### 重现错误 定义一个新的`helper`方法
+
+```c#
+public static class CustomHelpers
+{
+	public static MvcHtmlString ListArrayItems(this HtmlHelper html, string[] list)
+	{
+		TagBuilder tag = new TagBuilder("ul");
+		
+		foreach (string str in list)
+		{
+			TagBuilder itemTag = new TagBuilder("li");
+			itemTag.SetInnerText(str);
+			tag.InnerHtml += itemTag.ToString();
+		}
+		return new MvcHtmlString(tag.ToString());
+	}
+
+	public static MvcHtmlString DisplayMessage(this HtmlHelper html, string msg)
+	{
+		string result = String.Format("This is the message: <p>{0}</p>", msg);
+		return new MvcHtmlString(result);
+	}
+}
+```
 
 
 
