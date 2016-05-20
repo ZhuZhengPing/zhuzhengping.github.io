@@ -215,6 +215,73 @@ public static class CustomHelpers
 }
 ```
 
+我们使用`String.Format`生成`html`作为结果参数传递给`MvcHtmlString`，你可以看到前端
+页面的修改
+
+```html
+@model string
+@using MvcApplication2.Infrastructure
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <p>This is the content from the view:</p>
+    <div style="border: thin solid black; padding: 10px">
+        Here is the message:
+        <p>@Model</p>
+    </div>
+
+    <p>This is the content from the helper method:</p>
+    <div style="border: thin solid black; padding: 10px">
+        @Html.DisplayMessage(Model)
+    </div>
+</body>
+</html>
+```
+
+*在`Index view`使用`DisplayMessage helper`*
+
+<img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f422m3swhoj309w090753.jpg" style="width:100%" />
+
+### `encoding helper`方法内容
+
+这里有好几种办法解决这个问题，最简单的办法是改变返回的类型，
+
+```c#
+public static string DisplayMessage(this HtmlHelper html, string msg)
+{
+	return String.Format("This is the message: <p>{0}</p>", msg); 
+}
+```
+
+`Razor`会`encode helper`返回的内容，当你返回的是`html`标签时就会出现问题
+
+<img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f422tg6nh7j30i30e375t.jpg" style="width:100%" />
+
+我们可以解决这个`input`元素的问题
+
+```c#
+public static MvcHtmlString DisplayMessage(this HtmlHelper html, string msg) { 
+    string encodedMessage = html.Encode(msg); 
+    string result = String.Format("This is the message: <p>{0}</p>", encodedMessage);     
+	return new MvcHtmlString(result); 
+}
+```
+
+`HtmlHelper`定义了一个`Encode`的方法，用来解决`string`类型的编码问题。
+
+<img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f422tg6nh7j30i30e375t.jpg" style="width:100%" />
+
+### 使用内置的`Form Helper`方法
+
 
 
 #### Helper example
