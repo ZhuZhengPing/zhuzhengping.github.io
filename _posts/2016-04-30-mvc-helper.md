@@ -282,65 +282,458 @@ public static MvcHtmlString DisplayMessage(this HtmlHelper html, string msg) {
 
 ### 使用内置的`Form Helper`方法
 
+MVC框架包括一个内置的选择辅助方法,帮助您管理创建`HTML`表单元素，下面我们创建一个`Person`和`Address`、`Role`来显示这些语法，首先创建几个实体类
+
+```c#
+public class Person
+{
+	public int PersonId { get; set; }        
+	public string FirstName { get; set; }      
+	public string LastName { get; set; }      
+	public DateTime BirthDate { get; set; }       
+	public Address HomeAddress { get; set; }      
+	public bool IsApproved { get; set; }         
+	public Role Role { get; set; } 
+}
+
+public class Address
+{
+	public string Line1 { get; set; }
+	public string Line2 { get; set; }
+	public string City { get; set; }
+	public string PostalCode { get; set; }
+	public string Country { get; set; }
+}
+
+public enum Role
+{
+	Admin,
+	User,
+	Guest
+}
+```
+
+我们在`Home controller`里面添加一个`action`来使用这些`model`
+
+```c#
+public class HomeController : Controller
+{
+	public ActionResult CreatePerson()
+	{
+		return View(new Person());
+	}
+	[HttpPost]
+	public ActionResult CreatePerson(Person person)
+	{
+		return View(person);
+	}
+}
+```
+
+我们使用创建了2`CreatePerson`方法，一个是`HttpGet`请求，一个事`HttpPost`请求，并且
+方法的参数还需要不一样，在前端创建数据
+
+```c#
+@model MvcApplication2.Models.Person
+@{
+    ViewBag.Title = "CreatePerson";
+}
+<h2>CreatePerson</h2>
+<form action="/Home/CreatePerson" method="post">
+    <div class="dataElem">
+        <label>PersonId</label>
+        <input name="personId" value="@Model.PersonId" />
+    </div>
+    <div class="dataElem">
+        <label>First Name</label>
+        <input name="FirstName" value="@Model.FirstName" />
+    </div>
+    <div class="dataElem">
+        <label>Last Name</label>
+        <input name="lastName" value="@Model.LastName" />
+    </div>
+    <input type="submit" value="Submit" />
+</form> 
+```
+
+这个`view`直接把`model`绑定到`input value`上，我们在`view`上套用一个`layout`，当运行这个`view`的时候，
+可以看`input`能正确显示`model`的数据
+
+<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f42wqwdp0jj30by08ggmf.jpg" style="width:100%" />
+
+MVC框架不是强制性的使用`helper`来生成`html`标记例如`form`,`input`，如果你喜欢，你可以使用静态的`html`标签，使用`helper`生成的更加方便和后台进行交互
+
+### 创建`Form`元素
+
+最有用的两个`helper`是`Html.BeginForm`和`Html.EndForm`，他们能创建`form`标签，
+并且生成`action`参数
+
+```html
+<h2>CreatePerson</h2>
+
+@{Html.BeginForm();}
+<div class="dataElem">
+    <label>PersonId</label>
+    <input name="personId" value="@Model.PersonId" />
+</div>
+<div class="dataElem">
+    <label>First Name</label>
+    <input name="FirstName" value="@Model.FirstName" />
+</div>
+<div class="dataElem">
+    <label>Last Name</label>
+    <input name="lastName" value="@Model.LastName" />
+</div>
+<input type="submit" value="Submit" />
+@{Html.EndForm();}
+``` 
+
+这个`Form helper` 是一个丑陋的设计，这种方式一般很少会使用，常用的方式是下面这种
+
+```html
+<h2>CreatePerson</h2> 
+ 
+@using(Html.BeginForm()) { 
+    <div class="dataElem"> 
+        <label>PersonId</label> 
+        <input name="personId" value="@Model.PersonId"/> 
+    </div> 
+    <div class="dataElem"> 
+        <label>First Name</label> 
+        <input name="FirstName" value="@Model.FirstName"/> 
+    </div> 
+    <div class="dataElem"> 
+        <label>Last Name</label> 
+        <input name="lastName" value="@Model.LastName"/> 
+    </div> 
+    <input type="submit" value="Submit" /> 
+} 
+```
+
+这种方式称为自闭方式，这样用使得代码干净，`BeginForm`还有一些其它的属性
+
+重载														|描述
+BeginForm()													|`Post`方式到`view`对应的`action`
+BeginForm(action,controller)								|`Post`方式到传递的参数的`controller`，`action`
+BeginForm(action,controller,method)							|根据`method`参数传递过来的方式，把表单数据传递到`controller`下面的`action`
+BeginForm(action,controller,method,attributes)				|`attributes` :允许指定`form`的`html`属性，例如：class,id等
+BeginForm(action,controller,routeValues,method,attributes)  |`routeValues`:指定路由参数
+
+```html
+@model MvcApplication2.Models.Person
+
+@{
+    ViewBag.Title = "CreatePerson";
+    Layout = "~/views/shared/_layout.cshtml";
+}
+<h2>CreatePerson</h2>
+
+@using (Html.BeginForm("CreatePerson", "Home", 
+new { id = "MyIdValue" }, FormMethod.Post, 
+new { @class = "personClass", data_formType = "person" })){
+    <div class="dataElem">
+        <label>PersonId</label>
+        <input name="personId" value="@Model.PersonId" />
+    </div>
+    <div class="dataElem">
+        <label>First Name</label>
+        <input name="FirstName" value="@Model.FirstName" />
+    </div>
+    <div class="dataElem">
+        <label>Last Name</label>
+        <input name="lastName" value="@Model.LastName" />
+    </div>
+    <input type="submit" value="Submit" />
+}
+```	
+
+在这个例子中，我们指定了更加具体的`form`信息
+
+```html
+<form action="/Home/CreatePerson/MyIdValue" class="personClass" data-formType="person" method="post">
+```
+
+### 指定`route`所使用的一种形式
+
+当你使用`BeginForm`方法，MVC框架找到第一个匹配的路由配置来生成`url`，如果你确定想使用一个特定的`route`，你可以使用`BeginRouteForm`
+
+```c#
+ public class RouteConfig
+{
+	public static void RegisterRoutes(RouteCollection routes)
+	{
+		routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+
+		routes.MapRoute(name: "Default",
+			url: "{controller}/{action}/{id}",
+			defaults: new
+			{
+				controller = "Home",
+				action = "Index",
+				id = UrlParameter.Optional
+			});
+		routes.MapRoute(name: "FormRoute",
+			url: "app/forms/{controller}/{action}"
+		);
+	}
+}
+```
+
+如果我们调用`BeginForm`,默认会调用`Default route`，如果要调用`FormRoute`这个`route`，可以像下面这样
+
+```html
+@model MvcApplication2.Models.Person
+
+@{
+    ViewBag.Title = "CreatePerson";
+    Layout = "~/views/shared/_layout.cshtml";
+}
+<h2>CreatePerson</h2>
+@using (Html.BeginRouteForm("FormRoute", new { }, FormMethod.Post, new { @class = "personClass", data_formType = "person" }))
+{
+    <div class="dataElem">
+        <label>PersonId</label>
+        <input name="personId" value="@Model.PersonId" />
+    </div>
+    <div class="dataElem">
+        <label>First Name</label>
+        <input name="FirstName" value="@Model.FirstName" />
+    </div>
+    <div class="dataElem">
+        <label>Last Name</label>
+        <input name="lastName" value="@Model.LastName" />
+    </div>
+    <input type="submit" value="Submit" />
+}
+```
+
+这将生成一下的标签形式，这个`action`属性符合新`route`结构
+
+```html
+<form action="/app/forms/Home/CreatePerson" class="personClass" 
+data-formType="person" method="post">
+```
+
+### 使用`input helpers`
+
+就算创建了`form`，你还需要创建`input`元素，下面的表格显示了基本的`input`元素创建方法
+
+HTML 元素					|示例
+Checkbox					|Html.CheckBox("myCheckbox",false)输出：<br /> `<input id="myCheckbox" name="myCheckbox" type="checkbox" value="true" />` <br /> `<input name="myCheckbox" type="hidden" value="false" />`
+Hidden field				|Html.Hidden("myHidden","val")输出：<br /> `<input id="myHidden" name="myHidden" type="hidden" value="val" />`
+Radio button				|Html.RadioButton("myRadiobutton","val",true)输出：`<input checked="checked" id="myRadiobutton" name="myRadiobutton" type="radio" value="val" />`
+Password					|Html.Password("myPassword","val")输出：<br /> `<input id="myPassword" name="myPassword" type="password" value="val" />`
+Textarea					|Html.TextArea("myTextarea","val",5,20,null)输出：`<textarea cols="20" id="myTextarea" name="myTextarea" rows="5">val</textarea>`
+Textbox						|Html.TextBox("myTextbox","val")输出：`<input id="myTextbox" name="myTextbox" type="text" value="val" />`
+
+每一个`helpers`都是可以重载的，上面的表格只是显示了最简单的版本，你可以看到怎样使用这些基本的`input`helper 方法
+
+```html
+@model MvcApplication2.Models.Person
+
+@{
+    ViewBag.Title = "CreatePerson";
+    Layout = "~/views/shared/_layout.cshtml";
+}
+<h2>CreatePerson</h2>
+
+@using (Html.BeginRouteForm("FormRoute", new { }, FormMethod.Post, 
+    new { @class = "personClass", data_formType = "person" }))
+{
+
+    <div class="dataElem">
+        <label>PersonId</label>         @Html.TextBox("personId", @Model.PersonId)
+    </div>
+    <div class="dataElem">
+        <label>First Name</label>         @Html.TextBox("firstName", @Model.FirstName)
+    </div>
+    <div class="dataElem">
+        <label>Last Name</label>         @Html.TextBox("lastName", @Model.LastName)
+    </div>
+    <input type="submit" value="Submit" />
+} 
+```
+
+### 从模型生成`input`元素属性
+
+上面的章节很好的显示了`helper`方法，但是我们需要从第一个参数传递到第二个参数，下面还可以使用只有一个参数的`helper`方法
+
+```html
+@model MvcApplication2.Models.Person
+
+@{
+    ViewBag.Title = "CreatePerson";
+    Layout = "~/views/shared/_layout.cshtml";
+}
+<h2>CreatePerson</h2>
+
+@using (Html.BeginRouteForm("FormRoute", new { }, FormMethod.Post, 
+    new { @class = "personClass", data_formType = "person" }))
+{
+
+    <div class="dataElem">
+        <label>PersonId</label>
+        @Html.TextBox("PersonId")
+    </div>
+    <div class="dataElem">
+        <label>First Name</label>         @Html.TextBox("firstName")
+    </div>
+    <div class="dataElem">
+        <label>Last Name</label>         @Html.TextBox("lastName")
+    </div>
+    <input type="submit" value="Submit" />
+} 
+```
+
+`string`类型的参数是用来查找`view data`,`viewbag`和`view`模型，如果你调用`@Html.TextBox("DataValue")`,MVC框架尝试着访问key为`DataValue`
+
+>* ViewBag.DataValue
+>* @Model.DataValue
+
+第一个`value` 是查找生成的`html`元素的`value`属性，如果我们指定一个值为`DataValue.First.Name`，查找会更复杂。
+
+>* ViewBag.DataValue.First.Name
+>* ViewBag.DataValue["First"].Name
+>* •ViewBag.DataValue["First.Name"] 
+>* ViewBag.DataValue["First"]["Name"]
+
+### 使用强类型的`input helpers`
+
+这些`helper`只能用在强类型的`view`中
+
+HTML元素			|示例
+CheckBox			|Html.CheckBoxFor(x=>x.IsApproved)输出：<br />`<input id="IsApproved" name="IsApproved" type="checkbox" value="true" />`<br />`<input name="IsApproved" type="hidden" value="false" />`
+Hidden field		|Html.HiddenFor(x => x.FirstName)输出：<br />`<input id="FirstName" name="FirstName" type="hidden" value="" /> `
+Radio button		|Html.RadioButtonFor(x => x.IsApproved, "val")输出：<br />`<input id="IsApproved" name="IsApproved" type="radio" value="val" />`
+Password			|Html.PasswordFor(x => x.Password)输出：<br />`<input id="Password" name="Password" type="password" />`
+Textarea			|Html.TextAreaFor(x => x.Bio, 5, 20, new{})输出：<br />`<textarea cols="20" id="Bio" name="Bio" rows="5">Bio value</textarea>`
+Textbox				|Html.TextBoxFor(x => x.FirstName)输出：<br />`<input id="FirstName" name="FirstName" type="text" value="" />`
+
+强类型的`input helpers`有`lambda`表达式作为参数，表达式的值传递给`view model`对象
+
+```html
+@model MvcApplication2.Models.Person
+
+@{
+    ViewBag.Title = "CreatePerson";
+    Layout = "~/views/shared/_layout.cshtml";
+}
+<h2>CreatePerson</h2>
+
+@using (Html.BeginRouteForm("FormRoute", new { }, FormMethod.Post, new { @class = "personClass", data_formType = "person" }))
+{     <div class="dataElem">
+        <label>PersonId</label>         
+		@Html.TextBoxFor(m => m.PersonId)
+    </div>
+    <div class="dataElem">
+        <label>First Name</label>         
+		@Html.TextBoxFor(m => m.FirstName)
+    </div>
+    <div class="dataElem">
+        <label>Last Name</label>         
+		@Html.TextBoxFor(m => m.LastName)
+    </div>
+    <input type="submit" value="Submit" />
+}
+```
+
+### 创建`select`元素
+
+下面的表格显示创建`select`元素
+
+Html元素			|示例
+Drop-down list		|Html.DropDownList("myList", new SelectList(new [] {"A", "B"}), "Choose") 输出：<br />`<select id="myList" name="myList">`<br />` <option value="">Choose</option>`<br />`<option>A</option>`<br />`<option>B</option>`<br />`</select>`
+Drop-down list		|Html.DropDownListFor(x => x.Gender, new SelectList(new [] {"M", "F"}))输出：`<select id="Gender" name="Gender">`<br />`<option>M</option> `<br />`<option>F</option> `<br />`</select> `
+Multiple-select		|Html.ListBox("myList", new MultiSelectList(new [] {"A", "B"}))输出：<br />`<select id="myList" multiple="multiple" name="myList">`<br />`<option>A</option> `<br />`<option>B</option> `<br />`</select> `
+Multiple-select 	|Html.ListBoxFor(x => x.Vals, new MultiSelectList(new [] {"A", "B"})) 输出：<br />`<select id="Vals" multiple="multiple" name="Vals"> `
+<br />`<option>A</option>`<br />`<option>B</option>`<br />`</select>`
+
+`select helpers`带有`SelectList`或者`MultiSelectList`参数，这两个参数不同之处在于，`MultiSelectList`有一个构造函数，当页面加载的时候，可以多个`item`被选中
+
+```c#
+@model MvcApplication2.Models.Person
+
+@{
+    ViewBag.Title = "CreatePerson";
+    Layout = "~/views/shared/_layout.cshtml";
+}
+<h2>CreatePerson</h2>
+
+@using (Html.BeginRouteForm("FormRoute", new { }, FormMethod.Post, new { @class = "personClass", data_formType = "person" }))
+{
+
+    <div class="dataElem">
+        <label>PersonId</label>
+        @Html.TextBoxFor(m => m.PersonId)
+    </div>
+    <div class="dataElem">
+        <label>First Name</label>
+        @Html.TextBoxFor(m => m.FirstName)
+    </div>
+    <div class="dataElem">
+        <label>Last Name</label>
+        @Html.TextBoxFor(m => m.LastName)
+    </div>
+    <div class="dataElem">
+        <label>Role</label>
+        @Html.DropDownListFor(m => m.Role,
+             new SelectList(Enum.GetNames(typeof(MvcApplication2.Models.Role))))
+    </div>
+    <input type="submit" value="Submit" />
+} 
+```
+
+你可以看到`html`属性
+
+```html
+<!DOCTYPE html> 
+<html> 
+<head> 
+    <meta charset="utf-8" /> 
+    <meta name="viewport" content="width=device-width" /> 
+    <title>CreatePerson</title> 
+    <link href="/Content/Site.css" rel="stylesheet"/> 
+    <style type="text/css"> 
+        label { display: inline-block; width: 100px;} 
+        .dataElem { margin: 5px;} 
+    </style> 
+</head> 
+<body> 
+     
+<h2>CreatePerson</h2> 
+ 
+<form action="/app/forms/Home/CreatePerson" class="personClass" data-formType="person" 
+method="post">    <div class="dataElem"> 
+        <label>PersonId</label> 
+        <input data-val="true" data-val-number="The field PersonId must be a number." data-valrequired="The PersonId field is required." id="PersonId" name="PersonId" type="text" value="0" 
+/> 
+    </div> 
+    <div class="dataElem"> 
+        <label>First Name</label> 
+        <input id="FirstName" name="FirstName" type="text" value="" /> 
+    </div> 
+    <div class="dataElem"> 
+        <label>Last Name</label> 
+        <input id="LastName" name="LastName" type="text" value="" /> 
+    </div> 
+    <div class="dataElem"> 
+        <label>Role</label> 
+        <select data-val="true" data-val-required="The Role field is required."  
+                id="Role" name="Role"> 
+            <option selected="selected">Admin</option>             <option>User</option> 
+            <option>Guest</option> 
+        </select>     </div>         <input type="submit" value="Submit" /> 
+</form> 
+</body> 
+</html>
+```
 
 
-#### Helper example
 
-Helper    		|Example    						|Description
-Display    		|Html.Display("FirstName")   		|Renders a read-only view of the specified model property, choosing an HTML element according to the property’s type and metadata 
-DisplayFor 		|Html.DisplayFor(x => x.FirstName) 	|Strongly typed version of the previous helper
-Editor     		|Html.Editor("FirstName") 			|Renders an editor for the specified model property, choosing an HTML element according to the property’s type and metadata 
-EditorFor		|Html.EditorFor(x => x.FirstName) 	|Strongly typed version of the previous helper
-Label 			|Html.Label("FirstName") 		  	|Renders an HTML `<label>` element referring to the specified model property 
-LabelFor		|Html.LabelFor(x => x.FirstName)  	|Strongly typed version of the previous 
-DisplayForModel	|Html.DisplayForModel()				|Renders a read-only view of the entire model object
-EditorForModel	|Html.EditorForModel() 				|Renders editor elements for the entire model object
-LabelForModel 	|Html.LabelForModel() 				|Renders an HTML <label> element referring to the
 
-#### The Values of the `DataType` Enumeration 
 
-Value			|Description 
-DateTime 		|Displays a date and time (this is the default behavior for System.DateTime values)
-Date 			|Displays the date portion of a DateTime 
-Time 			|Displays the time portion of a DateTime
-Text 			|Displays a single line of text 
-PhoneNumber		|Displays a phone number 
-MultilineText 	|Renders the value in a textarea element
-Password 		|Displays the data so that individual characters are masked from view 
-Url 			|Displays the data as a URL (using an HTML a element) 
-EmailAddress	|Displays the data as an e-mail address (using an a element with a  mailto href) 
 
-#### The Built-In MVC Framework View Templates
 
-Value 			|Effect (Editor) 					|Effect (Display) 
-Boolean			|Renders a checkbox for bool values. For nullable bool? values, a select element is created with options for True, False, and Not Set. 					|As for the editor helpers, but with the addition of the disabled attribute, which renders read-only HTML controls. 
-Collection		|Renders the appropriate template for each of the elements in an IEnumerable  sequence. The items in the sequence do not have to be of the same type. 	|As for the editor helpers. 
-Decimal 		|Renders a single-line textbox input  element and formats the data value to display two decimal places. |Renders the data value formatted to two decimal places. 
-DateTime		|Renders an input element whose type attribute is datetime and which contains the complete date and time. |Renders the complete value of a DateTime variable. 
-Date 			|Renders an input element whose type attribute is dateand that contains the date component (but not the time). |Renders the date component of a DateTime variable 
-EmailAddress 	|Renders the value in a single-line textbox input element. |Renders a link using an HTML a element and an href attribute that is formatted as a mailto URL. 
-HiddenInput		|Creates a hidden input element. |Renders the data value and creates a hidden input element. 
-Html 			|Renders the value in a single-line textbox input element. |Renders a link using an HTML a element. 
-MultilineText 	|Renders an HTML textarea element that contains the data value. |Renders the data value. 
-Number			|Renders an input element whose type attribute is set to number. |Renders the data value 
-Object			|See explanation after this table. |See explanation after this table. 
-Password		|Renders the value in a single-line textbox input element so that the characters are not displayed but can be edited. |Renders the data value—the characters are not obscured. 
-String 			|Renders the value in a single-line textbox input element. |Renders the data value. 
-Text 			|Identical to the String template. |Identical to the String template
-Tel 			|Renders an input element whose type attribute is set to tel. |Renders the data value 
-Time 			|Renders an input element whose type attribute is time and which contains the time component (but not the date). |Renders the time component of a DateTime variable 
-
-#### Creating a Custom Editor Template
-
->1. The template passed to the helper—for example, Html.EditorFor(m => m.SomeProperty, "MyTemplate") would lead to MyTemplate being used.
->2. Any template that is specified by metadata attributes, such as UIHint. 
->3. The template associated with any data type specified by metadata, such as the DataType attribute.
->4. Any template that corresponds to the.NET class name of the data type being processed.
->5. The built-in String template if the data type being processed is a simple type.
->6. Any template that corresponds to the base classes of the data type.
->7. 7.If the data type implements IEnumerable, then the built-in Collection template will be used.If all else fails, the Object template will be used—subject to the rule that scaffolding is not recursive. 
-
-#### Creating a Generic Template
 
 
 
