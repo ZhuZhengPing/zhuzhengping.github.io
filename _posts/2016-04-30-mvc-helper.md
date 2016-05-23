@@ -334,7 +334,7 @@ public class HomeController : Controller
 我们使用创建了2`CreatePerson`方法，一个是`HttpGet`请求，一个事`HttpPost`请求，并且
 方法的参数还需要不一样，在前端创建数据
 
-```c#
+```html
 @model MvcApplication2.Models.Person
 @{
     ViewBag.Title = "CreatePerson";
