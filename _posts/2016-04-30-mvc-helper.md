@@ -580,10 +580,12 @@ Textbox						|Html.TextBox("myTextbox","val")输出：`<input id="myTextbox" nam
         @Html.TextBox("PersonId")
     </div>
     <div class="dataElem">
-        <label>First Name</label>         @Html.TextBox("firstName")
+        <label>First Name</label>         
+		@Html.TextBox("firstName")
     </div>
     <div class="dataElem">
-        <label>Last Name</label>         @Html.TextBox("lastName")
+        <label>Last Name</label>         
+		@Html.TextBox("lastName")
     </div>
     <input type="submit" value="Submit" />
 } 
