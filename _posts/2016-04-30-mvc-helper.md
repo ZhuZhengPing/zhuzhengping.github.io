@@ -543,13 +543,16 @@ Textbox						|Html.TextBox("myTextbox","val")输出：`<input id="myTextbox" nam
 {
 
     <div class="dataElem">
-        <label>PersonId</label>         @Html.TextBox("personId", @Model.PersonId)
+        <label>PersonId</label>         
+		@Html.TextBox("personId", @Model.PersonId)
     </div>
     <div class="dataElem">
-        <label>First Name</label>         @Html.TextBox("firstName", @Model.FirstName)
+        <label>First Name</label>         
+		@Html.TextBox("firstName", @Model.FirstName)
     </div>
     <div class="dataElem">
-        <label>Last Name</label>         @Html.TextBox("lastName", @Model.LastName)
+        <label>Last Name</label>         
+		@Html.TextBox("lastName", @Model.LastName)
     </div>
     <input type="submit" value="Submit" />
 } 
