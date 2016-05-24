@@ -214,4 +214,86 @@ LabelForModel		|Html.LabelForModel()	|`model`全部生成`label`元素
 </div> 
 ```
 
-使用`Model Metadata`
+使用`Model Metadata`控制`editing`显示隐藏
+
+```c#
+public class Person
+{
+	[HiddenInput] 
+	public int PersonId { get; set; }        
+	public string FirstName { get; set; }      
+	public string LastName { get; set; }      
+	public DateTime BirthDate { get; set; }       
+	public Address HomeAddress { get; set; }      
+	public bool IsApproved { get; set; }         
+	public Role Role { get; set; } 
+}
+```
+
+当使用了`Html.EditorFor`或者`Html.EditorForModel`，`view`会显示`read-only`模式，如下图
+
+<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f46op27idwj308205274l.jpg" style="width:50%" />
+
+`PersonId`属性显示了，可是不能编辑，这个属性生成的`html`如下
+
+```html
+<div class="editor-field"> 
+    0 
+    <input id="PersonId" name="PersonId" type="hidden" value="0" />  
+</div>
+```
+
+`helper`还包含一个隐藏`input`元素属性
+
+```c#
+[HiddenInput(DisplayValue=false)]     
+public int PersonId { get; set; }
+```
+
+当重新运行的时候，`PersonId`属性所对应的文本框隐藏了，生成的`html`代码如下
+
+```html
+<input id="PersonId" name="PersonId" type="hidden" value="1" />
+```
+
+如果你想一个属性，不生成`html`，你可以使用`ScaffoldColumn`属性
+
+```c#
+[ScaffoldColumn(false)] 
+public int PersonId { get; set; }
+```
+
+### 使用`Labels helper`
+
+默认的，`Label`,`LabelFor`,`LabelForModel`使用属性的名称来生成`label`元素
+
+```html
+<label for="BirthDate">BirthDate</label>
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
