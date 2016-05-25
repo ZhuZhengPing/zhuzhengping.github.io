@@ -329,11 +329,92 @@ Tel				|生成`type`为`tel`的文本框|显示相应的数据
 Time			|生成`type`为`Time`的文本框|显示`Time`数据
 Url				|生成单行文本框|生成`a`标签的超链接，`href`属性设置属性的数据
 
+`Object`模板是一个特例，它使用`scaffolding helpers`根据`model`的属性为`view`生成`html`，这种模板检查每一个对象的属性和属性类型来选择最合适的模板，`Object`模板带有`metadata`，例如`UIHint`和`DataType`属性
 
+### 为`class`提供`metadata`
 
+不是每一次都必须给`model class`提供`metadata`，通常是当模型自动生成，就像`ORM`工具例如`entity framework`
 
+*一个部分的`class`*
 
+```c#
+[DisplayName("New Person")]
+[MetadataType(typeof(PersonMetaData))]
+public partial class Person
+{
+	[ScaffoldColumn(false)]
+	public int PersonId { get; set; }
+	[Display(Name = "First")]
+	[UIHint("MultilineText")]
+	public string FirstName { get; set; }
+	[Display(Name = "Last")]
+	[DataType(DataType.Url)]
+	public string LastName { get; set; }
+	[DataType(DataType.Date)]
+	public DateTime BirthDate { get; set; }
+	public Address HomeAddress { get; set; }
+	[Display(Name = "Approved")]
+	public bool IsApproved { get; set; }
+	public Role Role { get; set; }
+}
+```
 
+我们通过`metadata`属性告诉MVC框架`buddy class`，它带有`buddy class`作为参数，`buddy classes`必须是相同的`namespace`，必须是`partial class`
+
+*定义`buddy class`*
+
+```c#
+[DisplayName("New Person")]
+ public partial class PersonMetaData
+ {
+	 [HiddenInput(DisplayValue = false)]
+	 public int PersonId { get; set; }
+	 [Display(Name = "First")]
+	 public string FirstName { get; set; }
+	 [Display(Name = "Last")]
+	 public string LastName { get; set; }
+	 [Display(Name = "Birth Date")]
+	 [DataType(DataType.Date)]
+	 public DateTime BirthDate { get; set; }
+	 [Display(Name = "Approved")]
+	 public bool IsApproved { get; set; }
+ }
+```
+
+`buddy class`只需要包含我们需要提供`metadata`的属性，我们不需要重复所有`Person`的属性
+
+### 使用复杂类型属性
+
+你可能注意到，`Person class`里`HomeAddress`属性没有显示出来，这是因为`Object`只在简单类型模板操作，这些类型能使用`GetConverter`从`string`值解析出来，`GetConverter`属于`System.ComponentModel.TypeDescriptor`，这些类型包括`int,bool,double`和许多`c#`类型例如`guid`和`datetime`，
+
+`scaffolding helpers`不递归，如果处理一个对象，`scaffolding helpers`模板只会在简单类型的时候并且忽略复杂类型的时候生成`html`，经管它可能不方便，但是是一个明智的抉择，MVC框架不知道如何创建我们的模型对象，并且如果`Object`模板递归，然后我们可以很容易地引发我们的ORM延迟加载特性,这将使我们阅读和渲染每个对象的底层数据库，如果我们想为一个复制的属性生成`html`，我们必须显式地通过一个单独的调用一个`templated helper`方法
+
+*处理复杂的属性类型*
+
+```c#
+@model MvcApplication2.Models.Person
+
+@{
+    ViewBag.Title = "CreatePerson";
+    Layout = "~/views/shared/_layout.cshtml";
+    Html.EnableClientValidation(false); 
+}
+<h2>CreatePerson: @Html.LabelForModel()</h2>
+@using (Html.BeginRouteForm("FormRoute", new { }, FormMethod.Post, new { @class = "personClass", data_formType = "person" }))
+{
+    <div class="column">
+        @Html.EditorForModel()
+    </div>
+    <div class="column">
+        @Html.EditorFor(m => m.HomeAddress)
+    </div>
+    <input type="submit" value="Submit" />
+} 
+```
+
+显示结果如图所示
+
+<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f47zhiij60j30mz0em768.jpg" style="width:100%" />
 
 
 
