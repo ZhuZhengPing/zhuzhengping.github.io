@@ -271,12 +271,63 @@ public int PersonId { get; set; }
 <label for="BirthDate">BirthDate</label>
 ```
 
+`model`属性名称经常不是我们想要显示给用户的名称，这样的话，我们可以在`System.ComponentModel.DataAnnotations`命名空间下使用`DisplayName`
 
+### 使用`Metadata`
 
+我们可以使用`metadata`提供`model`属性的说明，在下面的示例中，处理`BirthDate`属性，让它显示成日期格式，我们在`model`属性上加上`DataType`，表示其日期格式
 
+```c#
+[Display(Name = "Birth Date")] 
+[DataType(DataType.Date)]     
+public DateTime BirthDate { get; set; } 
+```
 
+*`DataType`值*
 
+Value			|描述
+DateTime		|显示日期和时间
+Date			|显示日期
+Time			|显示时间
+Text			|显示单行文本
+PhoneNumber		|显示电话格式
+MultilineText	|显示一个`textarea`元素
+Password		|显示密码文本框
+Url				|显示URL
+EmailAddress	|显示`e-mail`地址
 
+### 使用`Metadata` 去选择显示模板
+
+`templated helpers`使用显示模板来生成`html`,可以使用`UIHint`去指定我们想要生成的`html`
+
+```c#
+[Display(Name="First")] 
+[UIHint("MultilineText")]     
+public string FirstName { get; set; } 
+```
+
+我们指定了`MultilineText`模板，它将为`FirstName`生成一个`textarea`元素
+
+*使用MVC框架内置的模板*
+
+Value			|文本框						|显示的值
+Boolean			|生成一个`checkbox`			|生成只读的`checkbox`
+Collection		|为`IEnumerable`接口的每个元素呈现适应的模板，这个集合的每个元素不需要相同类型|类似于`editor helper`
+Decimal			|显示一个单行文本框，文本框内容格式化成两位小数|显示有两位小数
+DateTime		|显示一个日期格式的文本框，并且带有日期和时间|显示`DateTime`类型的值
+Date			|显示一个日期格式的文本框，并且只有日期|显示日期
+EmailAddress	|显示单行文本框元素|显示一个`a`标签，有`href`属性，并且是`mailto`Url的格式
+HiddenInput		|创建一个类型为`hidden`的文本框|显示值并且创建`hidden`文本框
+Html			|显示单行文本框|显示一个`a`标签的超链接
+MultilineText	|显示`textarea`多行文本框|显示对应的数据
+Number			|显示类型为`number`的文本框|显示对应的数据
+Object			|查看接下来的说明|查看接下来的说明
+Password		|生成密码框	|显示相应的数据
+String			|生成单行文本框|显示相应的数据
+Text			|生成单行文本框|显示相应的数据
+Tel				|生成`type`为`tel`的文本框|显示相应的数据
+Time			|生成`type`为`Time`的文本框|显示`Time`数据
+Url				|生成单行文本框|生成`a`标签的超链接，`href`属性设置属性的数据
 
 
 
