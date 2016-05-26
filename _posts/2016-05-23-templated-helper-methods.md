@@ -416,11 +416,29 @@ public partial class Person
 
 <img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f47zhiij60j30mz0em768.jpg" style="width:100%" />
 
+### 自定义`view helper`模板
 
+为了显示自定义模板，我们为`Person`的`role`属性创建一个自定义模板，这个属性类型是一个枚举值类型，MVC框架会在`/Views/Shared/EditorTemplates`下面找模板
 
+*`Role.cshtml`文件内容*
 
+```html
+@model HelperMethods.Models.Role 
+@Html.DropDownListFor(m => m,  
+    new SelectList(Enum.GetNames(Model.GetType()),          Model.ToString())) 
+```
 
+当我们允许程序的时候，`/Views/Shared/EditorTemplates`将被使用，你可以看到`Role`属性变成下拉框
 
+<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f48o32qstzj30d204taaa.jpg" style="width:100%" />
+
+`Role.cshtml`可以被调用，是因为MVC框架会为一个`c#`类型查找自定义模板
+
+>1. 模板通过`helper`，例如`Html.EditorFor(m => m.SomeProperty, "MyTemplate") `，`MyTemplate`模板会调用
+>2. 指定了`metadata`属性，例如`UIHint`
+>3. 模板与指定了`metadata`的类型有关联，例如`DataType`属性
+>4. 符合`class`的`data type`名称的模板将被执行
+>5. 内置的`String`模板，如果`data type`是一个简单类型
 
 
 
