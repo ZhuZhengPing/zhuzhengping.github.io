@@ -439,9 +439,60 @@ public partial class Person
 >3. 模板与指定了`metadata`的类型有关联，例如`DataType`属性
 >4. 符合`class`的`data type`名称的模板将被执行
 >5. 内置的`String`模板，如果`data type`是一个简单类型
+>6. 任何对应`base classes`的`data type`的模板
+>7. 如果`data type`实现了`IEnumerable`，其内置的`collection`模板将被使用，如果其它都不是，`Object`模板将被使用
 
+### 创建泛型的模板
 
+我们并不仅限于创建特定的模板，还可以创建适用于所有枚举创建一个模板,然后使用`UIHint`属性指定这个模板选择，如果你看看模板搜索序列“理解模板搜索顺序”栏，你会发现模板使用`UIHint`属性优先于特定类型，为了示例泛型模板怎么工作的，我们在`/Views/Shared/EditorTemplete`文件夹
 
+```html
+@model Enum 
+
+@Html.DropDownListFor(m => m, Enum.GetValues(Model.GetType())
+    .Cast<Enum>()
+    .Select(m =>
+    {
+        string enumVal = Enum.GetName(Model.GetType(), m);
+        return new SelectListItem()
+        {
+            Selected = (Model.ToString() == enumVal),
+            Text = enumVal,
+            Value = enumVal
+        };
+    }))
+```
+
+这个模板是为`Enum`服务的，可以提供一个`UIHint`属性，我们的示例定义了一个`metadata buddy class`，所以为`PersonMetadata class`提供这个属性，
+
+```c#
+public partial class Person
+{
+	[UIHint("Enum")] 
+	public Role Role { get; set; }
+}
+```
+
+### 替换内置的模板
+
+如果我们创建的自定义模板和系统内置的模板有相同的名称，MVC框架优先使用自定义模板，我们在`/Views/Shared/EditorTemplates`文件夹下面创建了
+`Boolean.cshtml`文件，替换了内置的`Boolean`模板
+
+```html
+@model bool?
+
+@if (ViewData.ModelMetadata.IsNullableValueType && Model == null) {
+    @:(True) (False) <b>(Not Set)</b>
+} else if (Model.Value) {
+    @:<b>(True)</b> (False) (Not Set)
+} else {
+    @:(True) <b>(False)</b> (Not Set)
+} 
+```
+
+运行后的结果如下图所示
+
+<img src="http://ww1.sinaimg.cn/mw690/006dag38gw1f494iz6fi6j30k504pglv.jpg" style="width:100%" />
 
 
 
