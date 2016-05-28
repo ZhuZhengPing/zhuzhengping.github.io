@@ -75,7 +75,8 @@ public class PersonController : Controller
 		}
 		else
 		{
-			Role selected = (Role)Enum.Parse(typeof(Role), selectedRole); return View(personData.Where(p => p.Role == selected));
+			Role selected = (Role)Enum.Parse(typeof(Role), selectedRole); 
+			return View(personData.Where(p => p.Role == selected));
 		}
 	} 
 }
@@ -86,7 +87,8 @@ public class PersonController : Controller
 ```css
 table, td, th { 
     border: thin solid black; 
-	border-collapse: collapse; padding: 5px;     background-color: lemonchiffon; 
+	border-collapse: collapse; padding: 5px;     
+	background-color: lemonchiffon; 
 	text-align: left; margin: 10px 0; 
 } 
 div.load {
@@ -146,10 +148,10 @@ div.ajaxLink {
             </td>
             <td>
                 @Html.RouteLink("My Link", new
-           {
-               controller = "People",
-               action = "GetPeople"
-           })
+			   {
+				   controller = "People",
+				   action = "GetPeople"
+			   })
         </td>
         URL AND AJAX HELPER METHODS
     </tr>
@@ -453,7 +455,7 @@ Url						|设置`ajax`的`URL`
 } 
 ```
 
-<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f4b7gbc5mcj306q0453yn.jpg" style="width:100%" />
+<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f4b7gbc5mcj306q0453yn.jpg" style="width:40%" />
 
 ### 创建`ajax`链接
 
@@ -524,9 +526,11 @@ Url						|设置`ajax`的`URL`
 <div> 
     @foreach (string role in Enum.GetNames(typeof(Role))) { 
         <div class="ajaxLink"> 
-            @Ajax.ActionLink(role, "GetPeople",                  new {selectedRole = role},                 new AjaxOptions { 
-                    UpdateTargetId = "tableBody",                     Url = Url.Action("GetPeopleData", new {selectedRole = role}) 
-                }) 
+            @Ajax.ActionLink(role, "GetPeople",new {selectedRole = role},
+			new AjaxOptions { 
+				UpdateTargetId = "tableBody",                     
+				Url = Url.Action("GetPeopleData", new {selectedRole = role}) 
+            }) 
         </div>         
     } 
 </div>
