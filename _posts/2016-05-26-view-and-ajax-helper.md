@@ -3,7 +3,7 @@ layout: post
 title:  "URL和Ajax"
 date:   2016-05-26 16:32:18 +0800
 categories: mvc
-tags: linq
+tags: url ajax
 author: Zhengping Zhu
 ---
 
