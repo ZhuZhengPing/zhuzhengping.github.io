@@ -12,8 +12,6 @@ author: Zhengping Zhu
 
 ## 概念
 
-`model`绑定
-
 `model`绑定是使用`http`请求传输数据，每次我们定义了一个操作方法需要一个参数时，我们一直依赖于`model`绑定，`model`绑定创建参数对象
 
 
