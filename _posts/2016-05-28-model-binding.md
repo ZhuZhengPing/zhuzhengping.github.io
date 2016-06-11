@@ -117,7 +117,7 @@ form  div {
 
 `model`绑定是`http`请求和`c# action`的桥梁，大多数MVC框架的项目依赖`model`绑定，当我们请求`/Home/Index/1`,将显示如下结果
 
-<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f4mz2aleqhj30as07774u.jpg" style="width:100%" />
+<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f4mz2aleqhj30as07774u.jpg" style="width:50%" />
 
 MVC框架转义URL部分，最后调用`Home controller`下的`index action`
 
