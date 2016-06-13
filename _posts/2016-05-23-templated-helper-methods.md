@@ -81,17 +81,16 @@ LabelFor		|Html.LabelFor(x => x.FirstName)	|`Label`的强类型版本
 
 ```c#
 public class HomeController : Controller
-    {
+{
 
-        public ActionResult CreatePerson()
-        {
-            return View(new Person { IsApproved = true }); 
-        }
-        [HttpPost]
-        public ActionResult CreatePerson(Person person)
-        {
-            return View("DisplayPerson", person); 
-        }
+	public ActionResult CreatePerson()
+	{
+		return View(new Person { IsApproved = true }); 
+	}
+	[HttpPost]
+	public ActionResult CreatePerson(Person person)
+	{
+		return View("DisplayPerson", person); 
 	}
 }
 ```

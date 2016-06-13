@@ -117,7 +117,7 @@ form  div {
 
 `model`绑定是`http`请求和`c# action`的桥梁，大多数MVC框架的项目依赖`model`绑定，当我们请求`/Home/Index/1`,将显示如下结果
 
-<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f4mz2aleqhj30as07774u.jpg" style="width:50%" />
+<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f4mz2aleqhj30as07774u.jpg" style="width:80%" />
 
 MVC框架转义URL部分，最后调用`Home controller`下的`index action`
 
@@ -176,7 +176,7 @@ Request.Files		|上传文件里面取值
 
 当我们处理简单的`parameter types`，`DefaultModelBinder`使用`System.ComponentModel.TypeDescriptor`把请求的数据转换成`parameter type`,例如，如果提供的参数是`apple`可是`paramter type`需要`int`类型，`DefaultModelBinder`不会模型绑定，设置参数类型为`nullable`可以变得简单
 
-```
+```c#
 public ActionResult Index(int? id) { 
     Person dataItem = personData.Where(p => p.PersonId == id).First(); 
     return View(dataItem); 
@@ -185,7 +185,7 @@ public ActionResult Index(int? id) {
 
 还可以设置参数的默认值，当参数为`null`时使用
 
-```
+```c#
 public ActionResult Index(int id = 1) { 
     Person dataItem = personData.Where(p => p.PersonId == id).First(); 
     return View(dataItem); 
@@ -383,7 +383,7 @@ public ActionResult DisplaySummary([Bind(Prefix = "HomeAddress")]AddressSummary 
 } 
 ```
 
-<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f4r14mdhghj30lb0bg0ud.jpg" style="width:50%" />
+<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f4r14mdhghj30lb0bg0ud.jpg" style="width:80%" />
 
 ### 有选择的绑定属性
 
@@ -463,7 +463,7 @@ else
 
 当我们点击提交按钮，可以看到下面的结果
 
-<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f4r3ufawtyj30mz094wfi.jpg" style="width:70%" />
+<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f4r3ufawtyj30mz094wfi.jpg" style="width:80%" />
 
 ### 绑定`Collections`
 
@@ -693,7 +693,7 @@ public ActionResult Address()
 }
 ```
 
-<img src="http://ww3.sinaimg.cn/mw690/006dag38jw1f4rdlvb9szj30n10kk771.jpg" style="width:50%" />
+<img src="http://ww3.sinaimg.cn/mw690/006dag38jw1f4rdlvb9szj30n10kk771.jpg" style="width:80%" />
 
 ### 自定义`Modle Binder`
 
@@ -738,7 +738,7 @@ ValueProvider	|返回`IValueProvider`的实例，用于取数据
 
 ### 注册自定义`Model Binder`
 
-<img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f4rgjgirghj30n00jiack.jpg" style="width:50%" />
+<img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f4rgjgirghj30n00jiack.jpg" style="width:80%" />
 
 
 
