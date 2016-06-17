@@ -55,12 +55,11 @@ author: Zhengping Zhu
     </script>
 </body>
 </html>
-```html
+```
 
 ### 公共方法
 
 ```js
-
 // 获得对象信息
 // max:最大值
 // total:对象value总和
