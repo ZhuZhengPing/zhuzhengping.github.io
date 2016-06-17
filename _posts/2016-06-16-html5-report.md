@@ -81,7 +81,7 @@ var getTotal = function (obj) {
 
 ### 圆饼型报表
 
-<img src="http://ww3.sinaimg.cn/mw690/006dag38gw1f4x8o0v4z5j308u05eq31.jpg" style="width:100%" />
+<img src="http://ww3.sinaimg.cn/mw690/006dag38gw1f4x8o0v4z5j308u05eq31.jpg" style="width:70%" />
 
 ```js
 /*
@@ -207,7 +207,7 @@ $.fn.circle = function (config) {
 
 ### 柱形报表
 
-<img src="http://ww2.sinaimg.cn/mw690/006dag38gw1f4ybigolzrj308r05uaa2.jpg" style="width:100%" />
+<img src="http://ww2.sinaimg.cn/mw690/006dag38gw1f4ybigolzrj308r05uaa2.jpg" style="width:70%" />
 
 ```js
 // 圆柱型报表
@@ -318,7 +318,7 @@ $.fn.pillar = function (config) {
 
 ### 反向柱形报表
 
-<img src="http://ww3.sinaimg.cn/mw690/006dag38gw1f4ybhsanrdj308j05udft.jpg" style="width:100%" />
+<img src="http://ww3.sinaimg.cn/mw690/006dag38gw1f4ybhsanrdj308j05udft.jpg" style="width:70%" />
 
 ```js
 // 圆柱形报表-反向的
@@ -430,7 +430,7 @@ $.fn.pillar_reverse = function (config) {
 
 ### 线型报表
 
-<img src="http://ww3.sinaimg.cn/mw690/006dag38gw1f4ybhsir6xj308q06cjrg.jpg" style="width:100%" />
+<img src="http://ww3.sinaimg.cn/mw690/006dag38gw1f4ybhsir6xj308q06cjrg.jpg" style="width:70%" />
 
 ```js
 // 线型曲线图
