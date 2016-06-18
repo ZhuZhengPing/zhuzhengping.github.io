@@ -546,6 +546,136 @@ public class Appointment : IValidatableObject
 >* /Scripts/ jquery.validate.min.js
 >* /Scripts/ jquery.validate.unobtrusive.min.js
 
+我们可以修改`/Views/Shared/_Layout.cshtml`文件，添加我们要加的js文件
+
+```c#
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <script src="~/Javascript/jquery-1.8.2.js"></script>
+    <script src="~/Javascript/jquery.unobtrusive-ajax.js"></script>
+    <style type="text/css">
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        .dataElem {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    @RenderBody()
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @RenderSection("scripts", required: false)
+</body>
+</html> 
+```
+
+### 使用`Client-Side`验证
+
+当启用了客户端验证，并且引入了js文件，最简单的方式是提供`metadata`属性，例如`Required`,`Range`,`StringLength`
+
+```c#
+public class Appointment 
+{
+	[Required]
+	[StringLength(10, MinimumLength = 3)]
+	public string ClientName { get; set; }
+
+	[DataType(DataType.Date)]
+	public DateTime Date { get; set; }
+
+	public bool TermsAccepted { get; set; } 
+}
+```
+
+我们完成了客户端的验证，下面看看验证的结果
+
+<img src="http://ww3.sinaimg.cn/mw690/006dag38jw1f4z5cfwbtkj30h80c3tao.jpg" style="width:80%;" />
+
+### 理解`Client-Side`验证
+
+我们使用客户端验证，并不需要写`javascript`代码，验证规则表达使用HTML属性
+
+```html
+<input class="text-box single-line" id="ClientName" name="ClientName" type="text" value="" />
+```
+
+出现错误时的HTML属性
+
+```html
+<input class="text-box single-line" data-val="true" data-val-length="The field ClientName must be a string with a minimum length of 3 and a maximum length of 10." data-val-length-max="10" data-val-length-min="3" data-val-required="The ClientName field is required." id="ClientName" name="ClientName" type="text" value="" />
+```
+
+### 执行`Remote`验证
+
+创建一个`action`方法来验证我们的`model`属性，我们验证`Appointment`里面的`Date`属性
+
+```c#
+public JsonResult ValidateDate(string Date)
+{
+	DateTime parsedDate;
+
+	if (!DateTime.TryParse(Date, out parsedDate))
+	{
+		return Json("Please enter a valid date (mm/dd/yyyy)",
+			JsonRequestBehavior.AllowGet);
+	}
+	else if (DateTime.Now > parsedDate)
+	{
+		return Json("Please enter a date in the future",
+			JsonRequestBehavior.AllowGet);
+	}
+	else
+	{
+		return Json(true, JsonRequestBehavior.AllowGet);
+	}
+}
+```
+
+客户端为了支持`remote`验证，必须返回`JsonResult`类型
+
+```c#
+return Json(true, JsonRequestBehavior.AllowGet);
+```
+
+如果验证不通过，我们可以返回错误的验证信息
+
+```c#
+return Json("Please enter a date in the future", JsonRequestBehavior.AllowGet); 
+```
+
+为了使用`remote`验证方法，我们给`model`的属性提供`remote`特性
+
+```c#
+public class Appointment 
+{
+	[Required]
+	[StringLength(10, MinimumLength = 3)]
+	public string ClientName { get; set; }
+
+	[DataType(DataType.Date)]
+	[Remote("ValidateDate", "Home")]
+	public DateTime Date { get; set; }
+
+	public bool TermsAccepted { get; set; } 
+}
+```
+
+运行`/Home/MakeBooking` URL，你会看到如下验证结果
+
+<img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f4z8bygnigj30i50cqta4.jpg" style="width:100%" />
+
 
 
 
