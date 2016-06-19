@@ -14,6 +14,11 @@ author: Zhengping Zhu
 
 Bundles用于打包CSS和javascript脚本文件，优化对它们的组织管理。显示模式则允许我们为不同的设备显示不同的视图。
 
+
+
+
+
+
 ### 默认Script库
 
 MVC经常用到的Script库
