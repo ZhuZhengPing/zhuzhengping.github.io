@@ -34,48 +34,154 @@ jquery.validate.unobtrusive.js	|用于MVC的客户端验证，依赖jquery-valid
 
 ### 打包脚本和风格
 
-{% highlight c# %}
+```c#
 public class BundleConfig {
-public static void RegisterBundles(BundleCollection bundles) {
-	bundles.Add(new ScriptBundle("~/bundles/jquery").Include("~/Scripts/jquery-{version}.js"));
-	bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include("~/Scripts/jquery-ui-{version}.js"));
-	bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include("~/Scripts/jquery.unobtrusive*","~/Scripts/jquery.validate*"));
+	public static void RegisterBundles(BundleCollection bundles) {
+		bundles.Add(new ScriptBundle("~/bundles/jquery").Include("~/Scripts/jquery-{version}.js"));
+		bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include("~/Scripts/jquery-ui-{version}.js"));
+		bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include("~/Scripts/jquery.unobtrusive*","~/Scripts/jquery.validate*"));
 
-	// Use the development version of Modernizr to develop with and learn from. Then, when you're
-	// ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
-	bundles.Add(new ScriptBundle("~/bundles/modernizr").Include("~/Scripts/modernizr-*"));
-	bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/site.css"));
-	bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
-				"~/Content/themes/base/jquery.ui.core.css",
-				"~/Content/themes/base/jquery.ui.resizable.css",
-				"~/Content/themes/base/jquery.ui.selectable.css",
-				"~/Content/themes/base/jquery.ui.accordion.css",
-				"~/Content/themes/base/jquery.ui.autocomplete.css",
-				"~/Content/themes/base/jquery.ui.button.css",
-				"~/Content/themes/base/jquery.ui.dialog.css",
-				"~/Content/themes/base/jquery.ui.slider.css",
-				"~/Content/themes/base/jquery.ui.tabs.css",
-				"~/Content/themes/base/jquery.ui.datepicker.css",
-				"~/Content/themes/base/jquery.ui.progressbar.css",
-				"~/Content/themes/base/jquery.ui.theme.css"));
+		// Use the development version of Modernizr to develop with and learn from. Then, when you're
+		// ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
+		bundles.Add(new ScriptBundle("~/bundles/modernizr").Include("~/Scripts/modernizr-*"));
+		bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/site.css"));
+		bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
+		"~/Content/themes/base/jquery.ui.core.css",
+		"~/Content/themes/base/jquery.ui.resizable.css",
+		"~/Content/themes/base/jquery.ui.selectable.css",
+		"~/Content/themes/base/jquery.ui.accordion.css",
+		"~/Content/themes/base/jquery.ui.autocomplete.css",
+		"~/Content/themes/base/jquery.ui.button.css",
+		"~/Content/themes/base/jquery.ui.dialog.css",
+		"~/Content/themes/base/jquery.ui.slider.css",
+		"~/Content/themes/base/jquery.ui.tabs.css",
+		"~/Content/themes/base/jquery.ui.datepicker.css",
+		"~/Content/themes/base/jquery.ui.progressbar.css",
+		"~/Content/themes/base/jquery.ui.theme.css"));
+	}
 }
+```
+
+ScriptBundle创建脚本包，StyleBundle创建CSS风格包，两者都使用Include包含一组文件。VS创建的默认包并不一定适合我们的需要，我们可以自行定义：
+
+```c#
+public class BundleConfig {
+	public static void RegisterBundles(BundleCollection bundles) {
+
+		bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/*.css"));
+
+		bundles.Add(new ScriptBundle("~/bundles/clientfeaturesscripts")
+			.Include("~/Scripts/jquery-{version}.js",
+					"~/Scripts/jquery.validate.js",
+					"~/Scripts/jquery.validate.unobtrusive.js",
+					"~/Scripts/jquery.unobtrusive-ajax.js"));
+
+	}
 }
-{% endhighlight %}
 
+```
 
+注意这里的“~/Scripts/jquery-{version}.js”，{version}匹配对应文件的任何版本并通过工程配置文件选择正常版本还是缩小版，具体是web.config中的debug设置，如果为true选择正常版本，false则是缩小版。需要注意的是我们不能把相同文件的不同版本号放在一起，比如“jquery-1.7.2.js”和“jquery-1.7.1.js”，两个版本号都会被发送给客户端反而造成混淆。
 
+在布局文件中使用Scripts.Render()输出脚本包，Styles.Render()输出风格包：
 
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+</head>
+<body>
+    @RenderBody()
 
+    @Scripts.Render("~/bundles/clientfeaturesscripts")
 
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+```
 
+生成的HTML文件会通过<link href="XXX" rel="stylesheet"/>包含所有包里的CSS文件，所有的脚本文件则通过<script src="XXX"></script>引用。
 
+上面的例子中还使用“@RenderSection("scripts", required: false)”输出一个节，requried=false表示不是必须的，只有在视图文件中定义了这个节才会渲染，我们可以利用它来包含视图需要的额外脚本文件，比如我们在MakeBooking.cshtml中定义Scripts节来包含脚本文件：
 
+```html
+@model ClientFeatures.Models.Appointment
 
+@{
+    ViewBag.Title = "Make A Booking";
+    AjaxOptions ajaxOpts = new AjaxOptions {
+        OnSuccess = "processResponse"
+    };
+}
+<h4>Book an Appointment</h4>
+@section scripts {
+    <script src="~/Scripts/Home/MakeBooking.js" type="text/javascript"></script>
+}
+```
 
+使用这种可选节我们可以有选择的视图中包含视图仅需的脚本文件。
 
+### 面向移动设备
 
+人们越来越多的使用移动设备浏览网站，MVC应用也要考虑如何兼容这些移动设备以提供的更好的阅读体验。我们可以使用安卓、苹果手机访问开发测试网站，更方便的是从www.opera.com/developer/tools/mobile下载模仿移动版本的Opera浏览器，用它可以模仿不同设备设置不同屏幕大小的显示分辨率来测试。在MVC WEB应用中我们在普通的视图文件外可以添加面向移动设备的视图，视图文件名里在文件后缀名前加入“.Mobile”表示这是移动设备专用，比如“/Views/Home/MakeBooking.Mobile.cshtml”：
 
+```html
+@model ClientFeatures.Models.Appointment
 
+@{
+    ViewBag.Title = "Make A Booking";
+    AjaxOptions ajaxOpts = new AjaxOptions {
+        OnSuccess = "processResponse"
+    };
+}
+<h4>This is the MOBILE View</h4>
+@section scripts {
+    <script src="~/Scripts/Home/MakeBooking.js" type="text/javascript"></script>
+}
 
+<div id="formDiv" class="visible">
+    @using (Ajax.BeginForm(ajaxOpts)) {
+        @Html.ValidationSummary(true)    
+        <p>@Html.ValidationMessageFor(m => m.ClientName)</p>
+        <p>Name:</p><p>@Html.EditorFor(m => m.ClientName)</p>
+        <p>@Html.ValidationMessageFor(m => m.Date)</p>
+        <p>Date:</p><p>@Html.EditorFor(m => m.Date)</p>
+        <p>@Html.ValidationMessageFor(m => m.TermsAccepted)</p>
+        <p>@Html.EditorFor(m => m.TermsAccepted) Terms & Conditions</p>    
+        <input type="submit" value="Make Booking" />
+    }
+</div>
+<div id="successDiv" class="hidden">
+    <h4>Your appointment is confirmed</h4>
+    <p>Your name is: <b id="successClientName"></b></p>
+    <p>The date of your appointment is: <b id="successDate"></b></p>
+    <button id="backButton">Back</button>
+</div>
+```
 
+这里适当调整控件布局以更适合在移动设备上浏览，其他和桌面版基本一致。当我们从移动设备浏览时，MVC自动为我们应用移动版本的视图，MVC依赖C:\Windows\Microsoft.NET\Framework\v4.0.30319\Config\Browsers目录下的各种浏览器的描述文件检查浏览器版本，主要是匹配文件中定义的user agent特性，你会发现UC浏览器赫然在列。
+
+### 自定义显示模式
+
+上面的方法将所有的移动设备归为一类，如果我们还需要更细分具体是哪种移动设备，我们可以通过创建自定义显示模式来实现，这是在Application_start中注册的：
+
+```c#
+public class MvcApplication : System.Web.HttpApplication {
+	protected void Application_Start() {
+
+		DisplayModeProvider.Instance.Modes.Insert(0,
+			new DefaultDisplayMode("OperaTablet") {
+				ContextCondition = (context => context.Request.UserAgent.IndexOf("Opera Tablet", StringComparison.OrdinalIgnoreCase) >= 0)
+			});
+
+		AreaRegistration.RegisterAllAreas();
+	}
+}
+```
+
+这里通过比较请求的User agent是否包含“Operatablet”来标识OperaTablet显示模式，如果请求来自于这样的设备，MVC会查找包含OperaTablet的视图文件比如/Views/Home/MakeBooking.OperaTable.cshtml，这样我们就可以单为某种设备创建自定义的视图。
 
