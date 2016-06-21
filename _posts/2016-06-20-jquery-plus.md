@@ -2,8 +2,8 @@
 layout: post
 title:  "jQuery插件开发模式"
 date:   2016-06-20 16:32:18 +0800
-categories: jQuery
-tags: jQuery
+categories: jquery
+tags: jquery
 author: Zhengping Zhu
 ---
 
