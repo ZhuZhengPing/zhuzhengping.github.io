@@ -77,9 +77,9 @@ offsetTop    	|   clientTop		|		scrollTop
 
 效果如图
 
-<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f535qwvwgjj30ga0atjso.jpg" style="width:100%" />
+<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f535qwvwgjj30ga0atjso.jpg" style="width:80%" />
 
-<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f535sb28v3j30d00b2q47.jpg" style="width:100%" />
+<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f535sb28v3j30d00b2q47.jpg" style="width:80%" />
 
 从图中我们可以看到，clientHeight就是div的高度+上下各10px的padding，clientWidth同理
 
