@@ -651,8 +651,7 @@ Html元素			|示例
 Drop-down list		|Html.DropDownList("myList", new SelectList(new [] {"A", "B"}), "Choose") 输出：<br />`<select id="myList" name="myList">`<br />` <option value="">Choose</option>`<br />`<option>A</option>`<br />`<option>B</option>`<br />`</select>`
 Drop-down list		|Html.DropDownListFor(x => x.Gender, new SelectList(new [] {"M", "F"}))输出：`<select id="Gender" name="Gender">`<br />`<option>M</option> `<br />`<option>F</option> `<br />`</select> `
 Multiple-select		|Html.ListBox("myList", new MultiSelectList(new [] {"A", "B"}))输出：<br />`<select id="myList" multiple="multiple" name="myList">`<br />`<option>A</option> `<br />`<option>B</option> `<br />`</select> `
-Multiple-select 	|Html.ListBoxFor(x => x.Vals, new MultiSelectList(new [] {"A", "B"})) 输出：<br />`<select id="Vals" multiple="multiple" name="Vals"> `
-<br />`<option>A</option>`<br />`<option>B</option>`<br />`</select>`
+Multiple-select 	|Html.ListBoxFor(x => x.Vals, new MultiSelectList(new [] {"A", "B"})) 输出：<br />`<select id="Vals" multiple="multiple" name="Vals"> ` <br />`<option>A</option>`<br />`<option>B</option>`<br />`</select>`
 
 `select helpers`带有`SelectList`或者`MultiSelectList`参数，这两个参数不同之处在于，`MultiSelectList`有一个构造函数，当页面加载的时候，可以多个`item`被选中
 
