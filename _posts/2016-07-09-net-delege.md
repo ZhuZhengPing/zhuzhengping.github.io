@@ -190,6 +190,7 @@ Console.WriteLine("10 + 10 is {0}",b(10,10));
 {
 	...callvirt instance int32 SimpleDelegate.BinaryOp::Invoke(int32,int32)
 }
+```
 
 尽管C#不需要我们在代码库中显示调用Invoke(),但是我们也可以这么做。
 
