@@ -39,7 +39,7 @@ public delegate int BinaryOp(int x,int y);
 
 `BeginInvoke()`和`EndInvoke`方法能在第二个执行线程上异步调用当前方法。
 
-```
+```c#
 sealed class BinaryOp:System.MulticastDelegate
 {
 	public int Invoke(int x,int y);
@@ -120,6 +120,7 @@ public abstract class Delegate:ICloneable,ISerializable
 	public MethodInfo Method{get;}
 	public object Target{get;}
 }
+```
 
 要记住，我们永远不会直接派生自这些基类。然而，如果我们使用delegate关键字，就间接创建一个类，这个类是MulticastDelegate,下图列举了所有委托类型共有的核心成员
 
