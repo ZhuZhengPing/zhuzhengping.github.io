@@ -347,6 +347,132 @@ class Program
 
 <img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f5qc4fxmqnj30fy07n3z4.jpg" style="width:100%" />
 
+### 支持多路广播
+
+一个委托对象可以维护一个可调用方法的列表而不只是单独的一个方法。给一个委托对象添加多个方法时，不能直接分配，重载+=操作符即可。为使Car类支持多路广播，可以修改RegisterWithCarEngine方法
+
+```c#
+public class Car{
+	// 现在支持多路广播
+	// 注意现在我们正在使用+=操作符，而不是赋值操作符
+	public void RegisterWithCarEngine(CarEngineHandler methodToCall)
+	{
+		listOfHandlers += methodToCall;
+	}
+}
+```
+
+这样，调用者就可以为同样的回调注册多个目标对象了。这里，第二个处理程序以大写形式打印传入的消息，以供显示：
+
+```c#
+class Program
+{
+	static void Main(string[] args)
+	{
+		Console.WriteLine("******  Simple Delegate example  *****");
+
+		// 首先，创建一个Car对象
+		Car c1 = new Car("SlugBug", 100, 10);
+
+		// 现在，告诉汽车，它想要向我们发送信息时调用哪个方法
+		c1.RegisterWithCarEngine(new Car.CarEngineHandler(OnCarEngineEvent));
+		c1.RegisterWithCarEngine(new Car.CarEngineHandler(OnCarEngineEvent2));
+
+		// 加速(这将触发事件)
+		Console.WriteLine("**********  Speeding Up  *********");
+		for (int i = 0; i < 6; i++) 
+		{
+			c1.Accelerate(20);    
+		}
+
+		Console.ReadLine();
+	}
+
+	public static void OnCarEngineEvent(string msg)
+	{
+		Console.WriteLine("\n********  Message From Car Object  **********");
+		Console.WriteLine("=> {0}",msg);
+		Console.WriteLine("*********************************\n");
+	}
+
+	public static void OnCarEngineEvent2(string msg)
+	{
+		Console.WriteLine("=> {0}", msg);
+	}
+}
+```
+
+根据CIL代码可以发现，+=操作符实际上转换为一个对静态Delegate.Combine()方法调用
+
+### 从委托的调用列表中移除成员
+
+Delegate类还定义了一个静态Remove()方法，允许调用者动态地从委托对象的调用中移除方法。这样，调用者就可以在运行时简单地“退订”某个已知的通知。
+
+```c#
+public class Car{
+	public void UnRegisterWithCarEngine(CarEngineHandler methodToCall)
+	{
+		listOfHandlers -= methodToCall;
+	}
+}
+```
+
+-=语法是手工调用静态Delegate.Remove()方法的简写方式
+
+这样改完Car类之后，再按如下修改Main(),就可以让第二个引擎停止接收引擎通知
+
+```c#
+class Program
+{
+	static void Main(string[] args)
+	{
+		Console.WriteLine("******  Simple Delegate example  *****");
+
+		// 首先，创建一个Car对象
+		Car c1 = new Car("SlugBug", 100, 10);
+
+		// 现在，告诉汽车，它想要向我们发送信息时调用哪个方法
+		c1.RegisterWithCarEngine(new Car.CarEngineHandler(OnCarEngineEvent));
+
+		Car.CarEngineHandler handle2 = new Car.CarEngineHandler(OnCarEngineEvent2);
+		c1.RegisterWithCarEngine(handle2);
+
+		// 加速(这将触发事件)
+		Console.WriteLine("**********  Speeding Up  *********");
+		for (int i = 0; i < 6; i++) 
+		{
+			c1.Accelerate(20);    
+		}
+
+		c1.UnRegisterWithCarEngine(handle2);
+		for (int i = 0; i < 6; i++)
+		{
+			c1.Accelerate(20);
+		}
+
+		Console.ReadLine();
+	}
+
+	public static void OnCarEngineEvent(string msg)
+	{
+		Console.WriteLine("\n********  Message From Car Object  **********");
+		Console.WriteLine("=> {0}",msg);
+		Console.WriteLine("*********************************\n");
+	}
+
+	public static void OnCarEngineEvent2(string msg)
+	{
+		Console.WriteLine("=> {0}", msg);
+	}
+}
+```
+
+
+
+
+
+
+
 
 
 
