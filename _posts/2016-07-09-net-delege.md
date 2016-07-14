@@ -35,7 +35,7 @@ public delegate int BinaryOp(int x,int y);
 
 如果我们通过ildasm.exe来查看`BinaryOp`委托，我们可以发现上述委托产生了3个方法。`Invoke()`方法是核心方法，它被用来以同步的方式调用委托对象维护每个方法。
 
-<img src="http://ww1.sinaimg.cn/mw690/006dag38gw1f5pukr2zd5j30lo07e755.jpg" style="width:60%" />
+<img src="http://ww1.sinaimg.cn/mw690/006dag38gw1f5pukr2zd5j30lo07e755.jpg" style="width:100%" />
 
 `BeginInvoke()`和`EndInvoke`方法能在第二个执行线程上异步调用当前方法。
 
@@ -345,7 +345,7 @@ class Program
 }
 ```
 
-<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f5qc4fxmqnj30fy07n3z4.jpg" style="width:100%" />
+<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f5qc4fxmqnj30fy07n3z4.jpg" style="width:60%" />
 
 ### 支持多路广播
 
