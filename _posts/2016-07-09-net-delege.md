@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "委托、事件和Lambda"
+title:  "委托"
 date:   2016-07-05 16:32:18 +0800
 categories: jquery
 tags: 委托 事件 lambda
@@ -466,6 +466,157 @@ class Program
 	}
 }
 ```
+
+### 方法组转换语法
+
+为了简化上述的操作，C#提供了一种叫做方法组转换的简便方法。该特性允许我们在调用以委托作为参数的方法时直接提供方法的名字，而不是创建委托对象。
+
+```c#
+class Program
+{
+	static void Main(string[] args)
+	{
+		Console.WriteLine("******  Simple Delegate example  *****");
+
+		// 首先，创建一个Car对象
+		Car c1 = new Car("SlugBug", 100, 10);
+
+		// 现在，告诉汽车，它想要向我们发送信息时调用哪个方法
+		c1.RegisterWithCarEngine(CallMe);
+
+		// 加速(这将触发事件)
+		Console.WriteLine("**********  Speeding Up  *********");
+		for (int i = 0; i < 6; i++) 
+		{
+			c1.Accelerate(20);    
+		}
+
+		c1.UnRegisterWithCarEngine(CallMe);
+		for (int i = 0; i < 6; i++)
+		{
+			c1.Accelerate(20);
+		}
+
+		Console.ReadLine();
+	}
+
+	public static void CallMe(string msg)
+	{
+		Console.WriteLine("\n********  Message From Car Object  **********");
+		Console.WriteLine("=> {0}",msg);
+		Console.WriteLine("*********************************\n");
+	}
+}
+```
+
+注意，我们没有直接分配相关的委托对象，而是简单地指定了与委托期望的签名相匹配的方法。
+
+### 委托斜变
+
+我们之前创建的每个委托都返回简单的数字类型或者没有返回值，下面我们创建返回自定义类型的方法。
+
+```c#
+// 定义一个指向Car对象的方法委托
+public delegate Car ObtainCarDelegate();
+
+class Program
+{
+	static void Main(string[] args)
+	{
+		Console.WriteLine("******  Simple Delegate example  *****");
+
+		ObtainCarDelegate targetA = new ObtainCarDelegate(GetBaseCar);
+		Car c = targetA();
+		Console.WriteLine("Obtained a {0}", c);
+		Console.ReadLine();
+	}
+
+	public static Car GetBaseCar()
+	{
+		return new Car("Zippy", 100, 55);
+	}
+}
+```
+
+如果我们还有一个SportCar对象的方法，协变允许我们构建一个委托，能指向返回类及相关继承体系的方法。
+
+```c#
+public class SportCar : Car
+{
+}
+
+// 定义一个指向Car对象的方法委托
+public delegate Car ObtainCarDelegate();
+
+class Program
+{
+	static void Main(string[] args)
+	{
+		Console.WriteLine("******  Simple Delegate example  *****");
+
+		ObtainCarDelegate targetA = new ObtainCarDelegate(GetBaseCar);
+		Car A = targetA();
+		Console.WriteLine("Obtained a {0}", A);
+
+		ObtainCarDelegate targetB = new ObtainCarDelegate(GetSportCar);
+		SportCar B = targetB() as SportCar;
+		Console.WriteLine("Obtained a {0}", B);
+		Console.ReadLine();
+	}
+
+	public static Car GetBaseCar()
+	{
+		return new Car();
+	}
+
+	public static SportCar GetSportCar()
+	{
+		return new SportCar();
+	}
+}
+```
+
+### 泛型委托
+
+假如我们希望定义一个委托类型来调用任何返回void并且接受单个参数的方法。如果这个参数可能会不同，我们就可以通过泛型参数来构建
+
+```c#
+public delegate void MyGenericDelegate<T>(T arg);
+
+class Program
+{
+	static void Main(string[] args)
+	{
+		Console.WriteLine("******  Simple Delegate example  *****");
+
+		// 注册目标
+		MyGenericDelegate<string> strTarget = new MyGenericDelegate<string>(StringTarget);
+		strTarget("some xxxxxxx");
+
+
+		MyGenericDelegate<int> intTarget = new MyGenericDelegate<int>(IntTarget);
+		intTarget(8);
+
+		Console.ReadLine();
+	}
+
+	static void StringTarget(string arg)
+	{
+		Console.WriteLine("arg in uppercase is :{0}",arg.ToUpper());
+	}
+
+	static void IntTarget(int arg)
+	{
+		Console.WriteLine("++arg is :{0}",arg);
+	}
+}
+```
+
+我们也可以把委托的参数改成 object 类型，这样不需要使用泛型也能模拟泛型操作，只是需要经过装箱拆箱的操作。
+
+
+
+
 
 
 
