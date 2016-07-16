@@ -1,9 +1,9 @@
 ---
 layout: post
 title:  "委托"
-date:   2016-07-05 16:32:18 +0800
+date:   2016-07-09 16:32:18 +0800
 categories: jquery
-tags: 委托 事件 lambda
+tags: 委托
 author: Zhengping Zhu
 ---
 
@@ -614,15 +614,388 @@ class Program
 
 我们也可以把委托的参数改成 object 类型，这样不需要使用泛型也能模拟泛型操作，只是需要经过装箱拆箱的操作。
 
+### event 关键字(事件)
 
+为了简化自定义方法的构建来为委托调用列表增加和删除方法，C#提供了event关键字。在编译器处理event关键字的时候，它会自动提供注册和注销方法以及委托类型任何必要的成员变量。
 
+为了演示event关键字，我们在Car类中定义两个事件 AboutBlow和Exploded这两个事件。
 
+```c#
+public class Car
+{
+	// 1)定义委托类型,用来与Car的事件协作
+	public delegate void CarEngineHandler(string msg);
 
+	// 这种汽车可以发送这些事件
+	public event CarEngineHandler Exploded;
+	public event CarEngineHandler AboutToBlow;
+	...
+}
+```
 
+向调用者发送一个事件，就如通过名称和相关联委托定义的必须参数来指定事件这么简单。为确保调用者注册事件，需要在调用委托的方法之前检查这个事件是否是无效的。
 
+```c#
+public void Accelerate(int delta)
+{
+	// 如果汽车不能用了，触发引爆事件
+	if (carIsDead)
+	{
+		if (Exploded != null)
+		{
+			Exploded("Sorry, this car is dead...");
+		}
+	}
+	else
+	{
+		CurrentSpeed += delta;
 
+		// 快不能用了吗
+		if (10 == (MaxSpeed - CurrentSpeed) && AboutToBlow != null)
+		{
+			AboutToBlow("Careful buddly ! Gonna blow!");
+		}
 
+		// 还好着呢
+		if (CurrentSpeed >= MaxSpeed)
+			carIsDead = true;
+		else
+			Console.WriteLine("CurrentSpeed = {0}", CurrentSpeed);
+	}
+}
+```
 
+### 解开事件的神秘面纱
+
+C#事件事实上会扩展为两个隐藏的公共方法，一个带add_前缀，另一个带_remove前缀。下面是部分CIL代码
+
+```c#
+.method public hidebysig specialname instance void 
+add_AboutToBlow(class CarEvents.Car/CarEngineHandler 'value')cil managed
+{
+	...
+	call calss [mscorlib]System.Delegate
+	[mscorlib]System.Delegate::Combine(class [mscorlib]System.Delegate, class [mscorlib] System.Delegate)
+	...
+}
+```
+
+可以想到，remove_AboutToBlow方法将间接调用Delegate.Remove()方法
+
+### 监听传入的事件
+
+C#事件也简化了注册调用者事件处理程序的操作。现在无需指定自定义辅助方法，调用者仅需使用+=和-=操作符即可(操作符将在后台触发正确的 add_XXX()或remove_XXX方法)。
+
+我们下面重新修改main方法
+
+```c#
+class Program
+{
+	static void Main(string[] args)
+	{
+		Console.WriteLine("******  Simple event example  *****");
+
+		Car car = new Car("zzp", 100, 20);
+
+		// 注册事件处理程序
+		car.AboutToBlow += new Car.CarEngineHandler(CarIsAlmostDoomed);
+		car.AboutToBlow += new Car.CarEngineHandler(CarAboutToBlow);
+
+		Car.CarEngineHandler d = new Car.CarEngineHandler(CarExploded);
+
+		for (var i = 0; i < 16; i++)
+		{
+			car.Accelerate(20);
+		}
+
+		// 从调用列表中移除CarExploded方法
+		car.Exploded -= d;
+
+		Console.WriteLine("\n************  Speeding up  *************");
+
+		for (int i = 0; i < 6; i++)
+		{
+			car.Accelerate(20);
+		}
+
+		Console.ReadLine();
+	}
+
+	public static void CarAboutToBlow(string msg)
+	{
+		Console.WriteLine(msg);
+	}
+
+	public static void CarIsAlmostDoomed(string msg)
+	{
+		Console.WriteLine("=> Critical message from car:{0}",msg);
+	}
+
+	public static void CarExploded(string msg)
+	{
+		Console.WriteLine(msg);
+	}
+}
+```
+
+为了进一步简化事件注册，可以使用方法组转换。
+
+```c#
+class Program
+{
+	static void Main(string[] args)
+	{
+		Console.WriteLine("******  Simple event example  *****");
+
+		Car car = new Car("zzp", 100, 10);
+
+		// 注册事件处理程序
+		car.AboutToBlow += CarIsAlmostDoomed;
+		car.AboutToBlow += CarAboutToBlow;
+		car.Exploded += CarExploded;
+		for (var i = 0; i < 6; i++)
+		{
+			car.Accelerate(20);
+		}
+
+		// 从调用列表中移除CarExploded方法
+		car.Exploded -= CarExploded;
+
+		Console.WriteLine("\n************  Speeding up  *************");
+
+		for (int i = 0; i < 6; i++)
+		{
+			car.Accelerate(20);
+		}
+
+		Console.ReadLine();
+	}
+
+	public static void CarAboutToBlow(string msg)
+	{
+		Console.WriteLine(msg);
+	}
+
+	public static void CarIsAlmostDoomed(string msg)
+	{
+		Console.WriteLine("=> Critical message from car:{0}",msg);
+	}
+
+	public static void CarExploded(string msg)
+	{
+		Console.WriteLine(msg);
+	}
+}
+```
+
+### 创建自定义的事件参数
+
+我们可以对Car类做最后一步改进，以符合微软推荐的事件模式。查看基础类库中某个类型发送的事件时，会发现底层委托的第一个参数是一个System.Object,第二个参数是一个派生自System.EventyArgs的子类型。
+
+System.Object参数表示一个对发送事件的对象(例如Car对象)的引用，第二个参数则表示与该事件相关的信息。System.EventArgs基类表示一个不发送任何自定义信息的事件:
+
+```c#
+public class EventArgs
+{
+	public static readonly System.EventArgs Empty;
+	public EventArgs();
+}
+
+对于简单的事件来说，我们可以直接传递一个EventArgs的实例。但如果要传递自定义数据，应该构建一个派生自EventArgs的类。
+
+```c#
+public class CarEventArgs : EventArgs
+{
+	public readonly string msg;
+	public CarEventArgs(string message)
+	{
+		msg = message;
+	}
+}
+```
+
+这样，我们就可以修改CarEventHandler委托了
+
+```c#
+public class Car
+{
+	// 1)定义委托类型,用来与Car的事件协作
+	public delegate void CarEngineHandler(object sender,CarEventArgs e);
+	...
+}
+```
+
+当在Accelerate()方法中触发我们的事件时，需要提供对当前Car对象的一个引用
+
+```c#
+public void Accelerate(int delta)
+{
+	// 如果汽车不能用了，触发引爆事件
+	if (carIsDead)
+	{
+		if (Exploded != null)
+		{
+			Exploded(this,new CarEventArgs("Sorry, this car is dead..."));
+		}
+	}
+...
+}
+```
+
+在调用者，我们要做的就是修改事件处理程序来接收传入参数，并通过只读字段来获取消息
+
+```c#
+public static void CarAboutToBlow(object sender,CarEventArgs e)
+{
+	if(sender is Car)
+	{
+		Car c = sender as Car;
+	   Console.WriteLine("{0} says: {1}",c.PetName,e.msg);
+	}
+}
+```
+
+### 泛型 EventHandler<T> 委托
+
+由于很多自定义委托接收object作为第一个参数,EventArgs派生类型作为第二个参数，我们可以通过使用EventHandler<T>类型来进一步简化之前的示例，T就是自定义的EventArgs类型。考虑如下对Car类型的更新
+
+```c#
+public class Car
+{
+	// 这种汽车可以发送这些事件
+	public event EventHandler<CarEventArgs> Exploded;
+	public event EventHandler<CarEventArgs> AboutToBlow;
+	...
+}
+	
+Main()方法现在就可以在之前定义 CarEngineHandler 的任何地方使用 EventHandler<CarEventArgs>(这次又使用了方法组)
+
+```c#
+class Program
+{
+	static void Main(string[] args)
+	{
+		Console.WriteLine("******  Simple event example  *****");
+
+		Car car = new Car("zzp", 100, 10);
+
+		// 注册事件处理程序
+		car.AboutToBlow += CarIsAlmostDoomed;
+		car.AboutToBlow += CarAboutToBlow;
+		EventHandler<CarEventArgs> d = new EventHandler<CarEventArgs>(CarExploded);
+		car.Exploded += d;
+		//car.Exploded += CarExploded;
+		for (var i = 0; i < 6; i++)
+		{
+			car.Accelerate(20);
+		}
+
+		Console.ReadLine();
+	}
+
+	public static void CarAboutToBlow(object sender,CarEventArgs e)
+	{
+		if(sender is Car)
+		{
+			Car c = sender as Car;
+		   Console.WriteLine("{0} says: {1}",c.PetName,e.msg);
+		}
+	}
+
+	public static void CarIsAlmostDoomed(object sender, CarEventArgs e)
+	{
+		if (sender is Car)
+		{
+			Car c = sender as Car;
+			Console.WriteLine("{0} says: {1}", c.PetName, e.msg);
+		}
+	}
+
+	public static void CarExploded(object sender, CarEventArgs e)
+	{if(sender is Car)
+		{
+			Car c = sender as Car;
+		   Console.WriteLine("{0} says: {1}",c.PetName,e.msg);
+		}
+	}
+}
+```
+
+### C#匿名方法
+
+可以看到，当一个调用者想监听传进来的事件时，它必须定义一个唯一的与之相关联委托签名匹配的方法
+
+```c#
+class Program
+{
+	static void Main(string[] args)
+	{
+		SomeType t = new SomeType();
+
+		// 假定"SomeDelegate"指向不带参数且无返回值的方法
+		t.SomeEvent += new SomeDelegate(MyEventHandler);
+	}
+
+	public static void MyEventHandler() 
+	{
+		// 事件触发时执行某些操作
+	}
+}
+```
+
+MyEventHandler()这样的方法很少被委托之外的任何程序所调用。从生产效率的角度来说，手工定义一个由委托对象调用的方法显得有点繁琐
+
+```c#
+class Program
+{
+	static void Main(string[] args)
+	{
+		Console.WriteLine("******  Simple event example  *****");
+
+		Car c1 = new Car("zzp", 100, 10);
+
+		c1.AboutToBlow += delegate {
+			Console.WriteLine("Eek! good to fast!");
+		};
+
+		c1.AboutToBlow += delegate(object sender, CarEventArgs e)
+		{
+			Console.WriteLine("Message from car: {0}",e.msg);
+		};
+
+		c1.Exploded += delegate(object sender, CarEventArgs e)
+		{
+			Console.WriteLine("Fatal message from car {0}",e.msg);
+		};
+
+		for (var i = 0; i < 6; i++)
+		{
+			c1.Accelerate(20);
+		}
+
+		Console.ReadLine();
+	}
+}
+```
+
+严格来讲，我们不需要接受由指定事件发送的传入参数。但如果想使用可能传入的参数，需要通过委托类型指定参数原型
+
+```c#
+c1.AboutToBlow += delegate(object sender, CarEventArgs e)
+{
+	Console.WriteLine("Message from car: {0}",e.msg);
+};
+```
+
+### 访问本地变量
+
+匿名方法能使我们访问它定义的方法的本地变量。这些变量称为匿名方法的外部变量。
+
+>* 匿名方法不能访问定义方法中的ref或out参数
+>* 匿名方法中的本地变量不能与外部方法中的本地变量重名
+>* 匿名方法可以访问外部类作用域中的实例变量(或静态变量)
+
+匿名方法内的本地变量可以与外部类的成员变量同名(本地变量的作用域不同，可以隐藏外部类的成员变量)
 
 
 
