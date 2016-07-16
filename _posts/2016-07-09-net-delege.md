@@ -868,6 +868,7 @@ public class Car
 	public event EventHandler<CarEventArgs> AboutToBlow;
 	...
 }
+```
 	
 Main()方法现在就可以在之前定义 CarEngineHandler 的任何地方使用 EventHandler<CarEventArgs>(这次又使用了方法组)
 
