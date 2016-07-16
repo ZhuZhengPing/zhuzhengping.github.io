@@ -2,7 +2,7 @@
 layout: post
 title:  "Lambda表达式"
 date:   2016-07-16 16:32:18 +0800
-categories: jquery
+categories: .net
 tags: lambda
 author: Zhengping Zhu
 ---
