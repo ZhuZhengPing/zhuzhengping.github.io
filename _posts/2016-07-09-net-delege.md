@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "委托"
+title:  "委托和事件"
 date:   2016-07-09 16:32:18 +0800
 categories: jquery
 tags: 委托
