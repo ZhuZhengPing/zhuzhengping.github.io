@@ -800,6 +800,7 @@ public class EventArgs
 	public static readonly System.EventArgs Empty;
 	public EventArgs();
 }
+```
 
 对于简单的事件来说，我们可以直接传递一个EventArgs的实例。但如果要传递自定义数据，应该构建一个派生自EventArgs的类。
 
