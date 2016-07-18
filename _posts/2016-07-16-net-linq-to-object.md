@@ -247,6 +247,43 @@ static void DisplayConcat()
 
 打印  Yugo Aztec BWM BWM ZZP Aztec 
 
+### 移除重复
+
+在调用 Concat扩展方法时，最终得到的很可能是冗余的结果。我们可以除重复
+
+```c#
+static void ReverseEverything(ProductInfo[] products){
+	var allProducts = from p in products select p;
+	foreach(var prod in allProducts.Distince()){
+		Console.WriteLine(prod.ToString());
+	}
+}
+```
+
+### LINQ查询语句的内部表示
+
+至此，你对使用各种C#查询操作符有了初步的认识。在使用C# Where LINQ查询操作符时，你将调用 Enumerable的Where方法
+
+```c#
+// Enumerable.Where<T>()方法的重载版本
+// 注意第二个参数的类型为System.Func<>
+public static IEnumerable<TSource> Where<TSource>(
+    this IEnumerable<TSource> source,
+    Func<TSource, bool> predicate
+)
+public static IEnumerable<TSource> Where<TSource>(
+    this IEnumerable<TSource> source,
+    Func<TSource, int, bool> predicate
+)
+```
+
+这个Func<>委托代表了一个接受一串参数和一个返回值的给定函数的模式。
+
+鉴于System.Linq.Enumerable的许多成员都需要一个委托作为输入，在调用他们时，我们可以手工创建一个新委托类型，或者使用匿名方法，或者Lambda表达式，得到的结果都是一样的
+
+
+
+
 
 
 
