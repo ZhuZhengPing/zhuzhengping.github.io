@@ -281,9 +281,82 @@ public static IEnumerable<TSource> Where<TSource>(
 
 鉴于System.Linq.Enumerable的许多成员都需要一个委托作为输入，在调用他们时，我们可以手工创建一个新委托类型，或者使用匿名方法，或者Lambda表达式，得到的结果都是一样的
 
+### 使用Enumerable类型和匿名方法来建立查询表达式
 
+```c#
+static void QueryStringWithAnonymousMethods()
+{
+	string[] currentString = new string[] { "联系","ipad 3.0","ipad mini" };
 
+	// 使用匿名方法来查询
+	Func<string, bool> searchFilter = delegate (string p){
+		return p.Contains(" ");
+	};
+	Func<string, string> itemToProcess = delegate(string s){
+		return s;
+	};
 
+	var result = currentString.Where(searchFilter).OrderBy(itemToProcess).Select(itemToProcess);
+	foreach (var item in result)
+	{
+		Console.WriteLine(item);
+	}
+}
+```
+
+### 用Enumerable类型和原始委托建立查询表达式
+
+```c#
+static void QueryStringWithRawDelegates()
+{
+	string[] currentString = new string[] { "联系", "ipad 3.0", "ipad mini" };
+
+	// 使用匿名方法来查询
+	Func<string, bool> searchFilter = new Func<string, bool>(Filter);
+	Func<string, string> itemToProcess = new Func<string, string>(ItemProcess);
+
+	var result = currentString.Where(searchFilter).OrderBy(itemToProcess).Select(itemToProcess);
+	foreach (var item in result)
+	{
+		Console.WriteLine(item);
+	}
+}
+
+public static bool  Filter(string s)
+{
+	return s.Contains(" ");
+}
+
+public static string ItemProcess(string s)
+{
+	return s;
+}
+```
+
+这里可以使用方法组，在lambda表达式里面直接传入一个方法
+
+```c#
+static void QueryStringWithRawDelegates()
+{
+	string[] currentString = new string[] { "联系", "ipad 3.0", "ipad mini" };
+
+	var result = currentString.Where(Filter).OrderBy(ItemProcess).Select(ItemProcess);
+	foreach (var item in result)
+	{
+		Console.WriteLine(item);
+	}
+}
+
+public static bool  Filter(string s)
+{
+	return s.Contains(" ");
+}
+
+public static string ItemProcess(string s)
+{
+	return s;
+}
+```
 
 
 
