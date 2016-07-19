@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "反射"
-date:   2016-07-16 16:32:18 +0800
+date:   2016-07-19 16:32:18 +0800
 categories: .net
 tags: 反射
 author: Zhengping Zhu
@@ -166,7 +166,9 @@ static void Main(string[] args)
 System.Collections.Generic.List`1
 ```
 
+### 反射方法和返回值
 
+到目前为止，一切顺利！我们需要特别修改ListMethods()辅助方法，
 
 
 
