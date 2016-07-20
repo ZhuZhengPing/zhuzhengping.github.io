@@ -168,10 +168,171 @@ System.Collections.Generic.List`1
 
 ### 反射方法和返回值
 
-到目前为止，一切顺利！我们需要特别修改ListMethods()辅助方法，
+到目前为止，一切顺利！我们需要特别修改ListMethods()辅助方法，使其不仅给出方法的名称，而且还列出方法的返回类型和输入参数类型。
 
+```c#
+static void ListMethods(Type t)
+{
+	Console.WriteLine("***************   Methods   ***************");
+	MethodInfo[] mi = t.GetMethods();
+	foreach (MethodInfo m in mi)
+	{
+		string retValue = m.ReturnType.FullName;
+		string paramInfo = "(";
+		// 得到参数
+		foreach (ParameterInfo pi in m.GetParameters())
+		{
+			paramInfo += string.Format("{0} {1}", pi.ParameterType, pi.Name);
+		}
+		paramInfo += ")";
+		Console.WriteLine("->{0} {1} {2}",retValue,m.Name,paramInfo);
+	}
+}
+```
 
+运行后，将显示如下的方法
 
+```
+->System.String ToString()
+->System.Boolean Equals(System.Object obj)
+->System.Boolean Equals(System.Object objA System.Object objB)
+->System.Boolean ReferenceEquals(System.Object objA System.Object objB)
+->System.Int32 GetHashCode()
+->System.Type GetType()
+```
+
+### 动态加载程序集
+
+System.Reflection定义了一个名为Assembly的类。使用这个类，我们可以动态的加载程序集，并找到关于程序集自身的属性。而且使用Assembly,我们可以动态加载私有程序集或共享程序集，还能加载任意位置的程序集。从本质上说，Assembly类提供的方法使你可以用编程的方式提供和客户端*.config文件同样的信息
+
+```c#
+static void Main(string[] args)
+{
+	string asmName = "";
+	Assembly asm = null;
+
+	do
+	{
+		Console.WriteLine("\nEnter an assembly to evaluate");
+		Console.Write("or enter Q to quit: ");
+
+		// 得到程序集名称
+		asmName = Console.ReadLine();
+
+		// 用户是否想退出
+		if (asmName.ToUpper() == "Q")
+		{
+			break;
+		}
+
+		// 尝试加载程序集
+		try
+		{
+			asm = Assembly.Load(asmName);
+			DisplayTypesInAsm(asm);
+		}
+		catch (Exception)
+		{
+			Console.WriteLine("Sorry, can't find assembly.");
+		}
+	} while (true);
+
+	Console.ReadKey();
+}
+
+static void DisplayTypesInAsm(Assembly asm)
+{
+	Console.WriteLine("->{0}",asm.FullName);
+	Type[] types = asm.GetTypes();
+	foreach (Type t in types)
+	{
+		Console.WriteLine("Type: {0}",t);
+	}
+	Console.WriteLine("");
+}
+```
+
+注意，静态Assembly.Load()方法仅仅传入了一个要加载到内存的程序集的友好名称。因此，如果希望反射CarLibrary.dll，需要把CarLibrary.dll二进制文件复制到当前项目应用程序的\bin\Debug目录，然后再来运行这个程序。
+
+```
+Enter an assembly to evaluate or enter Q to quit: CarLibrary
+->CarLibrary,Version=2.0.0.0,Culture=neutral,PublicKeyToken=33a2bc294331e8b9
+Type: CarLibrary.MusicMedia
+Type: CarLibrary.EngineState
+Type: CarLibrary.Car
+Type: CarLibrary.SportsCar
+Type: CarLibrary.MiniVan
+```
+
+如果希望使反射用得更加灵活，可以用Assembly.LoadFrom()而不是Assembly.Load()方法加载外部程序集,这里需要使用绝对路径，例如：F:\c#\CTest\CTest\bin\Debug\C5.dll
+
+```c#
+try{
+	asm = Assembly.LoadFrom(asmName);
+	DisplayTypesInAsm(asm);
+}
+```
+
+### 反射共享程序集
+
+Assembly.Load()方法被重载很多次了。Assembly.Load()的一种变化是允许指定一个区域设置、一个版本号和公钥标记值。整体来说，识别一个程序集的一组术语称为显示名称(display name)。显示名称的格式以程序集友好名称开头，其后加上以逗号分隔的名称/值对字符串，后接可选的标识符
+
+```
+Name(,Version = major.minor.build.revision) (,Culture = culture token) (,PublicKeyToken = public key token)
+```
+
+在显示名称中，PublicKeyToken=null 通常表示需要绑定和匹配一个非强名称的程序集。而Culture=""表示匹配目标机器默认的区域设置
+
+```c#
+// 使用默认的区域设置加载CarLibrary的1.0.0.0版本
+Assembly a = Assembly.Load(@"CarLibrary, Version=1.0.0.0, PublicKeyToken=null,Culture=""");
+```
+
+另外，System.Reflection 命名空间提供了 AssemblyName类型，它允许用手工编写的对象变量来表示前面的字符串信息。通常，该类和System.Version结合使用。以这种方式建立了显示名称后，就可以把它传入到重载的Assembly.Load()方法
+
+```c#
+// 使用AssemblyName定义显示名称
+AsseemblyName asmName;
+asmName = new AssemblyName();
+asmName.Name = "CarLibrary";
+Version v = new Version("1.0.0.0");
+asmName.Version = v;
+Assembly a = Assembly.Load(asmName);
+```
+
+要加载一个GAC中的共享程序集，Assembly.Load()参数必须指定publikeytoken公钥标记值。举例来说，假定希望加载由.NET基础库提供的System.Window.Forms.dll程序集的4.0.0.0版本。由于此程序集中类型的数量非常大，所以下面的应用程序仅仅输出公有枚举的名称
+
+```c#
+static void Main(string[] args)
+{
+
+	// 从GAC中加载System.Windows.Forms.dll
+	string displayName = null;
+	displayName = "System.Windows.Forms," + "Version=4.0.0.0," + "PublicKeyToken=b77a5c561934e089," + @"Culture=""";
+
+	Assembly asm = Assembly.Load(displayName);
+	DisplayInfo(asm);
+	Console.WriteLine("Done!");
+	Console.ReadKey();
+}
+
+private static void DisplayInfo(Assembly a)
+{
+	Console.WriteLine("Loaded from GAC? {0}",a.GlobalAssemblyCache);
+	Console.WriteLine("Asm Name: {0}",a.GetName().Name);
+	Console.WriteLine("Asm Version: {0}",a.GetName().Version);
+	Console.WriteLine("Asm Culture: {0}",a.GetName().CultureInfo.DisplayName);
+	Console.WriteLine("\nHere are the public enums:");
+
+	// 用LINQ查询找到公有枚举
+	Type[] types = a.GetTypes();
+	var publicEnums = from pe in types where pe.IsEnum && pe.IsPublic select pe;
+	foreach (var pe in publicEnums)
+	{
+		Console.WriteLine(pe);
+	}
+}
+```
 
 
 
