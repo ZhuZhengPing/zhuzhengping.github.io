@@ -334,6 +334,144 @@ private static void DisplayInfo(Assembly a)
 }
 ```
 
+### System.Activator类
+
+简单地说，晚期绑定是一种创建一个给定类型实例并在运行时调用其成员，而不需要在编译时知道它存在的一种技术。
+
+咋一看，晚期绑定的作用似乎不那么明显。如果可以“早期绑定”一个类型（比如，设置一个程序集引用并使用C# new 关键字分配类型）的话，我们当然选择早期绑定。因为早期绑定能在编译时判断错误，而晚期绑定是运行时错误。但是晚期绑定对于程序的可扩展性至关重要。
+
+System.Activator类是晚期绑定过程中的关键所在。对于我们当前的例子，只需要关注Activator.CreateInstance()方法，它用来建立一个晚期绑定类型的实例。
+
+```c#
+static void Main(string[] args)
+{
+
+	Assembly a = null;
+
+	try
+	{
+		a = Assembly.Load("CarLibrary");
+	}
+	catch (Exception e)
+	{
+		Console.WriteLine(e.Message);
+		return;
+	}
+	if (a != null)
+	{
+		CreateUsingLateBinding(a);
+	}
+	
+	Console.ReadKey();
+}
+
+private static void CreateUsingLateBinding(Assembly a)
+{
+	try
+	{
+		// 得到Minivan类型的元数据
+		Type miniVan = a.GetType("CarLibrary.MiniVan");
+
+		// 在运行时建立Minivan
+		object obj = Activator.CreateInstance(miniVan);
+		Console.WriteLine("Create a {0} using late binding!", obj);
+	}
+	catch (Exception ex)
+	{
+		Console.WriteLine(ex.Message);
+	}
+}
+```
+
+在运行该应用前，需要使用Windows EXplorer将CarLibrary.dll手工复制到bin\Debug文件夹中。这是因为我们使用的是Assembly.Load()，因此CLR将只探测客户端文件夹(如果你愿意，你可以使用Assembly.LoadFrom()向程序集输入一个路径，尽管这没必要)
+
+注意，Activator.CreateInstance()方法返回一个基本的System.Object类型，而不是一个强类型的MiniVan。因此，如果要在obj变量上用点(.)操作，将不会看到任何MiniVan类的成员。咋一看，我们可以用显示强制类型转换解决这个问题：
+
+```c#
+// 是否需要通过强制转换来访问MiniVan的成员
+// 不！编译器错误
+object obj = (MiniVan)Activator.CreateInstance(miniVan);
+```
+
+因为程序没有应用CarLibrary.dll
+
+### 调用没有参数的方法
+
+假定希望调用MiniVan中的TurboBoost()方法。回想一下，这个方法设置引擎状态为"dead"并显示一个消息框。第一步是使用 Type.GetMethod()方法为TurbuBoost()方法得到一个MethodInfo对象。接着，可以使用MethodInfo类型的Invoke()方法来调用MiniVan.Turboboost。MethodInfo.Invoke()需要把所有的参数送到MethodInfo代表的方法中。这些参数用一组System.Object类型表示(作为方法的参数，可以是任意数量的不同对象实体)。
+
+```c#
+static void CreateUsingLateBinding()
+{
+	Assembly asm = Assembly.Load("CarLibrary");
+
+	// 得到 MiniVan类型的元数据
+	Type type = asm.GetType("CarLibrary.MiniVan");
+
+	// 在运行中建立 MiniVan
+	object obj = Activator.CreateInstance(type);
+	Console.WriteLine("Create a {0} using late binding!",obj);
+	// 得到 TurboBoost的信息
+	MethodInfo mi = type.GetMethod("TurboBoost");
+
+	// 调用方法('null'意味着没有参数)
+	var result =  mi.Invoke(obj, null);
+
+	Console.WriteLine(result);
+}
+```
+
+### 调用有参数的方法
+
+在使用晚期绑定调用需要参数的方法时，要讲参数打包到一个object类型的数组中。CarLibrary.dll版在Car类中定义了以下方法
+
+```c#
+public void TurnOnRadio(bool musicOn, MusicMedia mm)
+{
+	if (musicOn)
+	{
+		MessageBox.Show(string.Format("Jamming {0}", mm));
+	}
+	else
+	{
+		MessageBox.Show("Quiet time...");
+	}
+}
+
+public enum MusicMedia
+{
+	musicCd,
+	musicTape,
+	musicRadio,
+	musicMp3
+}
+```
+
+以下是Program类的新方法，它调用TurnOnRadio()。
+
+```c#
+static void InvokeMethodWithArgsUsingLateBinding()
+{
+	Assembly asm = Assembly.Load("CarLibrary");
+
+	// 得到 MiniVan类型的元数据
+	Type type = asm.GetType("CarLibrary.MiniVan");
+
+	// 在运行中建立 MiniVan
+	object obj = Activator.CreateInstance(type);
+	MethodInfo mi = type.GetMethod("TurnOnRadio");
+	mi.Invoke(obj, new object[] { true, 2 });
+}
+```
+
+<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f61ver33n2j30bq05t74t.jpg" style="width:100%" />
+
+
+
+
+
+
+
+
 
 
 
