@@ -463,7 +463,7 @@ static void InvokeMethodWithArgsUsingLateBinding()
 }
 ```
 
-<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f61ver33n2j30bq05t74t.jpg" style="width:100%" />
+<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f61ver33n2j30bq05t74t.jpg" style="width:60%" />
 
 
 
