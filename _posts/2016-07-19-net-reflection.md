@@ -3,7 +3,7 @@ layout: post
 title:  "反射"
 date:   2016-07-19 16:32:18 +0800
 categories: .net
-tags: 反射
+tags: 反射 .net 特性
 author: Zhengping Zhu
 ---
 
@@ -464,14 +464,6 @@ static void InvokeMethodWithArgsUsingLateBinding()
 ```
 
 <img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f61ver33n2j30bq05t74t.jpg" style="width:60%" />
-
-
-
-
-
-
-
-
 
 
 
