@@ -129,6 +129,166 @@ static void GetSpecificProcess()
 }
 ```
 
+### 进程的线程集合
+
+这组线程通过ProcessThreadCollection强类型集合来表示，包含了许多单个的ProcessThread对象。
+
+```c#
+static void EnumThreadsForPid(int pID)
+{
+	Process theProc = null;
+
+	try
+	{
+		theProc = Process.GetProcessById(pID);
+	}
+	catch (ArgumentException ex)
+	{
+		Console.WriteLine(ex.Message);
+		return;
+	}
+
+	// 列出指定进程中每个线程的统计数字
+	Console.WriteLine("Here are the threads used by: {0}", theProc.ProcessName);
+
+	ProcessThreadCollection theThreads = theProc.Threads;
+
+	foreach (ProcessThread pt in theThreads)
+	{
+		string info = string.Format("-> Thread ID: {0}\tStart Time: {1}\tPriority: {2}", pt.Id, pt.StartTime.ToShortDateString(), pt.PriorityLevel);
+		Console.WriteLine(info);
+	}
+}
+```
+
+运行程序，输入机器中任意进程的PID，就可以查看其线程了。
+
+```
+PID:108
+Here are the threads used by: iexplore
+-> Thread ID: 680		Start Time: 9:05 AM		Priority: Normal
+-> Thread ID: 2040		Start Time: 9:05 AM		Priority: Normal
+-> Thread ID: 880		Start Time: 9:05 AM		Priority: Normal
+-> Thread ID: 3380		Start Time: 9:05 AM		Priority: Normal
+...
+```
+
+除了 Id,StartTime 和 PriorityLevel外，ProcessThread类型还有一些有趣的成员。
+
+成员				|作用
+CurrentPriority		|获取线程的当前优先级
+Id					|获取线程的唯一标识符
+IdealProcessor		|设置线程运行的首选处理器
+PriorityLevel		|获取或设置线程的优先级别
+ProcessorAffinity	|设置关联线程可以运行的处理器
+StartAddress		|获取操作系统启动线程要调用的函数的内存地址
+StartTime			|获取操作系统启动线程的时间
+ThreadState			|获取线程的当前状态
+TotalProcessorTime	|获取线程使用处理器的时间总量
+WaitReason			|获取线程等待的原因
+
+请记住在.NET平台下，ProcessThread类型并不用于创建、挂起或停止线程，ProcessThread是一种用来获取运行进程中活动Windows线程诊断信息的手段。
+
+### 进程中的模块集合
+
+接下来，看看如何对承载在进程中的加载模块的数量进行迭代。当通过Process.Modules属性访问ProcessModuleCollection时，可以列举出承载在进程中的所有模块
+
+```c#
+static void EnumModsForPid(int pID)
+{
+	Process theProc = null;
+	try
+	{
+		theProc = Process.GetProcessById(pID);
+	}
+	catch (ArgumentException ex)
+	{
+		Console.WriteLine(ex.Message);
+		return;
+	}
+
+	Console.WriteLine("Here are the loaded modules for: {0}",theProc.ProcessName);
+	ProcessModuleCollection theMods = theProc.Modules;
+	foreach (ProcessModule pm in theMods)
+	{
+		string info = string.Format("-> Mod Name: {0}", pm.ModuleName);
+		Console.WriteLine(info);
+	}
+}
+```
+
+为了看到输出结果，我们测试一个进程
+
+```
+-> Mod Name: ProcessMainpulator.exe
+-> Mod Name: ntdll.dll
+-> Mod Name: MSCOREE.DLL
+...
+```
+
+### 以编程的方式启动或结束进程
+
+对于System.Diagnostics.Process类，最后再来看看它的Start()和Kill()方法。仅从名字上就能看出，他们提供了启动和结束进程的编程方法
+
+```c#
+static void StartAndKillProcess()
+{
+	Process ggProc = null;
+
+	// 启动谷歌浏览器，进入 百度
+	try
+	{
+		ggProc = Process.Start("chrome.exe", "www.baidu.com");
+	}
+	catch (InvalidOperationException ex)
+	{
+		Console.WriteLine(ex.Message);
+	}
+
+	Console.WriteLine("--> Hit enter to kill {0}...",ggProc.ProcessName);
+	Console.ReadLine();
+
+	// 结束chrome.exe进程
+	try
+	{
+		ggProc.Kill();
+	}
+	catch (InvalidOperationException ex)
+	{
+		Console.WriteLine(ex.Message);
+	}
+}
+```
+
+### 使用ProcessStartInfo类控制进程的启动
+
+Start()方法还允许传入一个System.Diagnostics.ProcessStartInfo类型，说明一些关于进程如何被激活的额外信息。下面是ProcessStartInfo的正式定义
+
+```c#
+public sealed class ProcessStartInfo
+{
+	public ProcessStartInfo();
+	public ProcessStartInfo(string fileName);
+	public ProcessStartInfo(string fileName, string arguments);
+	public string Arguments { get; set; }
+	public bool CreateNoWindow { get; set; }
+	public string Domain { get; set; }
+	public StringDictionary EnvironmentVariables { get; }
+	public IntPtr ErrorDialogParentHandle { get; set; }
+	public string FileName { get; set; }
+	public SecureString Password { get; set; }
+	public bool RedirectStandardInput { get; set; }
+	public bool RedirectStandardOutput { get; set; }
+	public Encoding StandardErrorEncoding { get; set; }
+	public Encoding StandardOutputEncoding { get; set; }
+	public string UserName { get; set; }
+	public bool UseShellExecute { get; set; }
+	public string Verb { get; set; }
+	public string[] Verbs { get; }
+	public ProcessWindowStyle WindowStyle { get; set; }
+	public string WorkingDirectory { get; set; }
+}
+```
 
 
 
