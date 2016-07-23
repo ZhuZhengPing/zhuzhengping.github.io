@@ -290,6 +290,49 @@ public sealed class ProcessStartInfo
 }
 ```
 
+为了演示如何控制进程的启动，我们修改了StartAndKillProcess()
+
+```c#
+static void StartAndKillProcess()
+{
+	Process ggProc = null;
+
+	// 启动谷歌浏览器，进入 百度
+	try
+	{
+		ProcessStartInfo startInfo = new ProcessStartInfo("chrome.exe", "www.baidu.com");
+		// 窗口最大化
+		startInfo.WindowStyle = ProcessWindowStyle.Maximized;
+
+		ggProc = Process.Start(startInfo);
+	}
+	catch (InvalidOperationException ex)
+	{
+		Console.WriteLine(ex.Message);
+	}
+...
+}
+```
+
+### .NET 应用程序域
+
+在.NET平台下，可执行程序并没有直接承载在Windows进程中，而传统的非托管程序是直接承载的。实际上，.NET可执行程序承载在进程的一个逻辑分区中，术语称为应用程序域。可见，一个进程可以包含多个应用程序域，每一个应用程序域中承载一个.NET可执行程序。这种对传统的Windows进程的进一步分区具有几个好处
+
+>* 应用程序域是.NET平台操作系统独立性的关键特性。这种逻辑分区将不同操作系统表现加载可执行程序的差异抽象化了。
+>* 和一个完整的进程相比，应用程序域的CPU和内存占用都要小得多。因此CLR加载和卸载应用程序域比起完整的进程来说也快得多，并且可以快速提升服务器应用程序的可扩展性。
+>* 应用程序域为承载的应用程序提供了深度的隔离。如果进程中一个应用程序域失败了，剩下的应用程序域也能保持正常。
+
+单个进程可以承载多个应用程序域，其中每一个程序域都和该进程(或其它进程)中其他的程序域完全隔离开。由此，如果不使用分布式编程协议(如WCF)，运行在某个应用程序域中的应用程序将无法访问其他应用程序域中的任何数据(无论是全局变量还是静态字段)
+
+虽然单个进程可以承载多个应用程序域，但是情况也有例外。至少操作系统只能承载默认的应用程序域。在进程启动的时候，CLR将自动创建这个特定的应用程序域。此后，CLR能够根据需求创建其他的应用程序域。
+
+### System.AppDomain类
+
+.NET平台允许我们使用mscorlib.dll中System命名空间下的AppDomain类，以编程的方式监控应用程序域、在运行时新建应用程序域、向应用程序域加载程序集等多种任务。
+
+*AppDomain的主要成员*
+
+成员			|作用
 
 
 
