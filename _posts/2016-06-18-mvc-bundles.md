@@ -3,7 +3,7 @@ layout: post
 title:  "bundles和显示方式"
 date:   2016-06-18 16:32:18 +0800
 categories: mvc
-tags: bundles
+tags: bundles mvc
 author: Zhengping Zhu
 ---
 

@@ -3,7 +3,7 @@ layout: post
 title:  "反射"
 date:   2016-07-19 16:32:18 +0800
 categories: .net
-tags: 反射 .net 特性
+tags: 反射 .net
 author: Zhengping Zhu
 ---
 
