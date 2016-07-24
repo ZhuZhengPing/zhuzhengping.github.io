@@ -332,7 +332,34 @@ static void StartAndKillProcess()
 
 *AppDomain的主要成员*
 
-成员			|作用
+成员					|作用
+CreateDomain()			|该静态方法在当前进程中创建一个新的应用程序域
+CreateInstance()	|在加载程序集到调用的应用程序域时，在外部程序集文件中创建指定类型的新实例
+ExecuteAssembly()	|根据文件名在应用程序域中执行程序集
+GetAssemblies()		|获取已经加载到此应用程序域中的.NET程序集(基于COM和C的二进制文本除外)
+GetCurrentThreadId()	|该静态方法返回当前应用程序域上活动的线程ID
+Load()			|动态加载程序集到当前的应用程序域
+UnLoad			|该静态方法在进程中卸载指定的应用程序域
+
+.NET平台不允许从内存中卸载指定的程序集。以编程方式卸载库的唯一方式是使用Unload()方法小惠承载的应用程序域。
+
+此外，AppDomain类还定义了一些属性，用来监控给定应用程序域的活动。
+
+属性				|作用
+BaseDirectory		|获取目录路径，程序集解决程序用它来探测程序集
+CurrentDomain		|该静态属性获取当前执行线程所在的应用程序域
+FriendlyName		|获取当前应用程序的友好名称
+MonitoringIsEnabled	|获取或设置一个值，该值指示是否对当前进程启用应用程序域的CPU和内存监控。一旦对进程启用了监控，则无法将其禁用
+SetupInfomation		|获取给定应用程序域的配置信息，表示为一个AppDomainSetup对象
+
+最后，AppDomain类支持一组事件，对应于应用程序域生命周期中的不同部分。
+
+事件				|作用
+AssemblyLoad		|在加载程序集到内存时发生
+AssemblyResolve		|在对程序集的解析失败时发生
+DomainUnload		|在即将从主进程中卸载AppDomain时发生
+FirstChanceException|在应用程序域抛出异常时，该事件将在CLR找到合适的catch语句之前触发
+
 
 
 
