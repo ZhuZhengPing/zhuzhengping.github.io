@@ -16,6 +16,6 @@ You can visit [here](http://gaohaoyang.github.io) to see this blog.
 
 支付宝
 
-<img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f64pvxglylj30e80e8q4w.jpg" style="width:150px" />
+<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f64q28a7wkj3074074wf7.jpg" style="width:150px" />
 
 
