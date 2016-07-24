@@ -359,9 +359,334 @@ AssemblyLoad		|在加载程序集到内存时发生
 AssemblyResolve		|在对程序集的解析失败时发生
 DomainUnload		|在即将从主进程中卸载AppDomain时发生
 FirstChanceException|在应用程序域抛出异常时，该事件将在CLR找到合适的catch语句之前触发
+ProcessExit			|当默认应用程序域的父进程退出时，在默认的应用程序域上发生
+UnhandledException	|在异常处理程序未捕捉到异常时发生
 
+### 与默认应用程序域进行交互
 
+当一个.NET可执行文件启动时，CLR会自动将其放置到宿主进程的默认应用程序域中。该过程是自动且透明的，你不需要编写任何代码。但你可以使用AppDomain.CurrentDomain属性来访问这个默认的应用程序域。有了这个访问点，就可以捕捉任何感兴趣的事件。
 
+```c#
+static void DisplayDADStats()
+{
+	// 访问当前线程的应用程序域
+	AppDomain defaultAD = AppDomain.CurrentDomain;
+
+	// 打印该域中的不同状态
+	Console.WriteLine("Name of this domain: {0}",defaultAD.FriendlyName);
+	Console.WriteLine("ID of domain in this process: {0}",defaultAD.Id);
+	Console.WriteLine("Is this the default domain?: {0}",defaultAD.IsDefaultAppDomain());
+	Console.WriteLine("Base direct of this domain: {0}",defaultAD.BaseDirectory);
+}
+```
+
+该示例输出结果如下：
+
+```
+Name of this domain: CTest.vshost.exe
+ID of domain in this process: 1
+Is this the default domain?: True
+Base direct of this domain: F:\c#\CTest\bin\Debug\
+```
+
+### 枚举加载的程序集
+
+你还可以使用GetAssemblies()实例方法，获取给定应用程序域中所加载的.NET程序集。该方法返回Assembly对象的数组，该数组是System.Reflection命名空间的成员。
+
+```c#
+static void ListAllAssembliesInAppDomain()
+{
+	// 访问当前线程的应用程序域
+	AppDomain defaultAD = AppDomain.CurrentDomain;
+
+	// 获取默认应用程序域中所有家长的程序集
+	Assembly[] loadedAssemblies = defaultAD.GetAssemblies();
+	Console.WriteLine("Here are the assemblies loaded in {0}",defaultAD.FriendlyName);
+	foreach (Assembly a in loadedAssemblies)
+	{
+		Console.WriteLine("-> Name: {0}",a.GetName().Name);
+		Console.WriteLine("-> Version: {0}\n",a.GetName().Version);
+	}
+}
+```
+
+更新Main()方法以调用该成员，可以看到承载可执行文件的应用程序域使用了如下所示的.NET程序集：
+
+```
+Here are the assemblies loaded in CTest.vshost
+-> Name: mscorlib
+-> Version: 4.0.0.0
+
+-> Name: DefaultAppDomainApp
+-> Version: 1.0.0.0
+...
+```
+
+### 接收程序集加载通知
+
+如果想接收CLR在给定的应用程序域中加载新程序集时所发出的通知，可以处理Assembly-Load事件。该事件的类型为AssemblyLoadEventHandler委托。
+
+```c#
+static void InitDAD()
+{
+	// 这段逻辑将在应用程序域创建后，打印加载到应用程序域的程序集名称
+	AppDomain defaultAD = AppDomain.CurrentDomain;
+	defaultAD.AssemblyLoad += (o, s) => {
+		Console.WriteLine("{0} has been loaded!",s.LoadedAssembly.GetName().Name);
+	};
+}
+```
+
+### 创建新的应用程序域
+
+单个进程可以通过AppDomain.CreateDomain()静态方法承载多个应用程序域。尽管对大多数.NET应用程序来说，在运行时新建应用程序域是十分罕见的，但理解其原理还是十分重要的。
+
+```c#
+static void Main(string[] args)
+{
+
+	// 访问当前线程的应用程序域
+	AppDomain defaultAD = AppDomain.CurrentDomain;
+	ListAllAssembliesInAppDomain(defaultAD);
+
+	// 创建一个行的应用程序域
+	MakeNewAppDomain();
+	Console.ReadLine();
+}
+
+static void MakeNewAppDomain()
+{
+	// 在当前进程中新建一个AppDomain,并列出它所加载的程序集
+	AppDomain newAD = AppDomain.CreateDomain("SecondAppDomain");
+	ListAllAssembliesInAppDomain(newAD);
+}
+
+static void ListAllAssembliesInAppDomain(AppDomain ad)
+{
+	// 获取默认应用程序域中所有家长的程序集
+	var loadedAssemblies = from a in ad.GetAssemblies() orderby a.GetName().Name select a;
+	Console.WriteLine("Here are the assemblies loaded in {0}", ad.FriendlyName);
+	foreach (Assembly a in loadedAssemblies)
+	{
+		Console.WriteLine("-> Name: {0}", a.GetName().Name);
+		Console.WriteLine("-> Version: {0}\n", a.GetName().Version);
+	}
+}
+```
+
+运行当前示例结果如下
+
+```
+Here are the assemblies loaded in CTest.vshost
+-> Name: mscorlib
+-> Version: 4.0.0.0
+
+-> Name: DefaultAppDomainApp
+-> Version: 1.0.0.0
+...
+
+Here are the assemblies loaded in SecondAppDomain
+-> Name: mscorlib
+-> Version: 4.0.0.0
+```
+
+### 在自定义应用程序域中加载程序集
+
+CLR可随时向默认的应用程序域中加载程序集。如果手工创建了应用程序域，可以使用AppDomain.Load()方法向其加载程序集。
+
+```c#
+static void MakeNewAppDomain()
+{
+	// 在当前进程中新建一个AppDomain,并列出它所加载的程序集
+	AppDomain newAD = AppDomain.CreateDomain("SecondAppDomain");
+
+	try
+	{
+		// 将CarLibrary.dll 加载到新域中
+		newAD.Load("CarLibrary");
+	}
+	catch (FileNotFoundException ex)
+	{
+		Console.WriteLine(ex.Message);
+	}
+
+	ListAllAssembliesInAppDomain(newAD);
+}
+```
+
+这时程序的输出结果如下(注意CarLibrary.dll)
+
+```
+Here are the assemblies loaded in SecondAppDomain
+-> Name: CarLibrary
+-> Version: 1.0.0.0
+
+-> Name: mscorlib
+-> Version: 4.0.0.0
+```
+
+### 以编程的方式卸载应用程序域
+
+CLR并不允许卸载单独的.NET程序集。然而，使用AppDomain.Unload()方法，我们可以选择从承载的过程中卸载指定的应用程序域。
+
+```c#
+static void MakeNewAppDomain()
+{
+	// 在当前进程中新建一个AppDomain,并列出它所加载的程序集
+	AppDomain newAD = AppDomain.CreateDomain("SecondAppDomain");
+	newAD.DomainUnload += (o, s) =>
+	{
+		Console.WriteLine("The second app domain has been unloaded");
+	};
+	try
+	{
+		// 将CarLibrary.dll 加载到新域中
+		newAD.Load("CarLibrary");
+	}
+	catch (FileNotFoundException ex)
+	{
+		Console.WriteLine(ex.Message);
+	}
+
+	// 一一列出所有程序集
+	ListAllAssembliesInAppDomain(newAD);
+
+	// 现在卸载这个应用程序域
+	AppDomain.Unload(newAD);
+}
+```
+
+如果想要在默认的应用程序域被卸载时得到通知，请修改Main()方法处理默认应用程序域的ProcessExit事件
+
+```c#
+static void Main(string[] args)
+{
+	AppDomain defaultAD = AppDomain.CurrentDomain;
+	defaultAD.ProcessExit += (o, s) =>
+	{
+		Console.WriteLine("Default AD unloaded!");
+	};
+	ListAllAssembliesInAppDomain(defaultAD);
+
+	MakeNewAppDomain();
+
+	Console.ReadLine();
+}
+```
+
+### 对象上下文边界
+
+应用程序域是承载.NET程序集的进程中的逻辑分区。与此相似，应用程序域也可以进一步被划分成多个上下文边界。
+
+使用上下文，CLR可以确保在运行时有特殊需求的对象，可以通过拦截进出上下文的方法调用，得到适当的和一致的处理。这个拦截层允许CLR调整当前的方法调用，以便满足给定对象对上下文的设定要求。
+
+和一个进程定义了默认的应用程序域一样，每个应用程序域都有一个默认的上下文。这个默认的上下文【由于它总是应用程序域创建的第一个上下文，所以有时称为上下文0(context0)】用于组合那些对上下文没有具体的或唯一性需求的.NET对象。大多数.NET对象都会被加载到上下文0中。如果CLR判断一个新创建的对象有特殊需求，一个新的上下文边界将会在承载它的应用程序域中被创建
+
+<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f64zmoo37nj30bn06g0tn.jpg" style="width:70%" />
+
+### 上下文灵活和上下文绑定类型
+
+不需要指定特定上下文的.NET类型称为上下文灵活(context-alile)对象。这些对象可以从承载它的应用程序域的任何位置访问，与对象的运行时需求没有关系。想要构建这样一个上下文灵活的对象根本不用费神，因为简单得你什么都不用作
+
+```c#
+// 一个上下文灵活的对象被加载到上下文0中
+class SportsCar{}
+```
+
+那些需要上下文分配的对象称为上下文绑定(context-bound)对象，它们必须派生自System.ContextBoundObject基类。这个基类再次说明这样一个事实：任何一个对象都只能在其被创建的那个上下文中正常运行。考虑到.NET上下文的作用，如果一个上下文绑定对象不知何故在一个并不兼容的上下文中终止，则在这种最不合事宜的情况下理应出现错误。
+
+除了派生自System.ContextBoundObject外，一个上下文敏感的类型也可以用特定种类的.NET特性修饰，术语称为上下文特性。所有的上下文特性派生自ContextAttribute基类。
+
+### 定义上下文绑定对象
+
+假定想要定义一个自动线程安全的类(SportsCarTS)，但又不在成员实现中采用硬编码做线程同步的逻辑，可以继承ContextBoundObject,并应用[Synchronization]特性
+
+```c#
+using System.Runtime.Remoting.Contexts;
+[Synchronization]
+// 上下文绑定类型仅仅加载到一个同步的(因此是线程安全的)上下文中
+class SportsCarTS : ContextBoundObject
+{
+
+}
+```
+
+添加了[Synchronization]特性的类型将被加载到线程安全上下文中。因为SportsCarTS类类型有特殊的需求，如果一个已分配的对象从一个同步的上下文移动到一个非同步的上下文时，发生的问题可想而知。对象突然不再是线程安全的并且极有可能变成大块的坏数据，而大量线程还在视图与这个(现在已是线程不稳定的)引用对象交互。为了确保CLR不会将SportsCarTS对象移出同步上下文边界，只需让SportsCarTS继承自ContextBoundObject。
+
+### 研究上下文对象
+
+尽管很少有应用程序需要以编程的方式和上下文交互，但是我们还是给出下面的示例。
+
+```c#
+// SportsCar 没有特别的上下文要求，所以将加载到应用程序域的默认上下文中
+class SportsCar
+{
+	public SportsCar()
+	{
+		// 得到上下文信息，并输出上下文ID
+		Context ctx = Thread.CurrentContext;
+		Console.WriteLine("{0} object in context {1}",this.ToString(),ctx.ContextID);
+		foreach (IContextProperty itfCoxProp in ctx.ContextProperties)
+		{
+			Console.WriteLine("-> Ctx Prop: {0}",itfCoxProp.Name);
+		}
+	}
+}
+
+[Synchronization]
+// 上下文绑定类型仅仅加载到一个同步的(因此是线程安全的)上下文中
+class SportsCarTS : ContextBoundObject
+{
+	public SportsCarTS()
+	{
+		// 得到上下文信息，并输出上下文ID
+		Context ctx = Thread.CurrentContext;
+		Console.WriteLine("{0} object in context {1}", this.ToString(), ctx.ContextID);
+		foreach (IContextProperty itfCoxProp in ctx.ContextProperties)
+		{
+			Console.WriteLine("-> Ctx Prop: {0}", itfCoxProp.Name);
+		}
+	}
+}
+```
+
+注意，通过调用静态的Thread.CurrentContext属性，SportsCar的每个构造函数都从当前运行的线程中获得了Context对象。
+
+```c#
+static void Main(string[] args)
+{
+
+	// 对象将显示创建时的上下文信息
+	SportsCar sport = new SportsCar();
+	Console.WriteLine();
+
+	SportsCar sport2 = new SportsCar();
+	Console.WriteLine();
+
+	SportsCarTS synchroSport = new SportsCarTS();
+	
+	Console.ReadLine();
+}
+```
+
+运行结果输出如下
+
+```
+CTest.SportsCar object in context 0
+-> Ctx Prop: LeastLifeTimeServiceProperty
+
+CTest.SportsCar object in context 0
+-> Ctx Prop: LeastLifeTimeServiceProperty
+
+CTest.SportsCarTS object in context 1
+-> Ctx Prop: LeastLifeTimeServiceProperty
+-> Ctx Prop: Synchronization
+```
+
+到目前为止，对于.NET程序集如何由CLR承载，总结起来有以下几点要求
+
+>* 一个.NET进程可以承载多个应用程序域。每一个应用程序域可以承载多个相关的.NET程序集(或者使用AppDomain)，并且可由CLR独立地加载或卸载应用程序域
+>* 一个给定的应用程序域中包含一个或多个上下文。使用上下文，CLR能够将“有特殊需求的”对象放在到一个逻辑容器中，确保该对象的运行时需求能够被满足
 
 
 
