@@ -18,6 +18,7 @@ icon: bookmark
 
     渐变生成器。
 
+## 模板来自 [Hyg](https://gaohaoyang.github.io/)
 
 ## ES6 相关
 
