@@ -2,7 +2,7 @@
 layout: post
 title:  "Linq to object"
 date:   2016-07-16 16:32:18 +0800
-categories: .net
+categories: linq
 tags: linq .net
 author: Zhengping Zhu
 ---

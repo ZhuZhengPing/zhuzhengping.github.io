@@ -14,6 +14,11 @@ author: Zhengping Zhu
 
 线程被定义为可执行应用程序中的基本执行单元。虽然很多.NET程序在单线程模式下运行得很好，但程序集的主线程(在Main()方法执行时由CLR产生的)能够创建次线程，并由它们来执行一些额外的工作。采用这些新增的线程，能构建出相应更快的应用程序。
 
+
+
+
+
+
 若想要通过编程得到对当前(正在执行某段代码的)线程的引用，只需要调用静态属性Thread.CurrentThread:
 
 ```c#
@@ -70,7 +75,7 @@ public sealed class BinaryOp: System.MulticastDelegate
 	public int EndInvoke(IAsyncResult result);
 }
 
-
+传入 BeginInvoke()的参数必须符合C#委托约定(对于BinaryOp,就两个整形)。
 
 
 
