@@ -65,6 +65,7 @@ static void ExtractCurrentThreadContext()
 
 ### 委托的异步性 BeginInvoke()和EndInvoke()方法
 
+```
 public sealed class BinaryOp: System.MulticastDelegate
 {
 ...
@@ -74,8 +75,72 @@ public sealed class BinaryOp: System.MulticastDelegate
 	// 用于获取被调用方法的返回值
 	public int EndInvoke(IAsyncResult result);
 }
+```
 
 传入 BeginInvoke()的参数必须符合C#委托约定(对于BinaryOp,就两个整形)。
+
+### System.IAsyncResult 接口
+
+BeginInvoke()返回的对象实现了IAsyncResult接口，而EndInvoke()需要一个IAsyncResult兼容(即实现了IAsyncResult接口的类型)类型作为它唯一的参数。由BeginInvoke()返回的IAsyncResult兼容对象主要是一种耦合机制，它允许调用的线程在稍后通过EndInvoke()获取异步方法调用的结果。IAsyncResult接口的定义如下：
+
+```c#
+public interface IAsyncResult
+{
+	object AsyncState{get;set;}
+	WaitHandle AsyncWaitHandle { get; }
+	bool CompletedSynchronously { get; }
+	bool IsCompleted { get; }
+}
+```
+
+### 异步调用方法
+
+```c#
+delegate int BinaryOp(int x,int y);
+static int Add(int x, int y)
+{
+	Console.WriteLine("Add() invoked on thead {0}",Thread.CurrentThread.ManagedThreadId);
+	return x + y;
+}
+static void Main(string[] args)
+{
+
+	// 输出正在执行中的线程
+	Console.WriteLine("Main() invoked on thread {0}",Thread.CurrentThread.ManagedThreadId);
+
+	// 在次线程中调用Add
+	BinaryOp b = new BinaryOp(Add);
+	IAsyncResult iftAR = b.BeginInvoke(10, 10, null, null);
+
+	// 在主线程中做其他的事
+	Console.WriteLine("Doing more work in Main()");
+
+	// 当执行完后获取Add()方法的结果
+	int answer = b.EndInvoke(iftAR);
+	Console.WriteLine("10 + 10 is {0}",answer);
+
+	Console.ReadLine();
+}
+```
+
+运行这个程序，我们将发现两个不同的ID值，这说明当前应用程序域中有两个线程在运行
+
+```
+Main() invoked on thread 9
+Doing more work in Main()
+Add() invoked on thread 10
+10 + 10 is 20
+```
+
+### 同步调用线程
+
+如果仔细思考一下Main()的实现，可能意识到BeginInvoke()和EndInvoke()之间的时间间隔明显小于5秒钟，因此，在"Doing more work in Main()!" 被输出到控制台后，主线程将会被阻塞，并一直等到次线程完成才能获得Add()方法的结果。这样效率似乎不太好，我们需要做另一个同步调用。
+
+
+
+
+
+
 
 
 

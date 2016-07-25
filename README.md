@@ -8,7 +8,7 @@ You can visit [here](http://gaohaoyang.github.io) to see this blog.
 
 这是我的博客，基于 jekyll。我改了所有默认的样式和交互。如果你想使用这个博客模板。**请先在这个仓库上点个star吧**，这也是对我的肯定和鼓励，谢谢了。然后你可以克隆这个仓库用作你自己的博客。
 
-博客访问地址：[点击这里](http://http://zhuzhengping.github.io/)
+博客访问地址：[点击这里](http://zhuzhengping.github.io/)
 
 ##捐助 
 
