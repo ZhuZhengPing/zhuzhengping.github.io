@@ -196,6 +196,7 @@ while(!iftAR.AsyncWaitHandle.WaitOne(1000,true))
 {
 	Console.WriteLine("Doing more work in Main()!");
 }
+```
 
 虽然IAsyncResult的这些属性提供了同步调用线程的方式，但是这不是最高效的方式
 
