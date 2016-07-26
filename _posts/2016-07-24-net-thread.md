@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "构建多线程应用程序"
+title:  "多线程应用程序和异步委托"
 date:   2016-07-24 16:32:18 +0800
 categories: .net
-tags: .net 多线程
+tags: .net 多线程 委托
 author: Zhengping Zhu
 ---
 
@@ -388,10 +388,68 @@ static void Main(string[] args)
 
 	// 显示承载的应用程序域和上下文的详细信息
 	Console.WriteLine("Name of current AppDomain:{0}",Thread.GetDomain().FriendlyName);
+	Console.WriteLine("ID of current Context: {0}",Thread.CurrentContext.ContextID);
+
+	// 输出线程的一些信息
+	Console.WriteLine("Thread Name: {0}",primaryThread.Name);
+	Console.WriteLine("Has thread started?: {0}",primaryThread.IsAlive);
+	Console.WriteLine("Priority Level: {0}",primaryThread.Priority);
+	Console.WriteLine("Thread State: {0}",primaryThread.ThreadState);
 
 	Console.ReadLine();
 }
 ```
+
+下面显示了这个程序的输出结果：
+
+```
+Name of current AppDomain:CTest.vshost.exe
+ID of current Context: 0
+Thread Name: ThePrimaryThread
+Has thread started?: True
+Priority Level: Normal
+Thread State: Running
+```
+
+### Name 属性
+
+虽然上述代码或多或少有自描述的性质，但是请注意Thread类支持Name属性。如果没有设置这个值的话，Name将返回一个空的字符串。然而，一旦为一个给定的线程对象指定一个友好的字符串名字，在调试的时候就简单多了。如果使用Visual Studio ,可以在调试的时候访问Threads窗口(在菜单上选择Debug->Windows->Threads)。
+
+### Priority属性
+
+接下来，注意Thread类型定义了一个名为Priority的属性，默认情况下，所有线程的优先级都处于Normal级别。但是，在线程生命周期的任何时候，都可以使用ThreadPriority属性修改线程的优先级
+
+```c#
+public enum ThreadPriority
+{
+	Lowest,
+	BelowNormal,
+	Normal, // 默认值
+	AboveNormal,
+	Highest
+}
+```
+
+如果给线程的优先级指定一个非默认值(默认值为ThreadPriority.Normal)，应当知道这并不能控制线程调度器切换线程的过程。实际上，一个线程的优先级仅仅是把线程活动的重要程度提供给CLR。因此，一个带有ThreadPriority.Highest优先级的线程并不一定保证能得到最高的优先级。
+
+此外，如果线程调度器被某个人物(比如同步对象、切换线程或线程移动)抢占了，那么线程的优先级别很有可能因此会被修改。这个时候，CLR将会读取这些值，并指示线程调度器如何最好地分配时间片。总地来说，有着相同优先调度级别的线程应当得到相同数量的时间来执行任务。
+
+### 以编程方式创建次线程
+
+当希望以编程方式创建次线程以分担一些任务时，可以遵从下面预订的步骤。
+
+>1. 创建一个方法作为新线程的入口点
+>2. 创建一个 ParameterizedThreadStart(或者 ThreadStart)委托，并把在上一步所定义方法的地址传给委托的构造函数。
+>3. 创建一个 Thread 对象，并把 ParameterizedThreadStart 或 ThreadStart作为构造函数的参数。
+
+
+
+
+
+
+
+
+
 
 
 
