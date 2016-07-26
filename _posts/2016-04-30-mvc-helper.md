@@ -20,7 +20,7 @@ author: Zhengping Zhu
 
 
 
-### 创建`inline helper`方法
+### 创建 inline helper 方法
 
 ```html
 @model string
@@ -76,7 +76,7 @@ author: Zhengping Zhu
 
 <img src="http://ww1.sinaimg.cn/mw690/006dag38jw1f40zfnv8ibj30g308idgl.jpg" style="width:100%" />
 
-### 创建外部的`helper`方法
+### 创建外部的 helper 方法
 
 `inline helpers`虽然方便，但是如果太复杂，写在视图里面会很难阅读，另一种选择是创建一个外部`HTML`辅助方法，
 它们就是`c#`的扩展方法，外部的`helper`方法应用非常广泛
@@ -132,7 +132,7 @@ MergeAttribute(string,string,bool)　|将一个属性添加到`HTML`元素。第
 return new MvcHtmlString(tag.ToString());
 ```
 
-### 使用自定义的外部`helper`方法
+### 使用自定义的外部 helper 方法
 
 使用自定义的`helper`方法和`inline helper`有一点不同，下面创建`/Views/Home/Index.cshtml`
 
@@ -164,7 +164,7 @@ return new MvcHtmlString(tag.ToString());
 </html>
 ```
 
-### 管理字符串编码`helper`方法
+### 管理字符串编码 helper 方法
 
 MVC框架通过自动编码努力保护你免受恶意数据攻击,以便它可以被添加到一个Web页面，你可以在我们的示例应用程序中看到一个这样的例子。
 
@@ -190,7 +190,7 @@ public class HomeController : Controller {
 </div> 
 ```
 
-### 定义一个新的`helper`方法
+### 定义一个新的 helper 方法
 
 ```c#
 public static class CustomHelpers
