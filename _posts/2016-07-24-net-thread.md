@@ -441,13 +441,270 @@ public enum ThreadPriority
 >1. 创建一个方法作为新线程的入口点
 >2. 创建一个 ParameterizedThreadStart(或者 ThreadStart)委托，并把在上一步所定义方法的地址传给委托的构造函数。
 >3. 创建一个 Thread 对象，并把 ParameterizedThreadStart 或 ThreadStart作为构造函数的参数。
+>4. 建立任意初始化线程的特性(名称、优先级等)。
+>5. 调用Thread.Start()方法。在第2个步骤中建立委托所指向的方法将在线程中尽快开始执行。
 
+### 使用 ThreadStart 委托
 
+举例说明构建多线程程序的过程，我们创建一个控制台程序，它能够让用户选择是采用单线程还是两个分离的线程来执行任务。
 
+```c#
+public class Printer
+{
+	public void PrintNumbers()
+	{
+		// 显示 Thread 信息
+		Console.WriteLine("-> {0} is executing PrintNumbers()",Thread.CurrentThread.Name);
 
+		// 输出数字
+		Console.Write("Your numbers: ");
+		for (int i = 0; i < 10; i++)
+		{
+			Console.Write("{0} ,",i);
+			Thread.Sleep(2000);
+		}
+		Console.WriteLine();
+	}
+}
+```
 
+再 Main() 方法中，首先要提示用户，让他来确定是用一个还是两个线程来执行任务。如果用户需要一个单线程，那么在主线程上调用 PrintNumbers() 方法就可以了。但是，如果用户指定需要两个线程，那么创建一个指向 PrintNumbers()方法的 ThreadStart 委托，接着把这个委托对象传给一个新创建的 Thread 对象的构造函数，并且调用这个 Thread 对象的 Start() 方法以通知 CLR:线程已经准备好执行了。下面是完整的 Main()方法
 
+```c#
+static void Main(string[] args)
+{
 
+	Console.Write("Do you want [1] or [2] threads? ");
+	string threadCount = Console.ReadLine();
+
+	// 命名当前线程
+	Thread primaryThread = Thread.CurrentThread;
+	primaryThread.Name = "Primary";
+
+	// 显示线程的信息
+	Console.WriteLine("-> {0} is executing Main()",Thread.CurrentThread.Name);
+
+	// 创建执行任务类
+	Printer p = new Printer();
+
+	switch (threadCount)
+	{
+		case "2":
+			// 设置线程
+			Thread backgroundThread = new Thread(new ThreadStart(p.PrintNumbers));
+			backgroundThread.Name = "Secondary";
+			backgroundThread.Start();
+			break;
+		case "1":
+			p.PrintNumbers();
+			break;
+		default:
+			Console.WriteLine("I don't know what you want ...you get 1 thread.");
+			goto case "1";
+	}
+
+	// 做其他一些工作
+	MessageBox.Show("I'm busy!", "Wor on main thread...");
+
+	Console.ReadLine();
+}
+
+public class Printer
+{
+	public void PrintNumbers()
+	{
+		// 显示 Thread 信息
+		Console.WriteLine("-> {0} is executing PrintNumbers()",Thread.CurrentThread.Name);
+
+		// 输出数字
+		Console.Write("Your numbers: ");
+		for (int i = 0; i < 10; i++)
+		{
+			Console.Write("{0} ,",i);
+			Thread.Sleep(2000);
+		}
+		Console.WriteLine();
+	}
+}
+```
+
+如果以单线程运行这个程序，将发现知道全部数字输出到控制台上后，消息(对话框)才被显示出来。由于在每个数字输出来后都需要暂停大约两秒钟，所以这是很不好的用户体验。然而，如果选择两个线程，消息对话框就会立刻显示出来。
+
+<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f67lsjex3qj30iw08vq3z.jpg" style="width:100%" />
+
+### 使用 ParameterizedThreadStart 委托
+
+ThreadStart 委托不仅仅指向无返回值、无参数的方法。虽然这能满足大多数情况的要求，但是，如果想把数据传递给在次线程上执行的方法，则需要使用 ParameterizedThreadStart 委托类型。
+
+```c#
+class AddParams
+{
+	public int a, b;
+	public AddParams(int numb1, int numb2)
+	{
+		a = numb1;
+		b = numb2;
+	}
+}
+```
+
+接下来，在 Program 类中创建一个静态方法，这个方法使用 AddParams 类型作为参数，用于输出每次相加的结果：
+
+```c#
+static void Add(object data)
+{
+	if (data is AddParams)
+	{
+		Console.WriteLine("ID of thread in Add(): {0}",Thread.CurrentThread.ManagedThreadId);
+
+		AddParams ap = (AddParams)data;
+		Console.WriteLine("{0} + {1} is {2}",ap.a,ap.b,ap.a+ap.b);
+	}
+}
+```
+
+Main() 中的代码直截了当，使用 ParameterizedThreadStart比使用 ThreadStart 更加简单：
+
+```c#
+static void Main(string[] args)
+{
+
+	Console.WriteLine("ID of thread in Main(): {0}",Thread.CurrentThread.ManagedThreadId);
+
+	// 建立 AddParams 对象，将其传给次线程
+	AddParams ap = new AddParams(10, 10);
+	Thread t = new Thread(new ParameterizedThreadStart(Add));
+	t.Start(ap);
+
+	// 强制等待以让其他线程结束
+	Thread.Sleep(5);
+
+	Console.ReadLine();
+}
+```
+
+运行该程序，输出结果如下
+
+```
+ID of thread in Main(): 9
+ID of thread in Main(): 10
+10 + 10 is 20
+```
+
+### AutoResetEvent 类
+
+在学习异步委托时，我们使用了一个简单的 bool 变量作为开关，但这并不是推荐的解决方案，因为两个线程都能访问相同的数据点，并且这将导致数据损坏。一个较安全但不可取的方法是调用 Thread.Sleep(),等待一段固定的时间。
+
+一个简单、线程安全的方法是使用 AutoResetEvent 类，强制线程等待，直到其他线程结束。
+
+```c#
+private static AutoResetEvent waitHandle = new AutoResetEvent(false);
+static void Main(string[] args)
+{
+
+	Console.WriteLine("ID of thread in Main(): {0}",Thread.CurrentThread.ManagedThreadId);
+	AddParams ap = new AddParams(10, 10);
+	Thread t = new Thread(new ParameterizedThreadStart(Add));
+	t.Start(ap);
+
+	// 等待，直到收到通知
+	waitHandle.WaitOne();
+	Console.WriteLine("Other thread is done!");
+
+	Console.ReadLine();
+}
+```
+
+当其他线程完成任务时，将调用同一个 AutoResetEvent 类型实例的 Set() 方法：
+
+```c#
+static void Add(object data)
+{
+	if (data is AddParams)
+	{
+		Console.WriteLine("ID of thread in Add(): {0}",Thread.CurrentThread.ManagedThreadId);
+
+		AddParams ap = (AddParams)data;
+		Console.WriteLine("{0} + {1} is {2}",ap.a,ap.b,ap.a+ap.b);
+
+		// 通知其他线程，该线程已结束
+		waitHandle.Set();
+	}
+}
+```
+
+### 前台线程和后台线程
+
+了解如何使用 System.Threading 命名空间创建新的线程之后，下面来正式看一看前台线程和后台线程的区别。
+
+>* 前台线程能阻止应用程序的终结。一直到所有前台线程终止后，CLR 才能关闭应用程序(即卸载承载的应用程序域)
+>* 后台线程被CLR认为是线程执行中可作出牺牲的途径，即在任何时候都可能被忽略。因此，如果所有的前台线程终止，当应用程序域卸载时，所有的后台线程也会被自动终止。
+
+值得重点注意的是，前台线程和后台线程并不等于同于主线程和工作者线程。默认情况下，所用通过 Thread.Start() 方法创建的线程都自动成为前台线程。这意味着，直到所有的线程本身单元的工作都执行完成了，应用程序域才会卸载。
+
+```c#
+static void Main(string[] args)
+{
+
+	Printer p = new Printer();
+	Thread bgroundThread = new Thread(new ThreadStart(p.PrintNumbers));
+
+	// 这是后台线程
+	bgroundThread.IsBackground = true;
+	bgroundThread.Start();
+}
+```
+
+### 并发问题
+
+在构建多线程应用程序时，需要确保任何共享数据都处于被保护状态，以防止多个线程修改它的值。由于一个应用程序域中的所有线程都能够并发访问共享数据，由于线程调度器会随机挂起线程，所以如果线程 A 在完成之间被挂起了，线程 B 读到的就是一个不稳定的数据。
+
+```c#
+public class Printer
+{
+	public void PrintNumbers()
+	{
+...
+		for (int i = 0; i < 10; i++)
+		{
+			// 使线程休眠数秒
+			Random r = new Random();
+			Thread.Sleep(1000*r.Next(5));
+			Console.Write("{0} ,",i);
+		}
+		Console.WriteLine();
+	}
+}
+```
+
+Main() 方法负责创建一个拥有10个 Thread 对象的数组，并且每一个对象都调用 Printer 对象的同一个实例：
+
+```c#
+static void Main(string[] args)
+{
+
+	Printer p = new Printer();
+
+	// 使 10个线程全部指向同一对象的同一方法
+	Thread[] threads = new Thread[10];
+	for (int i = 0; i < 10; i++)
+	{
+		threads[i] = new Thread(new ThreadStart(p.PrintNumbers));
+		threads[i].Name = string.Format("Worker thread #{0}", i);
+	}
+
+	// 现在开始每一个线程
+	foreach (Thread t in threads)
+	{
+		t.Start();
+	}
+	Console.ReadLine();
+}
+```
+
+再看运行结果之前，我们归纳下问题：在应用程序域中的主线程产生了10个工作线程，每个工作线程执行同一个 Printer 实例的 PrintNumbers() 方法。
+
+<img src="" style="width:100%" />
 
 
 
