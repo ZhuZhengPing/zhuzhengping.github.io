@@ -190,7 +190,7 @@ public class HomeController : Controller {
 </div> 
 ```
 
-#### 重现错误 定义一个新的`helper`方法
+### 定义一个新的`helper`方法
 
 ```c#
 public static class CustomHelpers
@@ -252,7 +252,7 @@ public static class CustomHelpers
 
 <img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f422m3swhoj309w090753.jpg" style="width:100%" />
 
-### `encoding helper`方法内容
+### encoding helper 方法内容
 
 这里有好几种办法解决这个问题，最简单的办法是改变返回的类型，
 
@@ -281,7 +281,7 @@ public static MvcHtmlString DisplayMessage(this HtmlHelper html, string msg) {
 
 <img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f422tg6nh7j30i30e375t.jpg" style="width:100%" />
 
-### 使用内置的`Form Helper`方法
+### 使用内置的 Form Helper 方法
 
 MVC框架包括一个内置的选择辅助方法,帮助您管理创建`HTML`表单元素，下面我们创建一个`Person`和`Address`、`Role`来显示这些语法，首先创建几个实体类
 
@@ -364,7 +364,7 @@ public class HomeController : Controller
 
 MVC框架不是强制性的使用`helper`来生成`html`标记例如`form`,`input`，如果你喜欢，你可以使用静态的`html`标签，使用`helper`生成的更加方便和后台进行交互
 
-### 创建`Form`元素
+### 创建 Form 元素
 
 最有用的两个`helper`是`Html.BeginForm`和`Html.EndForm`，他们能创建`form`标签，
 并且生成`action`参数
@@ -454,7 +454,7 @@ new { @class = "personClass", data_formType = "person" })){
 <form action="/Home/CreatePerson/MyIdValue" class="personClass" data-formType="person" method="post">
 ```
 
-### 指定`route`所使用的一种形式
+### 指定 route 所使用的一种形式
 
 当你使用`BeginForm`方法，MVC框架找到第一个匹配的路由配置来生成`url`，如果你确定想使用一个特定的`route`，你可以使用`BeginRouteForm`
 
@@ -515,7 +515,7 @@ new { @class = "personClass", data_formType = "person" })){
 data-formType="person" method="post">
 ```
 
-### 使用`input helpers`
+### 使用 input helpers 
 
 就算创建了`form`，你还需要创建`input`元素，下面的表格显示了基本的`input`元素创建方法
 
@@ -558,7 +558,7 @@ Textbox						|Html.TextBox("myTextbox","val")输出：`<input id="myTextbox" nam
 } 
 ```
 
-### 从模型生成`input`元素属性
+### 从模型生成 input 元素属性
 
 上面的章节很好的显示了`helper`方法，但是我们需要从第一个参数传递到第二个参数，下面还可以使用只有一个参数的`helper`方法
 
@@ -603,7 +603,7 @@ Textbox						|Html.TextBox("myTextbox","val")输出：`<input id="myTextbox" nam
 >* •ViewBag.DataValue["First.Name"] 
 >* ViewBag.DataValue["First"]["Name"]
 
-### 使用强类型的`input helpers`
+### 使用强类型的 input helpers 
 
 这些`helper`只能用在强类型的`view`中
 
@@ -643,7 +643,7 @@ Textbox				|Html.TextBoxFor(x => x.FirstName)输出：<br />`<input id="FirstNam
 }
 ```
 
-### 创建`select`元素
+### 创建 select 元素
 
 下面的表格显示创建`select`元素
 
