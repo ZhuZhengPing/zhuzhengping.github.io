@@ -704,7 +704,276 @@ static void Main(string[] args)
 
 再看运行结果之前，我们归纳下问题：在应用程序域中的主线程产生了10个工作线程，每个工作线程执行同一个 Printer 实例的 PrintNumbers() 方法。
 
-<img src="" style="width:100%" />
+<img src="http://ww3.sinaimg.cn/mw690/006dag38jw1f67ntgx1faj30iu0cazn5.jpg" style="width:100%" />
+
+如果多运行几次程序，运行结果明显显示不同，显然这里有问题。当每个线程都调用 Printer 来输出数字的时候，线程调度器可能正在切换线程，这导致了不同的输出结果。
+
+### 使用C#的 lock 关键字进行同步
+
+同步访问共享资源的首选技术是C#的 lock 关键字。这个关键字允许定义一段线程同步的代码语句采用这项技术，后进入的线程不会中断当前线程，而是停止自身下一步执行。lock 关键字需要定义一个标记。当试图锁定一个实例级对象的私有方法时，使用方法本身所在对象的引用就可以了。
+
+```c#
+private void SomePrivateMethod()
+{
+	// 使用当前对象作为线程标记
+	lock(this)
+	{
+		// 所有在这个范围内的代码都是线程安全的
+	}
+}
+
+然而，如果需要锁定公共成员中的一段代码，比较安全的方式是声明是有的object成员来作为锁标识
+
+```c#
+public class Printer{
+	// 锁标识
+	private object threadLock = new object();
+	public void PrintNumbers(){
+		// 使用锁标识
+		lock(threadLock){
+			...
+		}
+	}
+}
+```
+
+如果分析 PrintNumbers()方法，可以看到线程强占的共享资源是控制台窗口，因此，所有和Console类型交互的代码都必须在锁定范围中。
+
+```c#
+public void PrintNumbers()
+{
+	// 使用是有对象锁定标记
+	lock (threadLock)
+	{
+		// 显示 Thread 信息
+		Console.WriteLine("-> {0} is executing PrintNumbers()",Thread.CurrentThread.Name);
+
+		// 输出数字
+		Console.Write("Your numbers: ");
+		for (int i = 0; i < 10; i++)
+		{
+			// 使线程休眠数秒
+			Random r = new Random();
+			Thread.Sleep(1000*r.Next(5));
+			Console.Write("{0} ,",i);
+	 
+		}
+		Console.WriteLine();
+	}
+}
+```
+
+现在已经有效设计了一个包子当前线程完成任务的方法。一旦一个线程今日锁定范围，在它退出锁定范围且释放锁定之前，其他线程都无法访问锁定标记。
+
+```
+-> Worker thread #0 is而写粗听PrintNumbers()
+Your numbers: 0 ,1 ,2 ,3 ,4 ,5 ,6 ,7 ,8 ,
+-> Worker thread #2 is而写粗听PrintNumbers()
+Your numbers: 0 ,1 ,2 ,3 ,4 ,5 ,6 ,7 ,8 ,
+-> Worker thread #7 is而写粗听PrintNumbers()
+Your numbers: 0 ,1 ,2 ,3 ,4 ,5 ,6 ,7 ,8 ,
+...
+```
+
+### 使用 System.Threading.Monitor 类型进行同步
+
+C# lock 声明实际上是和 System.Threading.Monitor 类一同使用时的速记符号。经过编译器处理，锁定区域实际上被转化成了如下内容
+
+```c#
+public void PrintNumbers()
+{
+	// 使用是有对象锁定标记
+	Monitor.Enter(threadLock);
+	try
+	{
+		// 显示 Thread 信息
+		Console.WriteLine("-> {0} is executing PrintNumbers()", Thread.CurrentThread.Name);
+
+		// 输出数字
+		Console.Write("Your numbers: ");
+		for (int i = 0; i < 10; i++)
+		{
+			// 使线程休眠数秒
+			Random r = new Random();
+			Thread.Sleep(1000 * r.Next(5));
+			Console.Write("{0} ,", i);
+
+		}
+		Console.WriteLine();
+	}
+	finally
+	{
+		Monitor.Exit(threadLock);
+	}
+}
+```
+
+请注意 Monitor.Enter() 方法是线程标记的最终容器，而该线程标记作为参数由用户指定给 lock 关键字。接下来，所有在锁定范围中的代码被 try 块包含。
+
+既然使用 lock 关键字比使用 System.Threading.Monitor 类型的代码更少，那么直接使用 Monitor 类型的好处，就是有更好的控制力。
+
+### 使用 System.Threading.Interlocked 类型进行同步
+
+如果看了底层的 CIL 代码，将发现赋值和简单的数据运算都不是原子型操作。由此，System.Threading 命名空间提供了一个类型允许我们使用原子型操作单个数据。
+
+成员				|作用
+CompareExchange()	|安全地比较两个值是否相等。如果相等，用第三个值改变第一个值
+Decrement()			|安全递减1
+Exchange()			|安全地交换数据
+Increment()			|安全递加1
+
+虽然不太起眼，但是原子型地修改单个值在多线程环境下非常普遍。假设有个方法名为 AddOne(), 它用来给名为 intVal 的整形变量加1
+
+```c#
+public void AddOne(){
+	lock(myLockToken){
+		intVal++;
+	}
+}
+```
+
+可以通过静态的 Interlocked.Increment()方法简化代码，Increment() 方法不但可以修改传入的参数值，还会返回递增后的新值
+
+```c#
+public void AddOne(){
+	int newVal = Interlocked.Increment(ref intVal);
+}
+```
+
+除了 Increment() 和 Decrement(),使用 Interlocked 类型还可以原子型地赋值给数字或对象。
+
+```c#
+public void SafeAssignment(){
+	Interlocked.Exchange(ref myInt,83);
+}
+```
+
+最后，如果想通过在线程安全的情况下测试两个值是否相等来改变比较后的指向，可以像下面这样调用 Interlocked.CompareExchange() 方法
+
+```c#
+public void CompareExchange(){
+	// 如果 i 等于83，把99 赋值给 i
+	Interlocked.CompareExchange(ref i,99,83);
+}
+```
+
+### 使用[Synchronization]特性进行同步
+
+最后一个同步化原语是 [Synchronization] 特性。这个类级别的特性有效地使对象的所有实例的成员都保持线程安全。当 CLR 分配带[Synchronization]的对象时，它会把这个对象放在同步上下文中。要想对象不在上下文边界移动，就必须继承 ContextBoundObject 类。
+
+```c#
+// Printer 的全部方法都是线程安全的
+[Synchronization]
+public class Printer
+{
+	public void PrintNumbers()
+	{
+		...
+	}
+}
+```
+
+这样写线程安全的代码时一种“偷懒”方法，这种方式主要问题是：即使一个方法没有用线程敏感的数据，CLR 仍然会锁定对该方法的调用，很明显，这回全面降低性能，所以要小心使用这种方式。
+
+### 使用 Timer Callback 编程
+
+许多程序需要定期调用具体的方法。可以使用 System.Threading.Timer 类型和与其相关的 TimerCallback 委托
+
+```c#
+static void PrintTime(object state)
+{
+	Console.WriteLine("Time is: {0}",DateTime.Now.ToLongDateString());
+}
+```
+
+TimerCallback 委托仅仅调用符合这样的签名的方法。传入 TimerCallback 委托的参数可以是任何类型信息。
+
+下一步，定义一个 TimerCallback 委托实例，并把它传入 Timer 对象中。除了定义 TimerCallback 委托，Timer 的构造函数还允许定义别的信息传送到委托指向的方法中
+
+```c#
+Hit key to terminate...
+Time is: 2016年7月27日
+Time is: 2016年7月27日
+Time is: 2016年7月27日
+Time is: 2016年7月27日
+...
+```
+
+如果希望传递一些信息给委托指向的方法，把 TimerCallback 构造函数的第二个参数用指定值取代空值就可以了
+
+```c#
+// 设置Timer类
+Timer t = new Timer(
+	timeCB,                 // TimerCallback 委托对象
+	"Hello From Main",      // 想传入的参数(null 表示没有参数)
+	0,                      // 在开始之前，等待多长时间(以毫秒为单位)
+	1000                    // 每次调用的间隔时间 (以毫秒为单位)
+	);
+```
+
+可以这样获得传入的数据：
+
+```c#
+static void PrintTime(object state)
+{
+	Console.WriteLine("Time is: {0}, Param is: {1}",DateTime.Now.ToLongDateString(),state.ToString());
+}
+```
+
+### CLR 线程池
+
+当使用委托类型(通过 BeginInvoke() 方法)进行异步方法调用的时候，CLR 并不会创建新的线程。为了取得更高的效率，委托的 BeginInvoke()方法创建了由运行时维护的工作者线程池。为了更好地和这些线程池进行交互，System.Threading命名空间提供了 ThreadPool 类型。
+
+如果想使用池中的工作者线程排队执行一个方法，可以使用 ThreadPool.QueueUserWorkItem()方法。
+
+```c#
+public static class ThreadPool
+{
+	...
+	public state bool QueueUserWorkItem(WaitCallback callBack);
+	public state bool QueueUserWorkItem(WaitCallback callBack,object state);
+}
+```
+
+WaitCallback 委托指向有单个 System.Object 类型的参数且无返回值的方法。如果在调用 QueueUserWorkItem() 时不提供这个参数，CLR会自动传送 null 值。
+
+```c#
+static void Main(string[] args)
+{
+
+	Console.WriteLine("Main thread started. ThreadID = {0}",Thread.CurrentThread.ManagedThreadId);
+
+	Printer p = new Printer();
+
+	WaitCallback workItem = new WaitCallback(PrintTheNumbers);
+
+	// 调用这个方法 10 次
+	for (int i = 0; i < 10; i++)
+	{
+		ThreadPool.QueueUserWorkItem(workItem, p);
+	}
+	Console.WriteLine("All tasks queued");
+	Console.ReadLine();
+}
+
+static void PrintTheNumbers(object state)
+{
+	Printer task = (Printer)state;
+	task.PrintNumbers();
+}
+```
+
+比起显式创建 Thread 对象，使用这个被 CLR 所维护的线程池的好处有以下几点：
+
+>* 线程池减少了线程创建、开始和停止的次数，而这提高了效率。
+>* 使用线程池，能够使我们将注意力放到业务逻辑上而不是多线程架构上。然而，在某些情况下应优先使用手工线程管理。
+>* 如果需要前台线程或设置优先级别。线程池中的线程总是后台线程，且它的优先级是默认的(ThreadPriority.Normal)，应使用手工线程。
+>* 如果需要有一个带固定标识的线程便于退出、挂起或通过名字查找，应使用手工线程。
+
+### task API
+
+总体而言，System.Threading.Tasks 中的类型(以及System.Threading 中的类型)被称为任务并行库(Task Parallel Library,TPL)。TPL 使用 CLR 线程池自动将应用程序的工作动态分配到可用的 CPU 中。TPL 还处理工作分区、线程调度、状态管理和其他低级别的细节操作。最终结果是，你可以最大限度地提升.NET 应用程序的性能，并且避免直接操作线程所带来的复杂性。
+
 
 
 
