@@ -721,6 +721,7 @@ private void SomePrivateMethod()
 		// 所有在这个范围内的代码都是线程安全的
 	}
 }
+```
 
 然而，如果需要锁定公共成员中的一段代码，比较安全的方式是声明是有的object成员来作为锁标识
 
@@ -890,7 +891,7 @@ TimerCallback 委托仅仅调用符合这样的签名的方法。传入 TimerCal
 
 下一步，定义一个 TimerCallback 委托实例，并把它传入 Timer 对象中。除了定义 TimerCallback 委托，Timer 的构造函数还允许定义别的信息传送到委托指向的方法中
 
-```c#
+```
 Hit key to terminate...
 Time is: 2016年7月27日
 Time is: 2016年7月27日
