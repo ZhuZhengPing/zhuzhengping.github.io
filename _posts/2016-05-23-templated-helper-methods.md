@@ -3,7 +3,7 @@ layout: post
 title:  "模板化的helper方法"
 date:   2016-05-23 16:32:18 +0800
 categories: mvc
-tags: linq
+tags: mvc linq
 author: Zhengping Zhu
 ---
 
