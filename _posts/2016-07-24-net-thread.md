@@ -971,13 +971,21 @@ static void PrintTheNumbers(object state)
 >* 如果需要前台线程或设置优先级别。线程池中的线程总是后台线程，且它的优先级是默认的(ThreadPriority.Normal)，应使用手工线程。
 >* 如果需要有一个带固定标识的线程便于退出、挂起或通过名字查找，应使用手工线程。
 
-### task API
+### task 任务并行库 API
 
 总体而言，System.Threading.Tasks 中的类型(以及System.Threading 中的类型)被称为任务并行库(Task Parallel Library,TPL)。TPL 使用 CLR 线程池自动将应用程序的工作动态分配到可用的 CPU 中。TPL 还处理工作分区、线程调度、状态管理和其他低级别的细节操作。最终结果是，你可以最大限度地提升.NET 应用程序的性能，并且避免直接操作线程所带来的复杂性。
 
+从.NET 4开始，使用 TPL 是构建多线程应用程序的推荐方法。当然不是说传统的多线程已经过时了。事实上，为了更高效地使用 TPL，你必须理解线程、锁和并发这些基元。
 
+最后，要知道的是，编写大量不必要的并行任务会损害.NET 程序的性能，同样创建多线程也会使程序的执行变慢。只有在你的任务真正成为瓶颈的时候，才能使用 TPL，如迭代大量的对象、处理多个文件中的数据等。
 
+### Parallel 类的作用
 
+TPL 中最重要的类是 System.Threading.Tasks.Parallel，它提供了大量方法，能够以并行的方式迭代数据集合(实现了 IEnumerable<T> 的对象)。在.NET Framework 4 SDK中，你会发现两个重要的方法 Parallel.For()和 Parallel.ForEach().
+
+### 数据并行
+
+使用 TPL 的第一种方式是执行数据并行。简单地说，该术语是指使用 Parallel.For()或 Parallel.ForEach()方法以并行方式对数组或集合中的数据迭代。假设需要执行一些大工作量的文件 IO操作。如需要向内存中加载大类*.jpg文件进行翻转，然后保存到新位置。
 
 
 
