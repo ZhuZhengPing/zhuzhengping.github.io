@@ -1,0 +1,609 @@
+---
+layout: post
+title:  "基本包装类型和内置对象"
+date:   2016-05-13 15:40:54 +0800
+categories:  javascript	
+tags: 	javascript object
+author: Zhengping Zhu
+---
+
+* content
+{:toc}
+
+本章讲的是使用javascript中的基本包装类型和内置对象
+
+
+
+
+
+## 基本包装类型
+
+**基本包装类型概述**
+
+```js
+//定义一个字符串
+var box = 'Mr. Lee';		
+//截掉字符串前两位					
+var box2 = box.substring(2);	
+//输出新字符串				
+alert(box2);							
+```
+
+变量box是一个字符串类型，而box.substring(2)又说明它是一个对象(PS：只有对象才会调用方法)，最后把处理结果赋值给box2。'Mr. Lee'是一个字符串类型的值，按道理它不应该是对象，不应该会有自己的方法，比如：
+
+```js
+//直接通过值来调用方法
+alert('Mr. Lee'.substring(2));					
+```
+
+### 字面量写法：
+
+```js
+//字面量
+var box = 'Mr. Lee';
+//无效属性						
+box.name = 'Lee';		
+//无效方法					
+box.age = function () {						
+	return 100;
+};
+//Mr. Lee
+alert(box);
+//. Lee								
+alert(box.substring(2));
+//string						
+alert(typeof box);	
+//undefined						
+alert(box.name);	
+//错误						
+alert(box.age());							
+```
+
+### new运算符写法：
+
+```js
+//new运算符
+var box = new String('Mr. Lee');
+//有效属性				
+box.name = 'Lee';
+//有效方法								
+box.age = function () {								
+	return 100;
+};
+//Mr. Lee
+alert(box);			
+//. Lee 					
+alert(box.substring(2));	
+//object					
+alert(typeof box);	
+//Lee						
+alert(box.name);	
+//100						
+alert(box.age());						
+```
+
+以上字面量声明和new运算符声明很好的展示了他们之间的区别。但有一定还是可以肯定的，那就是不管字面量形式还是new运算符形式，都可以使用它的内置方法。并且Boolean和Number特性与String相同，三种类型可以成为基本包装类型。
+
+PS：在使用new运算符创建以上三种类型的对象时，可以给自己添加属性和方法，但我们建议不要这样使用，因为这样会导致根本分不清到底是基本类型值还是引用类型值。
+
+### Boolean类型
+
+Boolean类型没有特定的属性或者方法。
+
+### Number类型
+
+Number类型有一些静态属性(直接通过Number调用的属性，而无须new运算符)和方法。
+
+**Number静态属性**
+
+属  性				|		描述
+MAX_VALUE			|		表示最大数
+MIN_VALUE			|		表示最小值
+NaN					|		非数值
+NEGATIVE_INFINITY	|		负无穷大，溢出返回该值
+POSITIVE_INFINITY	|		无穷大，溢出返回该值
+prototype			|		原型，用于增加新属性和方法
+
+**Number对象的方法**
+
+方  法					|		描述
+toString()				|		将数值转化为字符串，并且可以转换进制
+toLocaleString()		|		根据本地数字格式转换为字符串
+toFixed()				|		将数字保留小数点后指定位数并转化为字符串
+toExponential()			|		将数字以指数形式表示，保留小数点后指定位数并转化为字符串
+toPrecision()			|		指数形式或点形式表述数，保留小数点后面指定位数并转化为字符串
+
+```js
+var box = 1000.789;
+//转换为字符串，传参可以转换进制
+alert(box.toString());
+//本地形式，1,000.789						
+alert(box.toLocaleString());
+//小数点保留，1000.78					
+alert(box.toFixed(2));	
+//指数形式，传参会保留小数点					
+alert(box.toExponential());	
+//指数或点形式，传参保留小数点				
+alert(box.toPrecision(3));					
+```
+
+### tring类型
+
+String类型包含了三个属性和大量的可用内置方法。
+
+**String对象属性**
+
+属  性				|		描述
+length				|		返回字符串的字符长度
+constructor			|		返回创建String对象的函数
+prototype			|		通过添加属性和方法扩展字符串定义
+
+String也包含对象的通用方法，比如valueOf()、toLocaleString()和toString()方法，但这些方法都返回字符串的基本值。
+
+**字符方法**
+
+方  法			|		描述
+charAt(n)		|		返回指定索引位置的字符
+charCodeAt(n)	|		以Unicode编码形式返回指定索引位置的字符
+
+```js
+var box = 'Mr.Lee';
+//r
+alert(box.charAt(1));
+//114						
+alert(box.charCodeAt(1));
+//r，通过数组方式截取					
+alert(box[1]);								
+```
+
+PS：box[1]在IE浏览器会显示undefined，所以使用时要慎重。
+
+**字符串操作方法**
+
+方  法						|	描述
+concat(str1...str2)			|	将字符串参数串联到调用该方法的字符串
+slice(n,m)					|	返回字符串n到m之间位置的字符串
+substring(n,m)				|	同上
+substr(n,m)					|	返回字符串n开始的m个字符串
+
+```js
+var box = 'Mr.Lee';
+//Mr.Lee is Teacher !
+alert(box.concat(' is ', ' Teacher ', '!'));
+//Lee			
+alert(box.slice(3));	
+//Le						
+alert(box.slice(3,5));	
+//Lee					
+alert(box.substring(3));	
+//Le					
+alert(box.substring(3,5));
+//Lee					
+alert(box.substr(3));		
+//Lee				
+alert(box.substr(3,5));						
+
+var box = 'Mr.Lee';
+//Lee，6+(-3)=3位开始
+alert(box.slice(-3));	
+//Mr.Lee 负数返回全部						
+alert(box.substring(-3));	
+//Lee，6+(-3)=3位开始					
+alert(box.substr(-3));						
+
+var box = 'Mr.Lee';
+//Le 6+(-1)=5, (3,5)
+alert(box.slice(3, -1));
+//Mr. 第二参为负，直接转0，						
+alert(box.substring(3, -1));					
+//并且方法会把较小的数字提前，(0,3)
+//'' 第二参数为负，直接转0 ，(3,0)
+alert(box.substr(3, -1));						
+```
+
+PS：IE的JavaScript实现在处理向substr()方法传递负值的情况下存在问题，它会返回原始字符串，使用时要切记。
+
+**字符串位置方法**
+
+方  法					|	描述
+indexOf(str, n)			|	从n开始搜索的第一个str，并将搜索的索引值返回
+lastIndexOf(str, n)		|	从n开始搜索的最后一个str，并将搜索的索引值返回
+
+```js
+var box = 'Mr.Lee is Lee';
+//3
+alert(box.indexOf('L'));	
+//10					
+alert(box.indexOf('L', 5));		
+//10			
+alert(box.lastIndexOf('L'));
+//3，从指定的位置向前搜索					
+alert(box.lastIndexOf('L', 5));					
+```
+
+PS：如果没有找到想要的字符串，则返回-1。
+
+**示例：找出全部的L**
+
+```js
+//包含两个L的字符串
+var box = 'Mr.Lee is Lee';
+//存放L位置的数组					
+var boxarr = [];	
+//先获取第一个L的位置						
+var pos = box.indexOf('L');	
+//如果位置大于-1，说明还存在L				
+while (pos > -1) {	
+//添加到数组						
+	boxarr.push(pos);	
+//从新赋值pos目前的位置	
+	pos = box.indexOf('L', pos + 1);			
+}
+//输出
+alert(boxarr);								
+```
+
+**大小写转换方法**
+
+方  法						|		描述
+toLowerCase(str)			|		将字符串全部转换为小写
+toUpperCase(str)			|		将字符串全部转换为大写
+toLocaleLowerCase(str)		|		将字符串全部转换为小写，并且本地化
+toLocaleupperCase(str)		|		将字符串全部转换为大写，并且本地化
+
+```js
+var box = 'Mr.Lee is Lee';	
+//全部小写				
+alert(box.toLowerCase());	
+//全部大写				
+alert(box.toUpperCase());	
+//全部小写,并且本地化			
+alert(box.toLocaleLowerCase());
+//全部大写，并且本地化				
+alert(box.toLocaleUpperCase());				
+```
+
+PS：只有几种语言（如土耳其语）具有地方特有的大小写本地性，一般来说，是否本地化效果都是一致的。
+
+**字符串的模式匹配方法**
+
+方  法								|			描述
+match(pattern) 						|			返回pattern 中的子串或null
+replace(pattern, replacement)		|			用replacement 替换pattern
+search(pattern)						|			返回字符串中pattern 开始位置
+split(pattern)						|			返回字符串按指定pattern 拆分的数组
+
+正则表达式在字符串中的应用，在前面的章节已经详细探讨过，这里就不再赘述了。
+以上中match()、replace()、serach()、split()在普通字符串中也可以使用。
+
+```js
+var box = 'Mr.Lee is Lee';
+//找到L，返回L否则返回null
+alert(box.match('L'));	
+//找到L的位置，和indexOf类型					
+alert(box.search('L'));	
+//把L替换成Q					
+alert(box.replace('L', 'Q'));	
+//以空格分割成字符串				
+alert(box.split(' '));							
+```
+
+**其他方法**
+
+方  法							|		描述
+fromCharCode(ascii)				|		静态方法，输出Ascii码对应值
+localeCompare(str1,str2)		|		比较两个字符串，并返回相应的值
+
+```js
+//L，输出Ascii码对应值
+alert(String.fromCharCode(76));				
+```
+
+`localeCompare(str1,str2)`方法详解：比较两个字符串并返回以下值中的一个；
+
+>* 如果字符串在字母表中应该排在字符串参数之前，则返回一个负数。(多数-1)
+>* 如果字符串等于字符串参数，则返回0。
+>* 如果字符串在自附表中应该排在字符串参数之后，则返回一个正数。(多数1)
+
+```js
+var box = 'Lee';
+//1
+alert(box.localeCompare('apple'));	
+//0			
+alert(box.localeCompare('Lee'));	
+//-1			
+alert(box.localeCompare('zoo'));				
+```
+
+**HTML方法**
+
+方  法					|			描述
+anchor(name)			|			<a name="name">str</a>
+big()					|			<big>str</big>
+blink()					|			<blink>str</blink>
+bold()					|			<b>Str</b>
+fixed()					|			<tt>Str</tt>
+fontcolor(color)		|			<font color="color">str</font>
+fontsize(size)			|			<font size="size">str</font>
+link(URL)				|			<a href="URL">str</a>
+small()					|			<small>str</small>
+strike()				|			<strike>str</strike>
+italics()				|			<i>italics</i>
+sub()					|			<sub>str</sub>
+sup()					|			<sup>str</sup>
+
+以上是通过JS生成一个html标签，根据经验，没什么太大用处，做个了解。
+
+```js
+var box = 'Lee';
+//超链接							
+alert(box.link('http://www.yc60.com'));			
+```
+
+## 内置对象
+
+**Global对象**
+
+Global(全局)对象是ECMAScript中一个特别的对象，因为这个对象是不存在的。在ECMAScript中不属于任何其他对象的属性和方法，都属于它的属性和方法。所以，事实上，并不存在全局变量和全局函数；所有在全局作用域定义的变量和函数，都是Global对象的属性和方法。
+
+PS：因为ECMAScript没有定义怎么调用Global对象，所以，Global.属性或者Global.方法()都是无效的。(Web浏览器将Global作为window对象的一部分加以实现)
+
+Global对象有一些内置的属性和方法：
+
+### URI编码方法
+
+URI编码可以对链接进行编码，以便发送给浏览器。它们采用特殊的UTF-8编码替换所有无效字符，从而让浏览器能够接受和理解。
+
+encodeURI()不会对本身属于URI的特殊字符进行编码，例如冒号、正斜杠、问号和#号；而encodeURIComponent()则会对它发现的任何非标准字符进行编码
+
+```js
+var box = '//Lee李';
+//只编码了中文
+alert(encodeURI(box));						
+
+var box = '//Lee李';
+//特殊字符和中文编码了
+alert(encodeURIComponent(box));			
+```
+
+PS：因为encodeURIComponent()编码比encodeURI()编码来的更加彻底，一般来说encodeURIComponent()使用频率要高一些。
+
+使用了URI编码过后，还可以进行解码，通过decodeURI()和decodeURIComponent()来进行解码
+
+```js
+var box = '//Lee李';
+//还原
+alert(decodeURI(encodeURI(box)));					
+	
+var box = '//Lee李';
+//还原
+alert(decodeURIComponent(encodeURIComponent(box)));		
+```
+
+PS：URI方法如上所述的四种，用于代替已经被ECMA-262第3版废弃的escape()和unescape()方法。URI方法能够编码所有的Unicode字符，而原来的只能正确地编码ASCII字符。所以建议不要再使用escape()和unescape()方法。
+
+### eval()方法
+
+eval()方法主要担当一个字符串解析器的作用，他只接受一个参数，而这个参数就是要执行的JavaScript代码的字符串。
+
+```js
+//解析了字符串代码
+eval('var box = 100');						
+alert(box);
+//同上
+eval('alert(100)');							
+//函数也可以
+eval('function box() {return 123}');			
+alert(box());
+```
+
+eval()方法的功能非常强大，但也非常危险。因此使用的时候必须极为谨慎。特别是在用户输入数据的情况下，非常有可能导致程序的安全性，比如代码注入等等。
+
+### Global对象属性
+
+Global对象包含了一些属性：undefined、NaN、Object、Array、Function等等。
+
+```js
+//返回构造函数
+alert(Array);								
+```
+
+**4.window对象**
+
+之前已经说明，Global没有办法直接访问，而Web浏览器可以使用window对象来实现一全局访问。
+
+```js
+//同上
+alert(window.Array);						
+```
+
+### Math对象
+
+ECMAScript还为保存数学公式和信息提供了一个对象，即Math对象。与我们在JavaScript直接编写计算功能相比，Math对象提供的计算功能执行起来要快得多。
+
+**Math对象的属性**
+
+Math对象包含的属性大都是数学计算中可能会用到的一些特殊值。
+
+属  性				|		说  明
+Math.E				|		自然对数的底数，即常量e的值
+Math.LN10			|		10的自然对数
+Math.LN2			|		2的自然对数
+Math.LOG2E			|		以2为底e的对数
+Math.LOG10E			|		以10为底e的对数
+Math.PI				|		∏的值
+Math.SQRT1_2		|		1/2的平方根
+Math.SQRT2			|		2的平方根
+
+```js
+alert(Math.E);								
+alert(Math.LN10);
+alert(Math.LN2);
+alert(Math.LOG2E);
+alert(Math.LOG10E);
+alert(Math.PI);
+alert(Math.SQRT1_2);
+alert(Math.SQRT2);						
+```
+
+**min()和max()方法**
+
+Math.min()用于确定一组数值中的最小值。Math.max()用于确定一组数值中的最大值。
+
+```js
+//最小值
+alert(Math.min(2,4,3,6,3,8,0,1,3));	
+//最大值			
+alert(Math.max(4,7,8,3,1,9,6,0,3,2));			
+```
+
+**舍入方法**
+
+>* Math.ceil()执行向上舍入，即它总是将数值向上舍入为最接近的整数；
+>* Math.floor()执行向下舍入，即它总是将数值向下舍入为最接近的整数；
+>* Math.round()执行标准舍入，即它总是将数值四舍五入为最接近的整数；
+
+```js
+//26
+alert(Math.ceil(25.9));	
+//26					
+alert(Math.ceil(25.5));	
+//26					
+alert(Math.ceil(25.1));	
+					
+//25
+alert(Math.floor(25.9));
+//25						
+alert(Math.floor(25.5));
+//25						
+alert(Math.floor(25.1));						
+
+//26
+alert(Math.round(25.9));
+//26						
+alert(Math.round(25.5));	
+//25					
+alert(Math.round(25.1));						
+```
+
+### random()方法
+
+Math.random()方法返回介于0到1之间一个随机数，不包括0和1。如果想大于这个范围的话，可以套用一下公式：
+
+值 = Math.floor(Math.random() * 总数 + 第一个值)
+
+```js
+//随机产生1-10之间的任意数
+alert(Math.floor(Math.random() * 10 + 1));		
+for (var i = 0; i<10;i ++) {
+	//5-14之间的任意数
+	document.write(Math.floor(Math.random() * 10 + 5));		
+	document.write('<br />');
+}
+```
+
+为了更加方便的传递想要范围，可以写成函数：
+
+```js
+function selectFrom(lower, upper) {
+	//总数-第一个数+1
+	var sum = upper - lower + 1;							
+	return Math.floor(Math.random() * sum + lower);
+}
+
+for (var i=0 ;i<10;i++) {
+	//直接传递范围即可
+	document.write(selectFrom(5,10));					
+	document.write('<br />');
+}
+```
+
+### 其他方法
+
+方  法						|		说  明
+Math.abs(num)				|		返回num的绝对值
+Math.exp(num)				|		返回Math.E的num次幂
+Math.log(num)				|		返回num的自然对数
+Math.pow(num,power)			|		返回num的power次幂
+Math.sqrt(num)				|		返回num的平方根
+Math.acos(x)				|		返回x的反余弦值
+Math.asin(x)				|		返回x的反正弦值
+Math.atan(x)				|		返回x的反正切值
+Math.atan2(y,x)				|		返回y/x的反正切值
+Math.cos(x)					|		返回x的余弦值
+Math.sin(x)					|		返回x的正弦值
+Math.tan(x)					|		返回x的正切值
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
