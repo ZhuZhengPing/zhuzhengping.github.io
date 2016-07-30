@@ -3,7 +3,7 @@ layout: post
 title:  "javascript中的面向对象与原型"
 date:   2016-05-13 16:40:54 +0800
 categories:  javascript	
-tags: 	javascript property
+tags: javascript property
 author: Zhengping Zhu
 ---
 

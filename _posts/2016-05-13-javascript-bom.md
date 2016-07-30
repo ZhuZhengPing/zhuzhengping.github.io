@@ -3,7 +3,7 @@ layout: post
 title:  "javascript中的匿名函数和闭包和BOM"
 date:   2016-05-13 17:40:54 +0800
 categories:  javascript	
-tags: 	javascript bom
+tags: javascript bom
 author: Zhengping Zhu
 ---
 

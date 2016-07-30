@@ -3,7 +3,7 @@ layout: post
 title:  "基本包装类型和内置对象"
 date:   2016-05-13 15:40:54 +0800
 categories:  javascript	
-tags: 	javascript object
+tags: javascript object
 author: Zhengping Zhu
 ---
 
