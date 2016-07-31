@@ -12,14 +12,14 @@ author: Zhengping Zhu
 
 ## 概念
 
-在MVC系统中，每一个MVC请求都是由合适的`controller`来处理的，这意味着我们不把业务逻辑和数据存储逻辑放在控制器里面，控制器也不生成用户界面。
+在MVC系统中，每一个MVC请求都是由合适的 controller 来处理的，这意味着我们不把业务逻辑和数据存储逻辑放在控制器里面，控制器也不生成用户界面。
 
 
 
 
 ### 重写控制器
 
-控制器实现了`IController`接口，可以自己重写控制器
+控制器实现了 IController 接口，可以自己重写控制器
 
 ```c#
 public class BasicController : IController { 
@@ -39,7 +39,7 @@ public class BasicController : IController {
 } 
 ```
 
-如果你现在访问`http://localhost:10905/base/Index`，页面会输出`Controller: base, Action: Index`
+如果你现在访问 http://localhost:10905/base/Index ，页面会输出 Controller: base, Action: Index 
 
 ### 接收参数
 
@@ -49,7 +49,7 @@ public class BasicController : IController {
 > 数据作为参数传递到 action 方法
 > 显示地调用框架模型绑定的功能
 
-下面是用`Context`对象中取参数
+下面是用 Context 对象中取参数
 
 属性					|类型						|描述
 Request.QueryString		|NameValueCollection		|浏览器Get类型的参数
@@ -68,9 +68,9 @@ HttpContext.Session		|HttpSessionStateBase		|访问者的session
 User					|IPrincipal					|当前登录的用户信息
 TempData				|TempDataDictionary			|临时存储
 
-### 明白 `Action Result`
+### 明白  Action Result 
 
-`action` 返回一个对象 `ActionResult`,而不是直接使用 `Response`返回，调用一个视图，或者跳转到另外的`action`，我们演示定义自己的`ActionResult`
+ action  返回一个对象  ActionResult`,而不是直接使用  Response 返回，调用一个视图，或者跳转到另外的 action ，我们演示定义自己的 ActionResult 
 
 ```c#
 public class CustomRedirectResult:ActionResult
@@ -84,7 +84,7 @@ public class CustomRedirectResult:ActionResult
 }
 ```
 
-### 下面使用自定义的`ActionResult`来实现简单的页面跳转
+### 下面使用自定义的 ActionResult 来实现简单的页面跳转
 
 ```c#
 public ActionResult Index()
@@ -101,9 +101,9 @@ public ActionResult Index()
 }
 ```
 
-### 现在你已经看到了 `ActionResult`是怎样工作的，MVC框架还提供页面跳转的功能
+### 现在你已经看到了  ActionResult 是怎样工作的，MVC框架还提供页面跳转的功能
 
-*使用`RedirectResult`对象*
+*使用 RedirectResult 对象*
 
 ```c#
 public ActionResult ProduceOutput() {     
@@ -112,7 +112,7 @@ public ActionResult ProduceOutput() {
 }
 ```
 
-下面列出所有的 `ActionResult`类型
+下面列出所有的  ActionResult 类型
 
 类型					|描述							|方法
 ViewResult				|视图							|View 
@@ -180,7 +180,7 @@ public RedirectToRouteResult Redirect()
 } 
 ```
 
-### 跳转到某个`controller`的`action`
+### 跳转到某个 controller 的 action 
 
 ```c#
 public RedirectToRouteResult RedirectToRoute() { 
@@ -192,9 +192,9 @@ public RedirectToRouteResult Redirect() {
 }
 ```
 
-### `TempData` 和 `ViewBag`
+###  TempData  和  ViewBag 
 
-`TempData`和`session`比较类似，不同的是`TempData`访问后就被删除了，并且当访问执行后数据就被删除了
+ TempData 和 session 比较类似，不同的是 TempData 访问后就被删除了，并且当访问执行后数据就被删除了
 
 ```c#
 public RedirectToRouteResult RedirectToRoute() { 
@@ -214,9 +214,9 @@ public ViewResult Index() {
 } 
 ```
 
-使用`TempData`，你可以强制它不自动移除，`DateTime time = (DateTime)TempData.Peek("Date"); `
+使用 TempData ，你可以强制它不自动移除， DateTime time = (DateTime)TempData.Peek("Date");  
 
-保持一个临时的值，使用`TempData.Keep("Date")`
+保持一个临时的值，使用 TempData.Keep("Date")`
 
 #### 返回http状态信息
 

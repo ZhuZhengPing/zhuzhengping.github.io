@@ -14,14 +14,14 @@ author: Zhengping Zhu
 
 MVC路由用来处理 MVC的 Url，ASP.NET 平台使用路由系统，路由系统有两个功能
 	
->* 检查用户请求的URL,访问对应的controller和action
->* 生成URL，在我们开发的网站中，当用户单击按钮时，将调用一个特定的链接
+>* 检查用户请求的URL,访问对应的 controller 和 action
+>* 生成 URL，在我们开发的网站中，当用户单击按钮时，将调用一个特定的链接
 
 
 
 
 
-### URL匹配示例 如果在`APP_Start`文件夹里面的`RouteConfig` 里面的代码时这样的话
+### URL匹配示例 如果在 APP_Start 文件夹里面的 RouteConfig 里面的代码时这样的话
 
 ```c#
 public static void RegisterRoutes(RouteCollection routes)
@@ -43,8 +43,8 @@ http://mysite.com/Admin/Index/Soccer 	|匹配失败-多于两个变量
 
 URL模式的匹配行为
 
->* URL模式都是比较保守的，只会匹配和URL相同的变量
->* 如果URL的数量和变量相同的话，routing会提取变量的值
+>* URL模式都是比较保守的，只会匹配和 URL 相同的变量
+>* 如果URL的数量和变量相同的话，routing 会提取变量的值
 
 ### 创建有默认值的路由
 
@@ -57,7 +57,7 @@ public class RouteConfig {
 } 
 ```
 
-#### `controller`和`action`都提供了默认值,可以匹配带有1个、2个、3个的URL
+####  controller 和 action 都提供了默认值,可以匹配带有1个、2个、3个的URL
 
 变量数量		|示例							|匹配
 0				|mydomain.com					|controller = Home  action = Index  
@@ -67,7 +67,7 @@ public class RouteConfig {
 
 #### 使用静态的URL变量
 
-URL不是所有的部分都需要变量，你也可以在URL上面创建一个静态的变量，就像下面使用静态变量`Public`一样
+URL不是所有的部分都需要变量，你也可以在 URL 上面创建一个静态的变量，就像下面使用静态变量 Public 一样
 
 ```
 http://mydomain.com/Public/Home/Index 
@@ -85,7 +85,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 } 
 ```
 
-我们可以根据Routing的部分变量访问`RouteData.Values`属性，为了验证这一点，下面创建了一个action
+我们可以根据Routing的部分变量访问 RouteData.Values 属性，为了验证这一点，下面创建了一个action
 
 ```c#
 public ActionResult CustomVariable() { 
@@ -96,11 +96,11 @@ public ActionResult CustomVariable() {
 } 
 ```
 
-`RouteData.Values["id"]` 可以获取到`RouteCollection`里面的自定义参数`id`
+ RouteData.Values["id"]` 可以获取到 RouteCollection 里面的自定义参数 id 
 
 ### 创建选择性的部分变量
 
-一个选择性的部分变量不需要再`RouteCollection`里面指定，并且没有默认值，下面创建了一个选择性变量的示例，我们设置部分变量为选择性变量的语法为：`UrlParameter.Optional`
+一个选择性的部分变量不需要再 RouteCollection 里面指定，并且没有默认值，下面创建了一个选择性变量的示例，我们设置部分变量为选择性变量的语法为： UrlParameter.Optional 
 
 ```c#
 public static void RegisterRoutes(RouteCollection routes) { 
@@ -132,7 +132,7 @@ public ActionResult CustomVariable(string id) {
 
 ### 创建可变长度的Routes
 
-Routes可接受数量变化的部分变量，定义一个支持可变长度的URL变量`catchall`，通过加上一个前缀(*),下面定义了一个为Callchall的变量
+Routes可接受数量变化的部分变量，定义一个支持可变长度的URL变量 catchall ，通过加上一个前缀(*),下面定义了一个为Callchall的变量
 
 ```c#
 public static void RegisterRoutes(RouteCollection routes) { 
@@ -142,7 +142,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 } 
 ```
 
-上面的RouteCollection添加了一个`catchall`变量，这个route将匹配任何URL，开始的三个参数分别是controller,action和id变量，特别说明的是，最后一个参数catchall将匹配所有
+上面的RouteCollection添加了一个 catchall 变量，这个route将匹配任何URL，开始的三个参数分别是controller,action和id变量，特别说明的是，最后一个参数catchall将匹配所有
 
 *使用catchall匹配URL*
 
@@ -156,7 +156,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 ### 指定控制器的命名空间
 
-当一个URL匹配route,MVC框架根据控制器的名称来访问，例如当`controller`的值为`Home`,MVC 框架会查找`HomeController`控制器，如果项目里面有多个`HomeController`控制器在不同的命名空间下，则会出现错误，这时我们需要指定命名空间。
+当一个URL匹配route,MVC框架根据控制器的名称来访问，例如当 controller 的值为 Home`,MVC 框架会查找 HomeController 控制器，如果项目里面有多个 HomeController 控制器在不同的命名空间下，则会出现错误，这时我们需要指定命名空间。
 
 ```c#
 routes.MapRoute("MyRoute", "{controller}/{action}/{id}/{*catchall}", 
@@ -165,7 +165,7 @@ routes.MapRoute("MyRoute", "{controller}/{action}/{id}/{*catchall}",
 } 
 ```
 
-当设置了命名空间后，MVC框架会在 `URLsAndRoutes.AdditionalControllers` 下找对应的controller和action
+当设置了命名空间后，MVC框架会在  URLsAndRoutes.AdditionalControllers  下找对应的controller和action
 
 ### 路由约束
 
@@ -200,7 +200,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 ### 创建一个自定义约束
 
-如果上面的route功能都不满足你的需求，你可以实现`IRouteConstraint`接口创建一个自定义的约束，我们添加一个新类`UserAgentConstraint`
+如果上面的route功能都不满足你的需求，你可以实现 IRouteConstraint 接口创建一个自定义的约束，我们添加一个新类 UserAgentConstraint 
 
 ```c#
 public class UserAgentConstraint : IRouteConstraint
@@ -219,7 +219,7 @@ public class UserAgentConstraint : IRouteConstraint
 }
 ```
 
-`IRouteConstraint`创建匹配的方法，`Match`方法提供客户端访问请求,下面创建了一个浏览器约束，只能在谷歌浏览器中访问。
+ IRouteConstraint 创建匹配的方法， Match 方法提供客户端访问请求,下面创建了一个浏览器约束，只能在谷歌浏览器中访问。
 
 ```c#
 routes.MapRoute("ChromeRoute", "{*catchall}", 
@@ -231,7 +231,7 @@ routes.MapRoute("ChromeRoute", "{*catchall}",
 
 ### 路由访问磁盘文件
 
-不是所有的MVC请求都是请求的controller和action，我们还是需要请求一些其他的内容，例如图片，HTML页面，javascript类库等等。设置`RouteCollection`的`RouteExistingFiles`属性为true
+不是所有的MVC请求都是请求的controller和action，我们还是需要请求一些其他的内容，例如图片，HTML页面，javascript类库等等。设置 RouteCollection 的 RouteExistingFiles 属性为true
 
 ```c#
 public static void RegisterRoutes(RouteCollection routes) { 
@@ -241,9 +241,9 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 ### 绕过routing系统
 
-在`RouteCollection`集合里调用`IgnoreRoute`方法，可以绕过routing系统
+在 RouteCollection 集合里调用 IgnoreRoute 方法，可以绕过routing系统
 
-*使用`IgnoreRoute`方法*
+*使用 IgnoreRoute 方法*
 
 ```c#
 public static void RegisterRoutes(RouteCollection routes) {
@@ -253,7 +253,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 ### 使用Routing system 生成外部链接
 
-使用`Html.ActionLink`是最简单的生成外部链接的方式
+使用 Html.ActionLink 是最简单的生成外部链接的方式
 
 ```c#
 @Html.ActionLink("This is an outgoing URL", "CustomVariable")
@@ -265,7 +265,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 ### 生成URL，没有超链接
 
-`HTML.ActionLink`生成了一个a标签的元素，可是有时候我们只想显示URL，不显示超链接。
+ HTML.ActionLink 生成了一个a标签的元素，可是有时候我们只想显示URL，不显示超链接。
 
 ```c#
 @Url.Action("Index", "Home", new { id = "MyId" }) 
@@ -273,7 +273,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 ### 在Action 方法里面生成URL
 
-通常我们会在`view`里面生成URL，有些时候我们也想在action方法里面生成URL
+通常我们会在 view 里面生成URL，有些时候我们也想在action方法里面生成URL
 
 ```c#
 public ViewResult MyActionMethod() { 
@@ -283,9 +283,9 @@ public ViewResult MyActionMethod() {
 }
 ```
 
-另一个常用的功能是跳转到另外一个`action`,我们可以返回一个`RedirectToAction`类型
+另一个常用的功能是跳转到另外一个 action`,我们可以返回一个 RedirectToAction 类型
 
-*跳转到另外一个`action`*
+*跳转到另外一个 action`*
 
 ```c#
 public RedirectToRouteResult MyActionMethod() { 
@@ -293,7 +293,7 @@ public RedirectToRouteResult MyActionMethod() {
 } 
 ```
 
-`RedirectToAction` 是 `RedirectToRouteResult`的子类，如果你想一个url重定向，你可以使用`RedirectToRoute`方法
+ RedirectToAction  是  RedirectToRouteResult 的子类，如果你想一个url重定向，你可以使用 RedirectToRoute 方法
 
 *重定向URL生成匿名类型的属性*
 
@@ -305,7 +305,7 @@ public RedirectToRouteResult MyActionMethod() {
 
 ### 生成一个特定的URL
 
-之前我们使用`Html.ActionLink`生成URL或者Link,我们将显示选择一个指定的URL，首先在`RouteConfig.cs`文件中定义route
+之前我们使用 Html.ActionLink 生成URL或者Link,我们将显示选择一个指定的URL，首先在 RouteConfig.cs 文件中定义route
 
 ```c#
 public static void RegisterRoutes(RouteCollection routes) {     
@@ -314,13 +314,13 @@ public static void RegisterRoutes(RouteCollection routes) {
 }
 ```
 
-我们定义了两个route，分别是`MyRoute`和`MyOtherRoute`,如果我们使用ActionLink:`@Html.ActionLink("Click me", "Index", "Customer")`,输出的URL地址可能会是这样：`<a href="/Customer/Index">Click me</a>`
+我们定义了两个route，分别是 MyRoute 和 MyOtherRoute`,如果我们使用ActionLink:`@Html.ActionLink("Click me", "Index", "Customer")`,输出的URL地址可能会是这样：`<a href="/Customer/Index">Click me</a>`
 
-你可以通过`Html.RouteLink`指定一个route，例如：`@Html.RouteLink("Click me", "MyOtherRoute","Index", "Customer") ` ，生成的页面为：`<a Length="8" href="/App/Index?Length=5">Click me</a>`
+你可以通过 Html.RouteLink 指定一个route，例如：`@Html.RouteLink("Click me", "MyOtherRoute","Index", "Customer")   ，生成的页面为：`<a Length="8" href="/App/Index?Length=5">Click me</a>`
 
 ### 自定义Routing system
 
-如果你不喜欢直接使用route匹配URL,或者实现一些特殊的东西，你可以继承`RouteBase`实现自己的新功能
+如果你不喜欢直接使用route匹配URL,或者实现一些特殊的东西，你可以继承 RouteBase 实现自己的新功能
 
 ```c#
 public class LegacyController : Controller { 
@@ -342,7 +342,7 @@ public class LegacyController : Controller {
 The URL requested was: @Model
 ```
 
-这个示例非常简单，我们只是显示自定义route的行为，创建一个`LegacyRoute`类处理action行为
+这个示例非常简单，我们只是显示自定义route的行为，创建一个 LegacyRoute 类处理action行为
 
 ```c#
 public class LegacyRoute : RouteBase { 
@@ -377,7 +377,7 @@ public class LegacyRoute : RouteBase {
 } 
 ```
 
-创建了一个自定义的路由以后，我们把这个创建的路由注册到`RouteCollection`类里面去
+创建了一个自定义的路由以后，我们把这个创建的路由注册到 RouteCollection 类里面去
 
 ```c#
 public static void RegisterRoutes(RouteCollection routes) { 
@@ -391,7 +391,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 ### 创建route handler
 
-之前创建的自定义route 使用了`MvcRouteHandler`,可以继承`IRouteHandler`创建自己的route handler，下面创建一个`CustomRouteHandler`来演示
+之前创建的自定义route 使用了 MvcRouteHandler`,可以继承 IRouteHandler 创建自己的route handler，下面创建一个 CustomRouteHandler 来演示
 
 ```c#
 public class CustomRouteHandler : IRouteHandler
@@ -414,7 +414,7 @@ public class CustomRouteHandler : IRouteHandler
 }
 ```
 
-创建好之后，在`RouteCollection`里面注册这个route handler
+创建好之后，在 RouteCollection 里面注册这个route handler
 
 ```c#
 public static void RegisterRoutes(RouteCollection routes) { 
@@ -422,15 +422,15 @@ public static void RegisterRoutes(RouteCollection routes) {
 }
 ```
 
-完成之后我们直接访问网站 `http://localhost:10905/SayHello`， 就会出现Hello.
+完成之后我们直接访问网站  http://localhost:10905/SayHello ， 就会出现Hello.
 
 ### Route 区域
 
 MVC框架支持区域	，在大型项目中，很多的coltroller，model，view，这个时候会变得难以管理，所以需要用到区域.
 
-创建一个区域，在MVC项目中点右键，添加`Area`，新建Area后，你可以看到一个缩小版的MVC项目。不同的是，Area 文件夹会生成一个`类`
+创建一个区域，在MVC项目中点右键，添加 Area ，新建Area后，你可以看到一个缩小版的MVC项目。不同的是，Area 文件夹会生成一个 类 
 
-访问后的URL会变成 `http://domain/Admin/Home/Index`
+访问后的URL会变成  http://domain/Admin/Home/Index 
 
 ```c#
 public class AdminAreaRegistration : AreaRegistration
@@ -456,7 +456,7 @@ public class AdminAreaRegistration : AreaRegistration
 
 #### 解决模糊控制器的问题
 
-如果你现在访问`http://localhost:10905/Home/Index`，有可能会出现错误，这是因为Route会找到多个Home控制器，我们可以在`RouteCollection`里面添加命名空间来解决这个问题
+如果你现在访问 http://localhost:10905/Home/Index ，有可能会出现错误，这是因为Route会找到多个Home控制器，我们可以在 RouteCollection 里面添加命名空间来解决这个问题
 
 ```c#
 public static void RegisterRoutes(RouteCollection routes)
@@ -470,9 +470,9 @@ public static void RegisterRoutes(RouteCollection routes)
 }
 ```
 
-#### 在`Areas`里面生成`Actions`
+#### 在 Areas 里面生成 Actions 
 
-在区域内使用 `@Html.ActionLink("Click me", "About")` 生成的链接会带上区域 `<a href="/Admin/Home/About">Click me</a>`
+在区域内使用  @Html.ActionLink("Click me", "About") 生成的链接会带上区域  <a href="/Admin/Home/About">Click me</a>
 
 还可以跳转到另外一个区域
 
@@ -480,6 +480,6 @@ public static void RegisterRoutes(RouteCollection routes)
 @Html.ActionLink("Click me to go to another area", "Index", new { area = "customer" })
 ```
 
-上面的代码会生成 `<a href="/Support/Home">Click me to go to another area</a>` 跳转到另外一个`areas`
+上面的代码会生成 `<a href="/Support/Home">Click me to go to another area</a>` 跳转到另外一个 areas 
 
 

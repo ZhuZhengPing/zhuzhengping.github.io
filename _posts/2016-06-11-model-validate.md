@@ -12,7 +12,7 @@ author: Zhengping Zhu
 
 ## 概念
 
-`model`验证是为了保护领域模型数据，拒绝不合理的数据
+ model 验证是为了保护领域模型数据，拒绝不合理的数据
 
 
 
@@ -32,7 +32,7 @@ public class Appointment
 }
 ```
 
-我们创建`Home controller`
+我们创建 Home controller 
 
 ```c#
 public class HomeController : Controller
@@ -53,7 +53,7 @@ public class HomeController : Controller
 }
 ```
 
-为了完成示例项目，我们需要创建一些视图，下面创建`MakeBooking.cshtml`
+为了完成示例项目，我们需要创建一些视图，下面创建 MakeBooking.cshtml 
 
 ```html
 @model MvcApplication2.Models.Appointment
@@ -71,7 +71,7 @@ public class HomeController : Controller
 }
 ```
 
-当这个表单提交，`MakeBooking action`在`Completed.cshtml`里面显示结果
+当这个表单提交， MakeBooking action 在 Completed.cshtml 里面显示结果
 
 ```html
 @model MvcApplication2.Models.Appointment
@@ -95,9 +95,9 @@ public class HomeController : Controller
 >* 用户必须提供正确的日期格式
 >* 必须检查复选框
 
-### 验证`model`
+### 验证 model 
 
-最直接的验证`model`的方式是在`action`方法里验证
+最直接的验证 model 的方式是在 action 方法里验证
 
 ```c#
 [HttpPost]
@@ -134,7 +134,7 @@ public ViewResult MakeBooking(Appointment appt)
 
 #### 呈现验证错误
 
-我们在`~/Content/Site.css`文件里面添加错误样式
+我们在 ~/Content/Site.css 文件里面添加错误样式
 
 ```css
 .input-validation-error {     
@@ -147,7 +147,7 @@ public ViewResult MakeBooking(Appointment appt)
 
 ### 显示验证信息
 
-我们呈现了错误的验证文本框样式，但是我们还是没有让用户明白具体的错误是什么，我们将在`MakeBooking`视图里面显示具体的错误信息
+我们呈现了错误的验证文本框样式，但是我们还是没有让用户明白具体的错误是什么，我们将在 MakeBooking 视图里面显示具体的错误信息
 
 ```html
 @model MvcApplication2.Models.Appointment
@@ -169,7 +169,7 @@ public ViewResult MakeBooking(Appointment appt)
 }
 ```
 
-`@Html.ValidationSummary()`显示具体的验证信息
+ @Html.ValidationSummary() 显示具体的验证信息
 
 <img src="http://ww3.sinaimg.cn/mw690/006dag38gw1f4tcldue5rj30g30e3q4i.jpg" style="width:80%" />
 
@@ -185,7 +185,7 @@ public ViewResult MakeBooking(Appointment appt)
 </div>
 ```
 
-还有一些`ValidationSummary`的重载方法，下面显示一些常用的方法
+还有一些 ValidationSummary 的重载方法，下面显示一些常用的方法
 
 重载方法名							|描述
 Html.ValidationSummary() 			|生成所有的验证错误信息
@@ -231,13 +231,13 @@ public ViewResult MakeBooking(Appointment appt)
 }
 ```
 
-如果验证失败，在`ModelState`中添加错误信息
+如果验证失败，在 ModelState 中添加错误信息
 
 ```c#
 ModelState.AddModelError("", "Joe cannot book appointments on Mondays");
 ```
 
-我们更新`MakeBooking.cshtml`视图，使用`ValidationSummary`来显示错误信息
+我们更新 MakeBooking.cshtml 视图，使用 ValidationSummary 来显示错误信息
 
 ```html
 @model MvcApplication2.Models.Appointment
@@ -263,9 +263,9 @@ ModelState.AddModelError("", "Joe cannot book appointments on Mondays");
 
 <img src="http://ww3.sinaimg.cn/mw690/006dag38gw1f4tp6kws4cj30eb0bwdha.jpg" style="width:80%" />
 
-### 显示`Property-Level`验证信息
+### 显示 Property-Level 验证信息
 
-我们更新`MakeBooking.cshtml`视图，显示`model-level`错误，并且把`property-level`错误显示在文本框
+我们更新 MakeBooking.cshtml 视图，显示 model-level 错误，并且把 property-level 错误显示在文本框
 
 ```html
 @model MvcApplication2.Models.Appointment
@@ -290,23 +290,23 @@ ModelState.AddModelError("", "Joe cannot book appointments on Mondays");
 }
 ```
 
-`Html.ValidationMessageFor`显示单个的`model`错误信息
+ Html.ValidationMessageFor 显示单个的 model 错误信息
 
 ### 使用交替的验证技术
 
-如果我们提供的的值不能转换为`model`属性，则提示下面的信息
+如果我们提供的的值不能转换为 model 属性，则提示下面的信息
 
 <img src="http://ww3.sinaimg.cn/mw690/006dag38jw1f4w7axm3pqj30df07xab0.jpg" style="width:100%" />
 
-内置的`DefaultModelBinder`提供很多有用的方法
+内置的 DefaultModelBinder 提供很多有用的方法
 
 方法				|描述									|默认实现
-DefaultModelBinder	|当`binder`尝试给`model`属性分配值时调用|应用模型元数据定义的验证规则,在`ModelState`中注册错误
-SetProperty	|当`binder`提供值给指定的属性时调用|如果该属性不能保存`null`值，并且没有提供值，这时`ModelState`将注册`The <name> field is required`
+DefaultModelBinder	|当 binder 尝试给 model 属性分配值时调用|应用模型元数据定义的验证规则,在 ModelState 中注册错误
+SetProperty	|当 binder 提供值给指定的属性时调用|如果该属性不能保存 null 值，并且没有提供值，这时 ModelState 将注册 The <name> field is required 
 
-### 使用`Metadata`指定验证规则
+### 使用 Metadata 指定验证规则
 
-使用元数据的优势是我们的验证规则在整个应用程序执行任何绑定过程应用,不止一个`action`方法，验证属性通过内置的默认模型绑定器类`DefaultModelBinder`发现和实施，我们在`Appointment`类中演示
+使用元数据的优势是我们的验证规则在整个应用程序执行任何绑定过程应用,不止一个 action 方法，验证属性通过内置的默认模型绑定器类 DefaultModelBinder 发现和实施，我们在 Appointment 类中演示
 
 ```c#
 public class Appointment
@@ -323,7 +323,7 @@ public class Appointment
 }
 ```
 
-我们使用了`Required`和`Range`验证属性，`Range`指定只有一个子集可以接受
+我们使用了 Required 和 Range 验证属性， Range 指定只有一个子集可以接受
 
 属性				|示例							|描述
 Compare				|[Compare("MyOtherProperty")]	|两个属性必须有相同的值
@@ -332,13 +332,13 @@ RegularExpression	|[RegularExpression("pattern")]	|正则表达式验证
 Required			|[Required] 					|非空
 StringLength		|[StringLength(10)]				|字符串长度，不能超过10，[StringLength(10, MinimumLength=2)]
 
-上面的所有验证信息都能指定一个错误信息`ErrorMessage`
+上面的所有验证信息都能指定一个错误信息 ErrorMessage 
 
 ```c#
 [Required(ErrorMessage="Please enter a date")]
 ```
 
-我们仍然需要使用一些技巧,例如`TermsAccepted`属性
+我们仍然需要使用一些技巧,例如 TermsAccepted 属性
 
 ```c#
 [Range(typeof(bool), "true", "true", ErrorMessage="You must accept the terms")]
@@ -346,7 +346,7 @@ StringLength		|[StringLength(10)]				|字符串长度，不能超过10，[String
 
 ### 创建自定义的验证属性
 
-上面的`Range`属性验证使用有点怪，创建`ValidationAttribute`的派生类来实现自定义的验证属性，创建`MustBeTrueAttribute`类
+上面的 Range 属性验证使用有点怪，创建 ValidationAttribute 的派生类来实现自定义的验证属性，创建 MustBeTrueAttribute 类
 
 ```c#
 public class MustBeTrueAttribute : ValidationAttribute  
@@ -358,7 +358,7 @@ public class MustBeTrueAttribute : ValidationAttribute
 }
 ```
 
-验证逻辑非常简单，如果传过来的值为`bool`并且值为`true`，返回`true`表明验证通过，替换掉`Range`验证
+验证逻辑非常简单，如果传过来的值为 bool 并且值为 true ，返回 true 表明验证通过，替换掉 Range 验证
 
 ```c#
 public class Appointment
@@ -374,9 +374,9 @@ public class Appointment
 }
 ```
 
-### 从`Built-In`验证属性派生新`class`
+### 从 Built-In 验证属性派生新 class 
 
-我们可以从`built-in`属性派生新`class`,创建一个新的`FutureDateAttribute.cs`类
+我们可以从 built-in 属性派生新 class ,创建一个新的 FutureDateAttribute.cs 类
 
 ```c#
 public class FutureDateAttribute : RequiredAttribute 
@@ -388,7 +388,7 @@ public class FutureDateAttribute : RequiredAttribute
 }
 ```
 
-当我们调用`IsValid`方法，自定义的属性将执行基本验证，包含`Required`属性
+当我们调用 IsValid 方法，自定义的属性将执行基本验证，包含 Required 属性
 
 ```c#
 public class Appointment
@@ -404,9 +404,9 @@ public class Appointment
 }
 ```
 
-### 创建`model`验证属性
+### 创建 model 验证属性
 
-到目前为止我们创建的自定义验证属性应用于单个模型属性，我们可以使用属性来验证整个模型，我们来创建`NoJoeOnMondaysAttribute`类
+到目前为止我们创建的自定义验证属性应用于单个模型属性，我们可以使用属性来验证整个模型，我们来创建 NoJoeOnMondaysAttribute 类
 
 ```c#
 public class NoJoeOnMondaysAttribute : ValidationAttribute
@@ -433,7 +433,7 @@ public class NoJoeOnMondaysAttribute : ValidationAttribute
 }
 ```
 
-当我们为`model`提供验证属性，我们验证属性检查以确保我们确实有个`Appointment `对象，并且`ClientName`和`Date`都不能为空.
+当我们为 model 提供验证属性，我们验证属性检查以确保我们确实有个 Appointment  对象，并且 ClientName 和 Date 都不能为空.
 
 ```c#
 [NoJoeOnMondays] 
@@ -450,7 +450,7 @@ public class Appointment
 }
 ```
 
-有了上述的验证，我们可以修改`MakeBooking action`
+有了上述的验证，我们可以修改 MakeBooking action 
 
 ```c#
 public class HomeController : Controller
@@ -478,13 +478,13 @@ public class HomeController : Controller
 }
 ```
 
-我们测试下`/Home/MakeBooking` URL,输入名字Joe，时间2/17/2014，可以看到如下结果
+我们测试下 /Home/MakeBooking  URL,输入名字Joe，时间2/17/2014，可以看到如下结果
 
 <img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f4xekp8ze2j30eu07qjsv.jpg" style="width:100%" />
 
-### 定义`Self-Validating models`
+### 定义 Self-Validating models 
 
-我们实现`IValidatableObject`定义`self-validating model`
+我们实现 IValidatableObject 定义 self-validating model 
 
 ```c#
 public class Appointment : IValidatableObject
@@ -525,13 +525,13 @@ public class Appointment : IValidatableObject
 }
 ```
 
-`model`实现`IValidatableObject`,这种方法的好处的灵活性相结合的动作方法的验证逻辑
+ model 实现 IValidatableObject ,这种方法的好处的灵活性相结合的动作方法的验证逻辑
 
 <img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f4xf4tlz3hj30i50cqdhf.jpg" style="width:100%" />
 
 ### 执行客户端验证
 
-客户端验证需要设置`Web.config`的两个地方
+客户端验证需要设置 Web.config 的两个地方
 
 ```c#
 <appSettings> 
@@ -546,7 +546,7 @@ public class Appointment : IValidatableObject
 >* /Scripts/ jquery.validate.min.js
 >* /Scripts/ jquery.validate.unobtrusive.min.js
 
-我们可以修改`/Views/Shared/_Layout.cshtml`文件，添加我们要加的js文件
+我们可以修改 /Views/Shared/_Layout.cshtml 文件，添加我们要加的js文件
 
 ```c#
 <!DOCTYPE html>
@@ -581,9 +581,9 @@ public class Appointment : IValidatableObject
 </html> 
 ```
 
-### 使用`Client-Side`验证
+### 使用 Client-Side 验证
 
-当启用了客户端验证，并且引入了js文件，最简单的方式是提供`metadata`属性，例如`Required`,`Range`,`StringLength`
+当启用了客户端验证，并且引入了js文件，最简单的方式是提供 metadata 属性，例如 Required , Range , StringLength 
 
 ```c#
 public class Appointment 
@@ -603,9 +603,9 @@ public class Appointment
 
 <img src="http://ww3.sinaimg.cn/mw690/006dag38jw1f4z5cfwbtkj30h80c3tao.jpg" style="width:80%;" />
 
-### 理解`Client-Side`验证
+### 理解 Client-Side 验证
 
-我们使用客户端验证，并不需要写`javascript`代码，验证规则表达使用HTML属性
+我们使用客户端验证，并不需要写 javascript 代码，验证规则表达使用HTML属性
 
 ```html
 <input class="text-box single-line" id="ClientName" name="ClientName" type="text" value="" />
@@ -617,9 +617,9 @@ public class Appointment
 <input class="text-box single-line" data-val="true" data-val-length="The field ClientName must be a string with a minimum length of 3 and a maximum length of 10." data-val-length-max="10" data-val-length-min="3" data-val-required="The ClientName field is required." id="ClientName" name="ClientName" type="text" value="" />
 ```
 
-### 执行`Remote`验证
+### 执行 Remote 验证
 
-创建一个`action`方法来验证我们的`model`属性，我们验证`Appointment`里面的`Date`属性
+创建一个 action 方法来验证我们的 model 属性，我们验证 Appointment 里面的 Date 属性
 
 ```c#
 public JsonResult ValidateDate(string Date)
@@ -643,7 +643,7 @@ public JsonResult ValidateDate(string Date)
 }
 ```
 
-客户端为了支持`remote`验证，必须返回`JsonResult`类型
+客户端为了支持 remote 验证，必须返回 JsonResult 类型
 
 ```c#
 return Json(true, JsonRequestBehavior.AllowGet);
@@ -655,7 +655,7 @@ return Json(true, JsonRequestBehavior.AllowGet);
 return Json("Please enter a date in the future", JsonRequestBehavior.AllowGet); 
 ```
 
-为了使用`remote`验证方法，我们给`model`的属性提供`remote`特性
+为了使用 remote 验证方法，我们给 model 的属性提供 remote 特性
 
 ```c#
 public class Appointment 
@@ -672,7 +672,7 @@ public class Appointment
 }
 ```
 
-运行`/Home/MakeBooking` URL，你会看到如下验证结果
+运行 /Home/MakeBooking  URL，你会看到如下验证结果
 
 <img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f4z8bygnigj30i50cqta4.jpg" style="width:100%" />
 
