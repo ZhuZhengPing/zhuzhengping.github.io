@@ -9,7 +9,7 @@
 title: ZhuZhengPing
 brief-intro: Front-end Dev Engineer
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "http://zhuzhengping.github.io/" # the base hostname & protocol for your site
+url: "https://zhuzhengping.github.io/" # the base hostname & protocol for your site
 
 permalink: /:year/:month/:day/:title/
 
