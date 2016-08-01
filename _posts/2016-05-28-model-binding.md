@@ -164,7 +164,7 @@ namespace System.Web.Mvc {
 
 尽管可以创建自定义的 model 绑定，一般还是使用内置的绑定类 DefaultModelBinder 
 
-* DefaultModelBinder 查找参数的顺序*
+*DefaultModelBinder 查找参数的顺序*
 
 Source				|描述
 Request.Form		|HTML form 里面取值
