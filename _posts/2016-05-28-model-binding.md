@@ -167,8 +167,8 @@ namespace System.Web.Mvc {
 * DefaultModelBinder 查找参数的顺序*
 
 Source				|描述
-Request.Form		|`HTML form 里面取值
-RouteData.Values 	|`routes 里面包含的值
+Request.Form		|HTML form 里面取值
+RouteData.Values 	|routes 里面包含的值
 Request.QueryString	|请求的URL里面取值
 Request.Files		|上传文件里面取值
 
