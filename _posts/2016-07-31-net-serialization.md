@@ -124,6 +124,7 @@ public interface IFormatter{
 	object Deserialize(Stream serializationStream);
 	void Serialize(Stream serializationStream,object graph);
 }
+```
 
 System.Runtime.Remoting.Messaging.IRemotingFormatter 接口重载了 Serialize() 和 Deserialize() 成员使风格更适合于分布式持久化。
 
@@ -197,6 +198,121 @@ static void SaveAsBinaryFormat(object objGraph, string fileName)
 	Console.WriteLine("=> Saved car in binary format!");
 }
 
-可见，BinaryFormatter.Serialize()方法是一个负责生成对象图并将字节顺序
+可见，BinaryFormatter.Serialize()方法是一个负责生成对象图并将字节顺序移动到流的派生类型的成员。
+
+在运行程序之后，我们就可以转到当前项目\bin\Debug 文件夹查看表示 JamesBondCar 实体的 CarData.dat 文件的内容了
+
+<img src="http://ww3.sinaimg.cn/small/006dag38gw1f6gfydf1jvj30eu09e75n.jpg" style="width:70%" />
+
+### 使用 BinaryFormatter 反序列化对象
+
+现在假设你在考虑从二进制文件中读取被持久化的 JamesBondCar 并将其恢复到一个对象变量中。一旦以编程方式打开 CarData.dat 文件，只需要调用 BinaryFormatter 的 Deserialize()方法。如下面显示：
+
+```c#
+static void LoadFromBinaryFile(string fileName)
+{
+	BinaryFormatter binFormat = new BinaryFormatter();
+
+	// 从二进制文件中读取JamesBondCar对象
+	using (Stream fStream = File.OpenRead(fileName))
+	{
+		JamesBondCar carFromDisk = (JamesBondCar)binFormat.Deserialize(fStream);
+		Console.WriteLine("Can this car fly? : {0}",carFromDisk.canFly);
+	}
+}
+```
+
+注意，如果我们调用 Deserialize()，需要传入表示持久的对象图位置的 Stream 的派生类型。在把对象转换回正确类型后，我们就可以发现状态数据是我们保持对象时的那个状态点。
+
+### 使用 SoapFormatter 序列化对象
+
+下一个格式化程序的选择是 SoapFormatter 类型。SoapFormatter 类型将把对象图持久化为一个 SOAP 消息。简而言之，SOAP 定义了一个标准的过程，在这个过程中可以用与平台和操纵系统无关的方式调用方法。
+
+```c#
+// 确保使用了System.Runtime.Serialization.Formatters.Soap并引用了
+// System.Runtime.Serialization.Formatters.Soap.dll
+static void SaveAsSoapFormat(object objGraph, string fileName)
+{
+	// 将对象以SOAP格式保存到CarData.soap文件中
+	SoapFormatter soapFormat = new SoapFormatter();
+
+	using (Stream fStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
+	{
+		soapFormat.Serialize(fStream, objGraph);
+	}
+	Console.WriteLine("=> Saved car in SOAP format!");
+}
+```
+
+在main中调用
+
+```c#
+static void Main(string[] args)
+{
+	// Create a hashtable of values that will eventually be serialized.
+	Hashtable addresses = new Hashtable();
+	addresses.Add("Jeff", "123 Main Street, Redmond, WA 98052");
+
+	SaveAsSoapFormat(addresses, "DataFile.soap");
+
+	Console.ReadLine();
+}
+```
+
+和之前一样，仅仅使用 Serialize() 和 Deserialize()方法将对象图移入和移出流。如果从 Main() 调用这方法，并运行程序，将打开一个产生结果的*.soap 文件。可以定位到标记了当前 JamesBondCar 的状态值的 XML 元素上
+
+<img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f6gwrjk0prj30wj0di46a.jpg" style="width:100%" />
+
+### 使用 XmlSerializer 序列化对象
+
+除了SOAP和二进制格式化程序外，System.Xml.dll程序集提供了第三种格式化程序:System.Xml.Serialization.XmlSerializer。与XML数据被包含在一个SOAP消息中相反，该方式可以用来将给定对象的公共状态持久化为一个纯XML。使用这种类型与使用SoapFormatter或BinaryFormatter类型有一点不同。
+
+```c#
+public static void SaveAsXmlFormat(object objGraph, string fileName)
+{
+	// 将对象以XML格式保存到CarData.xml文件中
+	XmlSerializer xmlFormat = new XmlSerializer(typeof(JamesBondCar));
+
+	using (Stream fStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
+	{
+		xmlFormat.Serialize(fStream, objGraph);
+	}
+	Console.WriteLine("=> Saved car in XML format!");
+```
+
+main 方法里面的代码
+
+```c#
+public static void Main(string[] args)
+{
+	JamesBondCar car = new JamesBondCar();
+	car.canFly = true;
+	car.canSubmerge = false;
+	car.isHatchBack = false;
+	car.theRadio = new Radio();
+	car.theRadio.radioID = "XF-552RR6";
+
+	SaveAsXmlFormat(car, "CarData.xml");
+
+	Console.ReadLine();
+}
+```
+
+关键的不同点 XmlSerializer 类型需要你指定类型信息表示要序列化的类。如果查看新生成的 XML 文件，可以看到如下数据
+
+<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f6gx9fm1unj30nm085whd.jpg" style="width:100%" />
+
+### 控制生成的 XML 数据
+
+如果读者有使用 XML 技术的背景，就知道确认 XML 文档中的元素符合一套建立数据有效性的规则往往很关键。
+
+
+
+
+
+
+
+
+
 
 
