@@ -186,6 +186,7 @@ static void Main(string[] args)
 
 SaveAsBinaryFormat() 方法按如下所示实现
 
+```c#
 static void SaveAsBinaryFormat(object objGraph, string fileName)
 {
 	// 将对象以二进制保存到一个名为CarData.dat的文件
@@ -197,6 +198,7 @@ static void SaveAsBinaryFormat(object objGraph, string fileName)
 	}
 	Console.WriteLine("=> Saved car in binary format!");
 }
+```
 
 可见，BinaryFormatter.Serialize()方法是一个负责生成对象图并将字节顺序移动到流的派生类型的成员。
 
