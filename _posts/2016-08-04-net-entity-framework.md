@@ -3,7 +3,7 @@ layout: post
 title:  "Entity framework"
 date:   2016-08-04 16:32:18 +0800
 categories: .net
-tags: .net linq
+tags: linq
 author: Zhengping Zhu
 ---
 
