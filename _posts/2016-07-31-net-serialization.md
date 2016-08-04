@@ -470,6 +470,7 @@ public sealed class SerializationInfo{
 	public void AddValue(string name,int value);
 ...
 }
+```
 
 实现 ISerializable 接口的类型也必须定义一个带有下面签名的特殊构造函数
 
