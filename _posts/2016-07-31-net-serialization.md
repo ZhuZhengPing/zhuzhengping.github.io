@@ -353,6 +353,7 @@ public interface IFormatter{
 	object Deserialize(Stream serializationStream);
 	void Serialize(Stream serializationStream,object graph);
 }
+```
 
 如果你传递过来一个被标记为[Serializable]的对象并且还包含了其他[Serializable]对象，整个对象集可以立即被持久化。大多数在 System.Collections 和 System.Collections.Generic 命名空间内的类型已经被标记为[Serializable]。因此，如果你希望对一组对象进行持久化，只需要添加这组对象到容器(如 ArrayList 或 List<T>)中并序列化对象为你选择的流就可以了。
 
