@@ -306,13 +306,42 @@ public static void Main(string[] args)
 
 ### 控制生成的 XML 数据
 
-如果读者有使用 XML 技术的背景，就知道确认 XML 文档中的元素符合一套建立数据有效性的规则往往很关键。
+如果读者有使用 XML 技术的背景，就知道确认 XML 文档中的元素符合一套建立数据有效性的规则往往很关键。如果希望控制 XmlSerializer 如何生成 XML 文档，可以用取自 System.Xml.Seralization 命名空间的任意数量的附加特性来修饰你的类型。
 
+特性				|作用
+[XmlAttribute]		|可以在类的公共字段上使用这个.NET特性，它告诉 xmlSerializer 将数据作为 XML 特性(不是子元素)进行序列化
+[XmlElement]		|字段或属性将作为 XML 元素被序列化
+[XmlEnum]			|枚举成员的元素名称
+[XmlRoot]			|该特性控制根元素如何被构造
+[XmlText]			|属性或字段将被序列化为 XML 文本
+[XmlType]			|XML 类型的名称和命名空间
 
+如果希望指定一个自定义的 XML 命名空间限定修饰 JamesBondCar,还要将 canFly 和 canSubmerge 值编码为 XML 特性。
 
+```c#
+[XmlRoot(Namespace="http://www.zhuzhengping.com")]
+public class JamesBondCar : Car
+{
+	[XmlAttribute]
+	public bool canFly;
+	[XmlAttribute]
+	public bool canSubmerge;
+}
+```
 
+将生成下面的 XML 文档
 
-
+```xml
+<?xml version="1.0"?>
+<JamesBondCar xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" canFly="true" canSubmerge="false" xmlns="http://www.zhuzhengping.com">
+  <theRadio>
+    <hasTweeters>false</hasTweeters>
+    <hasSubWoofers>false</hasSubWoofers>
+    <radioID>XF-552RR5</radioID>
+  </theRadio>
+  <isHatchBack>false</isHatchBack>
+</JamesBondCar>
+```
 
 
 
