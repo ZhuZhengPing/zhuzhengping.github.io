@@ -343,7 +343,250 @@ public class JamesBondCar : Car
 </JamesBondCar>
 ```
 
+### 序列化对象集合
 
+IFormatter 接口中的 Serialize()方法不提供指定任意数量对象的方法。相关的是，Deserialize()方法的返回值同样也是一个 System.Object
 
+```c#
+public interface IFormatter{
+...
+	object Deserialize(Stream serializationStream);
+	void Serialize(Stream serializationStream,object graph);
+}
+
+如果你传递过来一个被标记为[Serializable]的对象并且还包含了其他[Serializable]对象，整个对象集可以立即被持久化。大多数在 System.Collections 和 System.Collections.Generic 命名空间内的类型已经被标记为[Serializable]。因此，如果你希望对一组对象进行持久化，只需要添加这组对象到容器(如 ArrayList 或 List<T>)中并序列化对象为你选择的流就可以了。
+
+```c#
+[Serializable,XmlRoot(Namespace="http://www.zhuzhengping.com")]
+public class JamesBondCar : Car
+{
+	public JamesBondCar(bool skyWorthy, bool seaWorthy)
+	{
+		canFly = skyWorthy;
+		canSubmerge = seaWorthy;
+	}
+	// XmlSerializer需要一个默认的构造函数
+	public JamesBondCar() { }
+	[XmlAttribute]
+	public bool canFly;
+	[XmlAttribute]
+	public bool canSubmerge;
+}
+```
+
+有了这些，就可以按照以下方式持久化任何数目的 JamesBondCar
+
+```c#
+public static void Main(string[] args)
+{
+   
+	// 现在持久化一个JamesBondCar的List<T>
+	List<JamesBondCar> myCars = new List<JamesBondCar>();
+	myCars.Add(new JamesBondCar(true, true));
+	myCars.Add(new JamesBondCar(true, false));
+	myCars.Add(new JamesBondCar(false, true));
+	myCars.Add(new JamesBondCar(false, false));
+
+	using (Stream fStream = new FileStream("CarCollection.xml", FileMode.Create, FileAccess.Write, FileShare.None))
+	{
+		XmlSerializer xmlFormat = new XmlSerializer(typeof(List<JamesBondCar>));
+		xmlFormat.Serialize(fStream,myCars);
+	}
+	Console.WriteLine("=> Saved list of cars!");
+	Console.ReadLine();
+}
+```
+
+重复以下，因为使用了 XmlSerializer，所以需要为每个子对象在跟对象中指定类型信息。如果使用了 BinaryFormatter 或 SoapFormatter 类型，逻辑可能更简单，举例来说
+
+```c#
+public static void Main(string[] args)
+{
+   
+	// 现在持久化一个JamesBondCar的List<T>
+	List<JamesBondCar> myCars = new List<JamesBondCar>();
+	myCars.Add(new JamesBondCar(true, true));
+	myCars.Add(new JamesBondCar(true, false));
+	myCars.Add(new JamesBondCar(false, true));
+	myCars.Add(new JamesBondCar(false, false));
+
+	BinaryFormatter binFormat = new BinaryFormatter();
+	using (Stream fStream = new FileStream("AllMyCars.dat", FileMode.Create, FileAccess.Write, FileShare.None))
+	{
+		binFormat.Serialize(fStream, myCars);
+	}
+	Console.WriteLine("=> Saved list of cars!");
+	Console.ReadLine();
+}
+```
+
+### 自定义 Soap/Binary 序列化过程
+
+大多数情况下，由.NET平台提供的默认序列化方案都可以满足需要，但是在一些情况下，你也许希望在序列化过程中更多地干预构造和处理目录树的过程。
+
+*System.Runtime.Serialization 命名空间核心类型*
+
+类	型				|作 用
+ISerializable		|在[Serializable]类型上实现这个接口来控制序列化和反序列化
+ObjectIDGenerator	|该类型为对象图中的成员生成唯一标识符
+[OnDeserialized]	|允许指定的方法在对象被反序列化后立即被调用
+[OnDeserializing]	|允许指定的方法在对象被反序列化之前被调用
+[OnSerialized]		|允许指定的方法在对象被序列化后立即被调用
+[OnSerializing]		|允许指定的方法在对象被序列化之前被调用
+[OptionalField]		|允许在类型中定义一个可能在指定流中丢失的字段
+[SerializationInfo]	|本质上，这个类是一个属性包，持有在序列化过程中表示对象状态的名称/值对
+
+### 深入了解对象序列化
+
+当 BinaryFormatter 序列化一个对象图时，它负责传送下面的信息到指定的流。
+
+>* 在对象图中对象的完全限定名 (如MyApp.JamesBondCar)
+>* 定义对象图的程序集名称 (如MyApp.exe)
+>* SerializationInfo类的一个实例，包含了所有由对象图成员保存的所有描述下的数据
+
+在反序列化过程中，BinaryFormatter 使用相同的信息建立对象的一模一样的副本，使用从基层流中提取的信息，SoapFormatter 使用的过程也和序列化相似。
+
+### 使用 ISerializable 自定义序列化
+
+被标记了[Serializable] 的对象拥有了实现 ISerializable 接口的选项。这样可以更为深入的了解序列化过程并执行任何前数据和后数据的格式化。
+
+```c#
+// 当希望逆转序列化过程时，就实现ISerializable
+public interface ISerializable{
+	void GetObjectData(SerializationInfo info,StreamingContext Context);
+}
+```
+
+SerializationInfo 还定义了多种不同的重载的 AddValue()方法。
+
+```c#
+public sealed class SerializationInfo{
+	public SerializationInfo(Type type,IFormatterConverter converter);
+	public string AssemblyName{get;set;}
+	public string FullTypeName{get;set;}
+	public int MemberCount{get;}
+	public void AddValue(string name,short value);
+	public void AddValue(string name,ushort value);
+	public void AddValue(string name,int value);
+...
+}
+
+实现 ISerializable 接口的类型也必须定义一个带有下面签名的特殊构造函数
+
+```c#
+// 你必须提供一个自定义的、带有这个签名的构造函数
+[Serializable]
+class SomeClass:ISerializable{
+	protected SomeClass{SerializationInfo si,StreamingContext ctx}{
+	...
+	}
+}
+```
+
+注意构造函数的可见性被设置为受保护的，这是允许的，因为格式化程序可以访问这个程序而不管它是否可见。这个特殊的构造函数特意被标记为受保护的，确保只有派生类才能调用。
+
+事实上，除非去实现一些低级的自定义远程服务，否则很少需要直接处理这个枚举值。
+
+```c#
+public enum StreamingContextStates{
+	CrossProcess,
+	CrossMachine,
+	File,
+	Persistence,
+	Remoting,
+	Other,
+	Clone,
+	CrossAppDomain,
+	All
+}
+```
+
+为说明使用 ISerializable 自定义序列化的过程，我们创建了下面的程序：
+
+```c#
+[Serializable]
+class StringData : ISerializable
+{
+	private string dataItemOne = "First data block";
+	private string dataItemTwo = "More data";
+
+	public StringData() { }
+	protected StringData(SerializationInfo si, StreamingContext ctx)
+	{
+		// 从流中得到合并的成员变量
+		dataItemOne = si.GetString("First_Item").ToLower();
+		dataItemTwo = si.GetString("dataItemTwo").ToLower();
+	}
+
+	void ISerializable.GetObjectData(SerializationInfo info, StreamingContext ctx)
+	{
+		// 用格式化数据填充SerializationInfo对象
+		info.AddValue("First_Item", dataItemOne.ToUpper());
+		info.AddValue("dataItemTwo", dataItemTwo.ToUpper());
+	}
+}
+```
+
+为了测试自定义序列化，假设已经使用 SoapFormatter 持久化了一个 MyStringData 的实例
+
+```c#
+public static void Main(string[] args)
+{
+   
+	// 这个类型实现了ISerializable
+	StringData myData = new StringData();
+
+	// 以SOAP格式保存到本地文件中
+	SoapFormatter soapFormat = new SoapFormatter();
+	using (Stream fStream = new FileStream("DataFile.soap", FileMode.Create, FileAccess.Write, FileShare.None))
+	{
+		soapFormat.Serialize(fStream, myData);
+	}
+
+	Console.ReadLine();
+}
+```
+
+当查看得到*.soap文件时，注意到字符串字段已经真正地被持久化为大写字母了
+
+```xml
+<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:clr="http://schemas.microsoft.com/soap/encoding/clr/1.0" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+<SOAP-ENV:Body>
+<a1:Program_x002B_StringData id="ref-1" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/CTest/CTest%2C%20Version%3D1.0.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<First_Item id="ref-3">FIRST DATA BLOCK</First_Item>
+<dataItemTwo id="ref-4">MORE DATA</dataItemTwo>
+</a1:Program_x002B_StringData>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+```
+
+### 使用特性定制序列化
+
+尽管实现 ISerializable 接口来定制序列化过程还是可能的，但是，定制序列化过程的首选方式是定义一些具有行的序列化相关特性的方法(这些特性如[OnSerializing]、[OnSerialized]、[OnDeserializing]或[OnDeserialized]).使用这些特性，减少了实现 ISerializable 的麻烦。
+
+```c#
+[Serializable]
+class MoreData
+{
+	private string dataItemOne = "First data block";
+	private string dataItemTwo = "More data";
+
+	[OnSerializing]
+	private void OnSerializing(StreamingContext context)
+	{
+		// 在序列化过程中就得到调用
+		dataItemOne = dataItemOne.ToUpper();
+		dataItemTwo = dataItemTwo.ToUpper();
+	}
+
+	[OnSerialized]
+	private void OnDeserialized(StreamingContext context)
+	{
+		// 一旦反序列化过程结束，就得到调用
+		dataItemOne = dataItemOne.ToLower();
+		dataItemTwo = dataItemTwo.ToLower();
+	}
+}
+```
 
 
