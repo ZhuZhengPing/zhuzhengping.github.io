@@ -226,7 +226,157 @@ public partial class InvertyEntities : DbContext
 }
 ```
 
-最后在设计器代码文件中还有一个有趣的东西就是 Car 实体类。实体类中的大部分代码都是构成概念模型的属性集合。每个属性的 set 逻辑都调用了 EF API 的 StructuralObject.SetValidVlaue()静态方法。
+最后在设计器代码文件中还有一个有趣的东西就是 Car 实体类。实体类中的大部分代码都是构成概念模型的属性集合。每个属性的 set 逻辑都调用了 EF API 的 StructuralObject.SetValidVlaue()静态方法。下面是 Car 实体类的 CarNickName 属性的实现
+
+```c#
+public partial class Car:EntityObject{
+...
+	public global::System.String.CarNickname{
+		get{
+			return _CarNickname;
+		}
+		set{
+			OnCarNicknameChanging(value);
+			ReportPropertyChanging("CarNickname");
+			_CarNickname = StructuralObject.SetValidVlaue(value,true);
+			ReportPropertyChanged("CarNickname");
+			OnCarNicknameChangED();
+		}
+	}
+	private global::System.String _CarNickname;
+	partial void OnCarNicknameChanging(global::System.String value);
+	private void OnCarNicknameChanged():
+}
+```
+
+### 强化生成的代码
+
+设计器生成的所有的类都使用 partial 关键字声明，这允许我们在多个 c# 代码中实现这些类。在使用 EF 编程模型时非常有用，因为这意味着你可以为实体添加”真正“的方法，从而更好地对业务领域进行建模。
+
+在本例中，我们在重写了 Car 实体类的 ToString()方法，返回一个格式化的字符串来描述实体的状态。
+
+```c#
+public partial class Car
+{
+	public override string ToString()
+	{
+		return string.Format("{0} is a {1} {2} with ID {3}", this.CarNickName ?? "**No Name**", this.Color, this.Make, this.CarID);
+	}
+}
+```
+
+### 对概念模型进行编程
+
+现在我们可以写一些与 EDM 交互的代码了。修改 Program 类，在 Main()方法中调用两个辅助方法。其中一个辅助方法使用概念模型打印 Inventory 数据库表的所有记录，另一个辅助方法向 Inventory 表插入一条新记录
+
+```c#
+public static void Main(string[] args)
+{
+	AddNewRecord();
+	PrintAllInventory();
+	Console.ReadLine();
+}
+
+private static void PrintAllInventory()
+{
+	using (InvertyEntities context = new InvertyEntities())
+	{
+		IEnumerable<Car> list = context.Cars;
+		foreach (var car in list)
+		{
+			Console.WriteLine(car.ToString());
+		}
+	}
+}
+
+private static void AddNewRecord()
+{
+	// 向数据库添加一条记录
+	using (InvertyEntities context = new InvertyEntities())
+	{
+		try
+		{
+			context.Cars.Add(new Car()
+			{
+				CarID = 2222,
+				Make = "Yugo",
+				Color = "Brown"
+			});
+			context.SaveChanges();
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex.InnerException.Message);
+		}
+	}
+}
+```
+
+每个辅助方法都创建了一个 ObjectContext 派生类实例。并使用强类型的 Cars 属性来与 OjbectSet<Car>字段进行交互。并且会间接向 ADO.NET 数据提供一条 SQL SELECT 语句。在使用 ObjectSet<Car>的 AddObject()方法插入新的 Car 对象然后调用上下文的 SaveChanges()方法时，实际上执行了一条 SQL INSERT语句。
+
+### 删除记录
+
+当你想在数据库中删除某条记录时，首先要在 OjbectSet<T>中找到正确的项，这可以使用 GetObjectByKey()方法，并传递一个 EntityKey 对象(位于 System.Data 命名空间)。
+
+```c#
+private static void RemoveRecord()
+{
+	// 通过主键查找要删除的汽车
+	using (InvertyEntities context = new InvertyEntities())
+	{
+		// 为查找的实体定义主键
+		EntityKey key = new EntityKey("InvertyEntities.Cars", "CarID", 2222);
+
+		Car carToDelete = (Car)context.GetObjectByKey(key);
+		if (carToDelete != null)
+		{
+			context.DeleteObject(carToDelete);
+			context.SaveChanges();
+		}
+	}
+}
+```
+
+更新记录也很简单，先定位对象，设置其属性值，然后保存更改。
+
+```c#
+public static void UpdateRecord()
+{
+	using (InvertyEntities context = new InvertyEntities())
+	{
+		// 查找实体
+		Car car = context.Cars.Find(2222);
+		if (car != null)
+		{
+			car.CarNickName = "朱正平";
+			context.SaveChanges();
+		}
+	}
+}
+```
+
+### 用LINQ to Entities进行查询
+
+其实 EF 和 LINQ 查询一起使用的时候才会更强大。
+
+```c#
+var car = (from c in context.Cars where c.CarID == 2222 select c).FirstOrDefault();
+```
+
+通过调用 ObjectQuery<T>的 FirstOrDefault()可以找到所需的项，而如果没有 ID 为 2222 的Car，那么默认值为 null。
+
+###
+
+
+
+
+
+
+
+
+
+
+
 
 
 
