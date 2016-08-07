@@ -76,7 +76,7 @@ ObjectContext 的派生类作为一个容器，管理那些存储在 OjbectSet<T
 
 ObjectSet<T>的成员			|含义
 AddObject()					|向集合中插入一个新的实体对象
-CreateObject<T>()			|创建指定实体类型的实例
+CreateObject()			|创建指定实体类型的实例
 DeleteObject				|标记一个要删除的对象
 
 当获取了对象上下文中正确的属性后，就可以调用 ObjectSet<T>的这些成员了。
