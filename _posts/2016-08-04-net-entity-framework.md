@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Entity framework"
+title:  "Entity framework(4.0)"
 date:   2016-08-04 16:32:18 +0800
 categories: linq
 tags: .net linq
@@ -211,18 +211,13 @@ using(AutoLotEntites context = new AutoLotEntites()){
 如果回到解决方案展开  InventoryEDM.edmx 节点，你会发现一个用于 IDE 维护的文件 InventoryEDM.Designer.cs。
 
 ```c#
-public partial class InvertyEntities : DbContext
+public partial class InvertyEntities : ObjectContext
 {
-	public InvertyEntities(): base("name=InvertyEntities")
+	public InvertyEntities() : base("name=InvertyEntities", "InvertyEntities")
 	{
+		this.ContextOptions.LazyLoadingEnabled = true;
+		OnContextCreated();
 	}
-
-	protected override void OnModelCreating(DbModelBuilder modelBuilder)
-	{
-		throw new UnintentionalCodeFirstException();
-	}
-
-	public DbSet<Car> Cars { get; set; }
 }
 ```
 
@@ -291,12 +286,11 @@ private static void PrintAllInventory()
 
 private static void AddNewRecord()
 {
-	// 向数据库添加一条记录
-	using (InvertyEntities context = new InvertyEntities())
+	using(InvertyEntities context = new InvertyEntities())
 	{
 		try
 		{
-			context.Cars.Add(new Car()
+			context.Cars.AddObject(new Car()
 			{
 				CarID = 2222,
 				Make = "Yugo",
@@ -345,15 +339,20 @@ public static void UpdateRecord()
 	using (InvertyEntities context = new InvertyEntities())
 	{
 		// 查找实体
-		Car car = context.Cars.Find(2222);
-		if (car != null)
+		EntityKey key = new EntityKey("InvertyEntities.Cars", "CarID", 2222);
+		
+		// 获取实体，更改并保存
+		Car carToUpdate = (Car)context.GetObjectByKey(key);
+		if (carToUpdate != null)
 		{
-			car.CarNickName = "朱正平";
+			carToUpdate.CarNickName = "朱正平";
 			context.SaveChanges();
 		}
 	}
 }
 ```
+
+这个方法看上去有点奇怪，但如果你意识到 GetObjectByKey() 方法返回的实体对象是 ObjectSet<T>字段中一个某个对象的引用的话，就不会再有这种疑惑了。
 
 ### 用LINQ to Entities进行查询
 
@@ -365,11 +364,63 @@ var car = (from c in context.Cars where c.CarID == 2222 select c).FirstOrDefault
 
 通过调用 ObjectQuery<T>的 FirstOrDefault()可以找到所需的项，而如果没有 ID 为 2222 的Car，那么默认值为 null。
 
-###
+### 使用 Entity SQL 进行查询
 
+可以肯定的是，大部分时间都会使用 LINQ 来查询 ObjectSet<T>。实体客户端会将你的 LINQ 查询转换成适合的 SQL 语句，并将其传递给数据库进行处理。但如果你想对查询的格式有更多的控制，可以使用 Entity SQL。与 LINQ to Entity 查询类似，Entity SQL 查询也会生成真正的SQL。
 
+```c#
+private static void FunWithEntitySQL() 
+{
+	using (InvertyEntities context = new InvertyEntities()) 
+	{
+		// 构建一个包含 Entity SQL 语法的字符串
+		string query = "select value car from InvertyEntities.Cars as car where car.Color='Brown'";
 
+		// 现在基于该字符串构建一个 ObjectQuery<T>
+		var brownCars = context.CreateQuery<Car>(query);
+		foreach (var item in brownCars)
+		{
+			Console.WriteLine(item);
+		}
+	}
+}
+```
 
+### 使用实体客户端的数据阅读器对象
+
+当使用 LINQ to Entity 或 Entity SQL 时，得到的数据将被自动映射为实体类。你还可以使用 EntityDataReader 在结果集映射到实体对象之前拦截他们，并进行手工处理。
+
+```c#
+private static void FunWithEntityDataReader() 
+{
+	// 基于*.config文件创建一个连接对象
+	using (EntityConnection cn = new EntityConnection("name=InvertyEntities")) 
+	{
+		cn.Open();
+
+		// 构建一个Entity SQL 查询
+		string query = "select value car from InvertyEntities.Cars as car";
+
+		// 创建一个命令对象
+		using (EntityCommand cmd = cn.CreateCommand()) 
+		{
+			cmd.CommandText = query;
+
+			// 最后，获取数据阅读器并处理得到的记录
+			using (EntityDataReader dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess)) 
+			{
+				while (dr.Read())
+				{
+					Console.WriteLine("ID: {0}", dr["CarID"]);
+					Console.WriteLine("Color: {0}", dr["Color"]);
+					Console.WriteLine("Make: {0}", dr["Make"]);
+					Console.WriteLine("Pet Name: {0}", dr["CarNickname"]);
+				}
+			}
+		}
+	}
+}
+```
 
 
 
