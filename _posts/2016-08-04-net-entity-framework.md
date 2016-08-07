@@ -62,7 +62,7 @@ ObjectContext 为子类提供了大量的核心服务，包括保存所有更新
 AcceptAllChanges()	|接受对对象上下文中的实例对象所做的所有改变
 AddObject()			|向对象上下文中添加一个对象
 DeleteObject()		|对一个要删除的对象进行标记
-ExecuteFunction<T>()|执行数据库中的一个存储过程
+ExecuteFunction()|执行数据库中的一个存储过程
 ExecuteStoreCommand()|直接向数据库发送一条 SQL 命令
 GetObjectByKey()	|通过主键在对象上下文中查询一个对象
 SaveChanges()		|向数据库提交所有更新
