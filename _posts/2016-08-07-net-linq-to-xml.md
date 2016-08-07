@@ -32,7 +32,7 @@ private static void BuildXmlDocWithLINQToXml()
 
 
 
-<p style="color:red;">未完待续</p>
+<p style="color:red;">未完待续......</p>
 
 
 
