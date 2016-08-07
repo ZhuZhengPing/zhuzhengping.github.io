@@ -58,17 +58,17 @@ ObjectContext 为子类提供了大量的核心服务，包括保存所有更新
 
 *OjbectContext 的常用成员*
 
-OjbectContext 的成员		|含 义
-AcceptAllChanges()			|接受对对象上下文中的实例对象所做的所有改变
-AddObject()					|向对象上下文中添加一个对象
-DeleteObject()				|对一个要删除的对象进行标记
-ExecuteFunction<T>()		|执行数据库中的一个存储过程
-ExecuteStoreCommand()		|直接向数据库发送一条 SQL 命令
-GetObjectByKey()			|通过主键在对象上下文中查询一个对象
-SaveChanges()				|向数据库提交所有更新
-CommandTimeout				|该属性为所有对象上下文操作获取或设置以秒记的超时值
-Connection					|该属性返回当前对象上下文使用的连接字符串
-SavingChanges				|当对象上下文向数据存储保存更改时将触发该事件
+OjbectContext 的成员|含 义
+AcceptAllChanges()	|接受对对象上下文中的实例对象所做的所有改变
+AddObject()			|向对象上下文中添加一个对象
+DeleteObject()		|对一个要删除的对象进行标记
+ExecuteFunction<T>()|执行数据库中的一个存储过程
+ExecuteStoreCommand()|直接向数据库发送一条 SQL 命令
+GetObjectByKey()	|通过主键在对象上下文中查询一个对象
+SaveChanges()		|向数据库提交所有更新
+CommandTimeout		|该属性为所有对象上下文操作获取或设置以秒记的超时值
+Connection			|该属性返回当前对象上下文使用的连接字符串
+SavingChanges		|当对象上下文向数据存储保存更改时将触发该事件
 
 ObjectContext 的派生类作为一个容器，管理那些存储在 OjbectSet<T>集合中的实体对象。例如，如果为 AutoLot 数据库的 Inventory 表生成*.edmx 文件，你最终将得到一个 AutoLotEntities 类。该类包含一个 Inventories 属性(注意，这里是复数形式)，它封装了一个 ObjectSet<Inventory>类型的数据成员。如果为 AutoLot 数据库的 Orders 表创建一个 EDM ，AutoLotEntites 类将定义另一个 Orders 属性，它封装了一个 ObjectSet<Order>类型的成员变量。
 
