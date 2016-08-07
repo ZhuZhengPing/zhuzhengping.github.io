@@ -422,6 +422,72 @@ private static void FunWithEntityDataReader()
 }
 ```
 
+### AutoLotDAL 4.0版,映射存储过程
+
+在 Vusial Studio 2010 中打开项目，插入一个新的 ADO.NET Entity Data Model并命名为 AutoLotDAL_EF.edmx
+
+<img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f6l59bbeylj30hh0hg41h.jpg" style="width:70%" />
+
+### 映射存储过程
+
+在EDM想到中引入存储过程后，要将存储过程实现在代码中，你需要向概念层引入这个函数。打开 Model Browser (View->Other Windows->Entity Data Model Browser菜单),在物理数据库中可以看到 GetPetName.但是现在 Function Imports 文件夹还是空的。
+
+<img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f6l5nn0llej30rz0h90uw.jpg" style="width:100%" />
+
+### 导航属性的作用
+
+在观察 EDM 设计器会发现一家包含所有选中的表了，并且实体类的 Navigation Property 属性多了新的条目。
+
+顾名思义，导航属性使我们可以在 Entity Framework 编程模型中实现 JOIN 操作(无需复杂的 SQL 语句)。为了说明这些外键关系，*.edmx 文件中的每个实体现在都增加了新的 XML 数据，来说明这些实体是如何通过外键关联的。
+
+### 在 LINQ to Entity 查询中使用导航属性
+
+在 Program 中添加一个辅助方法。该方法使用导航属性来获得某个客户订单中的所有 Inventory 对象
+
+```c#
+private static void PrintCustomerOrders(string custID) 
+{
+	int id = int.Parse(custID);
+
+	using (AutoLotEntities context = new AutoLotEntities()) 
+	{
+		var carsOnOrder = from o in context.Orders where o.CustID == id select o.Inventory;
+		foreach (var item in carsOnOrder)
+		{
+			Console.WriteLine("-> {0} {1} named {2}.",item.Color,item.Make,item.PerName);
+		}
+	}
+}
+```
+
+运行应用程序，输出结果如下
+
+```
+-> Brown Yugo named 朱正平.
+-> Blue Mini named 扣扣.
+```
+
+### 调用存储过程
+
+如果在 AutoLotDAL EMD 中需要调用 GetPetName 存储过程，可以使用如下两种方法之一
+
+```c#
+private static void CallStoreProc() 
+{
+	using (AutoLotEntities context = new AutoLotEntities()) 
+	{
+		ObjectParameter input = new ObjectParameter("CarID", 2222);
+
+		// 调用上下文的 ExecuteFunction 方法,返回受影响行数
+		// var item = context.ExecuteFunction("GetPetName", input);
+
+		// 或使用上下文强类型方法
+		var name = context.GetPetName(2222);
+		Console.WriteLine("Car #2222 is named {0}", name.First().PerName);
+	}
+}
+```
+
 
 
 
