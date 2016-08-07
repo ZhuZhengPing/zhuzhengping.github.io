@@ -58,7 +58,7 @@ ObjectContext 为子类提供了大量的核心服务，包括保存所有更新
 
 *OjbectContext 的常用成员*
 
-OjbectContext 的成员|含义
+成员|含义
 AcceptAllChanges()	|接受对对象上下文中的实例对象所做的所有改变
 AddObject()			|向对象上下文中添加一个对象
 DeleteObject()		|对一个要删除的对象进行标记
