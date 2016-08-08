@@ -32,7 +32,12 @@ private static void BuildXmlDocWithLINQToXml()
 
 
 
-<p style="color:red;">未完待续......</p>
+### System.Xml.LINQ 命名空间成员
+
+LINQ to XML 的核心程序集(System.Xml.Linq.dll)只在三个不同的命名空间下定义了很少的类型。这三个命名空间是 System.Xml.Linq、System.Xml.Schema、System.Xml.xPath
+
+
+
 
 
 

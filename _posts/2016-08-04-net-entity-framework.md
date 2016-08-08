@@ -96,7 +96,7 @@ using(AutoLotEntites context = new AutoLotEntites()){
 
 ### 汇总
 
-<img src="http://ww2.sinaimg.cn/small/006dag38jw1f6jtpuqyh0j30ie0d1418.jpg" style="width:60%" />
+<img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f6jtpuqyh0j30ie0d1418.jpg" style="width:100%" />
 
 该图咋看上去似乎很复杂，其实不然。例如，你对上下文中的实体编写了一个 LINQ 查询，该查询被传递给对象服务，对象服务将 LINQ 命令转换为实体客户端可以理解的树。然后实体客户端将树转换为符合 ADO.NET 提供程序的 SQL 语句。提供程序返回一个数据读取器(如一个DbDataReader的派生对象)，客户端服务使用该读取器(EntityDataReader)将数据传入对象服务。最终 C# 代码库所得到的是数据的枚举(IEnumerable<T>)
 
