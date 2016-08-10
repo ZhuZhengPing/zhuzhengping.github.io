@@ -291,6 +291,7 @@ static void MakeXElementFromArray()
 		<FirstName>Mandy</FirstName>
 	</Person>
 </People>
+```
 
 ### 加载和解析 XML 内容
 
@@ -400,6 +401,8 @@ public static void LookUpColorsForMake(string make)
 	MessageBox.Show(data, string.Format("{0} colors:", make));
 }
 ```
+
+### 将UI组装到辅助类
 
 
 
