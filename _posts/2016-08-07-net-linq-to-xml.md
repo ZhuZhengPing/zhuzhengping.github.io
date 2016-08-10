@@ -226,13 +226,70 @@ static void CreateRootAndChildren()
 </Inventory>
 ```
 
+### 从数组和容器中生成文档
 
+更常见的情况是通过数组、ADO.NET对象、文件数据等诸如此类的数据源中读取数据来生成 XElement。使用一组标准的 "for 循环" 来讲数据移动到 LINQ to XML 对象模型，是一种将内存中的数据映射为新的 XElement 的方法。
 
+```c#
+static void MakeXElementFromArray()
+{
+	// 创建一个匿名类型的数组
+	var people = new[] { 
+		new {FirstName="Mandy",Age=31},
+		new {FirstName="Andrew",Age=32},
+		new {FirstName="Mandy",Age=33},
+		new {FirstName="Mandy",Age=34},
+	};
 
+	XElement peopleDoc = new XElement("People", 
+		from c in people select new XElement("Person", 
+			new XAttribute("Age", c.Age),
+			new XElement("FirstName", c.FirstName)));
 
+	Console.WriteLine(peopleDoc);
+}
+```
 
+这里的 peopleDoc 对象使用 LINQ 查询定义了根源上<People>。该 LINQ 查询根据 people 数组的每一项创建新的 XElement。 如果你觉得这种嵌入的查询有点不易阅读，可以像下面来断行
 
+```c#
+static void MakeXElementFromArray()
+{
+	// 创建一个匿名类型的数组
+	var people = new[] { 
+		new {FirstName="Mandy",Age=31},
+		new {FirstName="Andrew",Age=32},
+		new {FirstName="Mandy",Age=33},
+		new {FirstName="Mandy",Age=34},
+	};
 
+	var arrayDataAsXElements = from c in people
+			select new XElement("Person",
+				new XAttribute("Age", c.Age),
+				new XElement("FirstName", c.FirstName));
 
+	XElement peopleDoc = new XElement("People", arrayDataAsXElements);
+
+	Console.WriteLine(peopleDoc);
+}
+```
+
+总之输出结果如下
+
+```xml
+<People>
+	<Person Age="31">
+		<FirstName>Mandy</FirstName>
+	</Person>
+	<Person Age="32">
+		<FirstName>Andrew</FirstName>
+	</Person>
+	<Person Age="33">
+		<FirstName>Mandy</FirstName>
+	</Person>
+	<Person Age="34">
+		<FirstName>Mandy</FirstName>
+	</Person>
+</People>
 
 
