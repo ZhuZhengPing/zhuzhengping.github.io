@@ -292,4 +292,120 @@ static void MakeXElementFromArray()
 	</Person>
 </People>
 
+### 加载和解析 XML 内容
+
+XElement 和 XDocument 都支持 Load()和Parse()方法，可以从包含 XML 数据的 string 对象或外部 XML 文件获取 XML 对象模型。
+
+```xml
+static void ParseAndLoadExitingXml()
+{
+	// 从string中构建XElement
+	string myElement =
+		@"<Car ID='3'>
+			<Color>Yellow</Color>
+			<Make>Yugo</Make>
+		  </Car>";
+	XElement newElement = XElement.Parse(myElement);
+	Console.WriteLine(newElement);
+	Console.WriteLine();
+
+	// 加载SimpleInventory.xml文件
+	XDocument myDoc = XDocument.Load("SimpleInventory.xml");
+	Console.WriteLine(myDoc);
+}
+```
+
+### 在内存中操作 XML 文档
+
+创建一个 Windows Form 应用程序
+
+<img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f6oyligiy9j30jc0ayjsb.jpg" style="width:100%" />
+
+在本书代码中包含一个 Inventory.xml 文件。它的根元素<Inventory> 下包含一些条目。引入这个 XML 文件。它的定义类似于这样：
+
+```xml
+<Car carID="0">
+	<Make>Ford</Make>
+	<Color>Blue</Color>
+	<PetName>Chuck</PetName>
+</Car>
+```
+
+### 定义 LINQ to XML 辅助类
+
+我们在项目中新建一个类，用来分离 LINQ to XML 数据。该类将定义一些静态来封装 LINQ to XML逻辑。
+
+```c#
+public static XDocument GetXmlInventory()
+{
+	try
+	{
+		XDocument inventoryDoc = XDocument.Load("Inventory.xml");
+		return inventoryDoc;
+	}
+	catch (Exception ex)
+	{
+		MessageBox.Show(ex.Message);
+		return null;
+	}
+}
+```
+
+InsertNewElement() 方法获取 "Add Inventory Item" 中各个 TextBox 控件的值，并使用 Descendants() 轴方法将其放置到<Inventory>元素的新节点中。这些工作完成后，将保持文档。
+
+```c#
+public static void InsertNewElement(string make, string color, string petName)
+{
+	// 加载当前温度
+	XDocument inventoryDoc = XDocument.Load("Inventory.xml");
+
+	// 为ID生成一个随机数
+	Random r = new Random();
+
+	// 根据传入参数新建 XElement
+	XElement newElement = new XElement("Car", new XAttribute("ID", r.Next(50000)),
+		new XElement("Color",color),
+		new XElement("Make",make),
+		new XElement("PetName",petName));
+
+	// 添加到内存中的对象
+	inventoryDoc.Descendants("Inventory").First().Add(newElement);
+
+	// 保存到磁盘
+	inventoryDoc.Save("Inventory.xml");
+}
+```
+
+最后一个方法 LookUpColorsForMake() 将使用一个 LINQ 查询获取最后一个 TextBox 中的数据，并创建一个包含指定颜色字符串。
+
+```c#
+public static void LookUpColorsForMake(string make)
+{
+	// 加载当前文档
+	XDocument inventoryDoc = XDocument.Load("Inventory.xml");
+
+	// 根据给定的值查找颜色
+	var makeInfo = from car in inventoryDoc.Descendants("Car")
+				   where (string)car.Element("Make") == make
+				   select car.Element("Color").Value;
+
+	// 构建一个代表每个颜色的字符串
+	string data = string.Empty;
+	foreach (var item in makeInfo.Distinct())
+	{
+		data += string.Format("- {0}\n", item);
+	}
+
+	// 显示颜色
+	MessageBox.Show(data, string.Format("{0} colors:", make));
+}
+```
+
+
+
+
+
+
+
+
 
