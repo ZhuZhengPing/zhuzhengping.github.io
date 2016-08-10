@@ -109,6 +109,130 @@ XName 和 XNamespace
 public IEnumerable<XElement> Descendants(XName name)
 ```
 
+XName 是很神奇的，因为你不需要直接使用它。由于该类没有公共的构造函数，因此无法创建一个 XName 对象
+
+```c#
+// 错误！不能创建XName对象
+doc.Descendants(new XName("PetName")).Remove();
+```
+
+如果查看 XName 的正式定义，你就会发现该类定义了一个自定义隐式转换符，它会将一个简单的 System.String 映射到正确的 XName 对象：
+
+```c#
+// 我们将在后台创建一个 XName
+doc.Descendants("PetName").Remove();
+```
+
+这么做的好处是可以在使用这些轴方法时用文本值来表示元素或特征的名称，并允许 LINQ to XML API 将 string 数据映射到所需的对象类型
+
+### 使用 XElement 和 XDocument
+
+在 LINQ to XML 编程模型中，XDocument 表示整个 XML 文档。它可以用来定义一个根元素及其包含的所有元素、处理指令和 XML 声明。
+
+```c#
+static void CreateFullXDocument()
+{
+	XDocument inventoryDoc = new XDocument(
+	   new XDocument(
+		   new XDeclaration("1.0","utf-8","yes"),
+		   new XComment("Current Inventory of cars!"),
+		   new XProcessingInstruction("xml-stylesheet","href='MyStyles.css' title='Compact' type='text/css'"),
+		   new XElement("Inventory",
+			   new XElement("Car", new XAttribute("ID","1"),
+			   new XElement("Color","Green"),
+			   new XElement("Make","BMW"),
+			   new XElement("PetName","Stan")
+		   ),
+		   new XElement("Car",new XAttribute("ID","2"),
+			   new XElement("Color","Pink"),
+			   new XElement("Make","Yugo"),
+			   new XElement("PetName","Melvin"))
+		   ) 
+	   ));
+
+	// 保存到磁盘
+	inventoryDoc.Save("SimpleInventory.xml");
+}
+```
+
+请注意 XDocument 对象的构造函数实际上时其他 LINQ to XML 对象组成的树。这里调用的构造函数的第一个参数为 XDeclaration，然后是一个 object 型的参数数组
+
+```c#
+public XDocument(System.Xml.Linq.XDeclaration declaration,params object[] content)
+```
+
+如果在 Main()方法中调用该方法，将在 SimpleInventory.xml 文件中看到如下数据
+
+```xml
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--Current Inventory of cars!-->
+<?xml-stylesheet href='MyStyles.css' title='Compact' type='text/css'?>
+<Inventory>
+  <Car ID="1">
+    <Color>Green</Color>
+    <Make>BMW</Make>
+    <PetName>Stan</PetName>
+  </Car>
+  <Car ID="2">
+    <Color>Pink</Color>
+    <Make>Yugo</Make>
+    <PetName>Melvin</PetName>
+  </Car>
+</Inventory>
+```
+
+对于任何 XDocument 来说，默认的 XML 声明使用 utf-8 编码，XML 版本为 1.0 , standalone 特性为 "yes"。因此，删除 XDeclaration 对象的创建将得到完全相同的数据。
+
+如果不需要定义处理指令或自定义 XML 声明，你可以不使用 XDocument 而简单地使用 XElement.记住，XElement 可以用来表示 XML 文档的根元素以及所有子对象。
+
+```c#
+static void CreateRootAndChildren()
+{
+	XElement inventoryDoc = new XElement("Inventory",
+		new XComment("Current Inventory of cars!"),
+		new XElement("Car", new XAttribute("ID", "1"),
+		new XElement("Color", "Green"),
+		new XElement("Make", "BMW"),
+		new XElement("PetName", "Stan")
+		),
+		new XElement("Car", new XAttribute("ID", "2"),
+			new XElement("Color", "Pink"),
+			new XElement("Make", "Yugo"),
+			new XElement("PetName", "Melvin")
+		)
+	);
+
+	// 保存到磁盘
+	inventoryDoc.Save("SimpleInventory.xml");
+}
+```
+
+除了为一个不存在的样式表自定义了处理指令外，其余的输出结果基本一致
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Inventory>
+  <!--Current Inventory of cars!-->
+  <Car ID="1">
+    <Color>Green</Color>
+    <Make>BMW</Make>
+    <PetName>Stan</PetName>
+  </Car>
+  <Car ID="2">
+    <Color>Pink</Color>
+    <Make>Yugo</Make>
+    <PetName>Melvin</PetName>
+  </Car>
+</Inventory>
+```
+
+
+
+
+
+
+
+
 
 
 
