@@ -297,7 +297,7 @@ static void MakeXElementFromArray()
 
 XElement 和 XDocument 都支持 Load()和Parse()方法，可以从包含 XML 数据的 string 对象或外部 XML 文件获取 XML 对象模型。
 
-```xml
+```c#
 static void ParseAndLoadExitingXml()
 {
 	// 从string中构建XElement
@@ -404,9 +404,34 @@ public static void LookUpColorsForMake(string make)
 
 ### 将UI组装到辅助类
 
+现在我们要做的就是实现事件处理程序的细节，只需要简单地调用静态的辅助方法
 
+```c#
+private void MainForm_Load(object sender, EventArgs e)
+{
+	//LinqToXmlObjectModel.BuildXmlDocWithLINQToXml();
+	// 在 TextBox 控件中显示当前库存的 XML 文档
+	txtInventory.Text = LinqToXmlObjectModel.GetXmlInventory().ToString();
+}
 
+private void btnAdd_Click(object sender, EventArgs e)
+{
+	// 为文档添加一个新项
+	LinqToXmlObjectModel.InsertNewElement(txtMake.Text, txtColor.Text, txtPetName.Text);
 
+	// 在 TextBox 控件中显示当前库存的 XML 文档
+	txtInventory.Text = LinqToXmlObjectModel.GetXmlInventory().ToString();
+}
+
+private void btnLookUpColors_Click(object sender, EventArgs e)
+{
+	LinqToXmlObjectModel.LookUpColorsForMake(txtMakeToLookUp.Text);
+}
+```
+
+最终显示的输出结果如下
+
+<img src="http://ww1.sinaimg.cn/mw690/006dag38gw1f6q164bmp3j30jg0azq3s.jpg" style="width:100%" />
 
 
 
