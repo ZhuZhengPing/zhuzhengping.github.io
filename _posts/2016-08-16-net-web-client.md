@@ -253,8 +253,8 @@ Uri CompletedUri = MSPage.Uri;
  
  IPAddress 类代表 IP 地址。地址本身可以作为 GetAddressBytes 属性，并使用 ToString()方法转化为用小数点隔开的十进制格式。此外，IPAddress 类也实现静态的 Parse()方法，这个方法的作用与 ToString()方法刚好相反，把小数点隔开的十进制字符串转化为 IP 地址：
  
- ```c#
- IPAddress ipAddress = IPAddress.Parse("234.56.78.9");
+```c#
+IPAddress ipAddress = IPAddress.Parse("234.56.78.9");
 byte[] address = ipAddress.GetAddressBytes();
 string ipString = ipAddress.ToString();
 ```
