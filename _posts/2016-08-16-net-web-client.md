@@ -168,6 +168,105 @@ myProcess.StartInfo.Arguments = "http://www.wrox.com";
 myProcess.Start();
 ```
 
+但是，上面的代码会把 Internet Explorer 作为单独的窗口打开，而应用程序并没有与新窗口相连接，因此不能控制浏览器。
+
+### 从应用程序中进行简单的 Web 浏览
+
+为了简单起见，首先创建一个 Window Forms 应用程序，它只有一个 TextBox 控件和一个 WebBrower 控件。构建该应用程序，让最终用户在文本框中输入一个 URL，并按回车键。WebBrowser 控件就会提取网页，并显示得到的文档。
+
+```c#
+private void textBox1_KeyPre(object sender,KeyPressEventArgs e){
+	if(e.KeyChar == (char)13){
+		webBrowser1.Navigate(textBox1.Text);
+	}
+}
+```
+
+### WebRequet 类和 WebResponse 类的层次结构
+
+<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f6y7lr7hsxj30h4084q3z.jpg" style="width:100%" />
+
+WebRequest 类和 WebResponse 类都是抽象的，不能进行实例化。这些基类提供了用于处理 Web 请求和响应的通用功能，这些功能独立于给定操作所使用的协议。
+
+有了 WebRequest.Create()方法，在 URI 中就不需要专门用于处理 HTTP 协议的对象。 WebRequest.Create()方法检查 URI 中的协议说明符，以实例化和返回一个适当类的对象。
+
+### URI
+
+Uri 和 UriBuilder 是 System命名空间中的两个类，它们都用于表示 URI。
+
+对于 Uri 类，构造函数需要一个完整的 URI 字符串：
+
+```c#
+Uri MSPage = new Uri("http://www.baidu.com/index.html?Order=true");
+```
+
+Uri 类提供了许多只读属性。当 Uri 对象构造出来之后，它就不能修改了。
+
+```c#
+// ?Order=true
+string Queue = MSPage.Query;
+// /index.html
+string AbsolutePath = MSPage.AbsolutePath;
+// http
+string Scheme = MSPage.Scheme;
+// 80
+int Port = MSPage.Port;
+// www.baidu.com
+string Host = MSPage.Host;
+// true
+bool IsDefaultPort = MSPage.IsDefaultPort;
+```
+
+然而，UriBuilder 类实现的属性较少：只允许构建一个完整的 URI。这些属性可读写。可以给构造函数提供构建 URI 所需的各种组件
+
+```c#
+UriBuilder MSPage = new UriBuilder("http", "www.baidu.com", 80, "index.html");
+```
+
+或者把值赋给属性，以此构建 URI 的组件
+
+```c#
+UriBuilder MSPage = new UriBuilder();
+MSPage.Scheme = "http";
+MSPage.Host = "www.microsoft.com";
+MSPage.Port = 80;
+MSPage.Path = "SomeFolder/SomeFile.html";
+```
+
+ 在完成 UriBuilder 类的初始化后，就可以使用 Uri 属性获得相应的 Uri 对象
+ 
+```c#
+Uri CompletedUri = MSPage.Uri;
+```
+
+### IP 地址和 DNS 名称
+
+在 Internet 上，服务器和客户端都由 IP 地址或主机名标识。通常，主机名是在 Web 浏览器的窗口中输入的地址。另一方面，IP 地址是计算机用于互相识别的标识符，它实际上是用于确保 Web 请求和响应到达相应计算机的地址。一台计算机甚至可以有多个 IP 地址。
+
+目前，IP 地址一般是一个32位的值，例如192.168.1.100就是一个32位的IP地址。IP地址的这个格式称为 IPv4。目前有许多计算机和其他设备在竞争 Internet 上的一个地点，所以人们开发了一个较新的地址：IPv6.它提供了 64 位的IP地址。.NET Framework 允许应用程序同时使用 IPv4和IPv6.
+
+ 为了使这些主机名发挥作用，首先必须发送一个网络请求，把主机名翻译成IP地址，翻译工作由一个或几个 DNS 服务器完成。DNS 服务器中保存的一个表把主机名映射为它知道的所有计算机的 IP 地址以及其他 DNS 服务器的 IP 地址，这些 DNS 服务器用于在该表中查找它不知道的主机名。本机计算机至少知道一个 DNS 服务器。
+ 
+ 在发送请求之前，计算机首先应要求 DNS 服务器指出与输入的主机名相对应的 IP 地址。找到正确的 IP 地址后，计算机就可以定位请求，并通过网络发送它。
+ 
+ ### 用于 IP 地址的.NET类
+ 
+ IPAddress 类代表 IP 地址。地址本身可以作为 GetAddressBytes 属性，并使用 ToString()方法转化为用小数点隔开的十进制格式。此外，IPAddress 类也实现静态的 Parse()方法，这个方法的作用与 ToString()方法刚好相反，把小数点隔开的十进制字符串转化为 IP 地址：
+ 
+ ```c#
+ IPAddress ipAddress = IPAddress.Parse("234.56.78.9");
+byte[] address = ipAddress.GetAddressBytes();
+string ipString = ipAddress.ToString();
+```
+
+
+
+
+
+
+
+
+
 
 
 
