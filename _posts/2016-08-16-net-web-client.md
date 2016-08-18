@@ -249,7 +249,7 @@ Uri CompletedUri = MSPage.Uri;
  
  在发送请求之前，计算机首先应要求 DNS 服务器指出与输入的主机名相对应的 IP 地址。找到正确的 IP 地址后，计算机就可以定位请求，并通过网络发送它。
  
- ### 用于 IP 地址的.NET类
+### 用于 IP 地址的.NET类
  
  IPAddress 类代表 IP 地址。地址本身可以作为 GetAddressBytes 属性，并使用 ToString()方法转化为用小数点隔开的十进制格式。此外，IPAddress 类也实现静态的 Parse()方法，这个方法的作用与 ToString()方法刚好相反，把小数点隔开的十进制字符串转化为 IP 地址：
  
