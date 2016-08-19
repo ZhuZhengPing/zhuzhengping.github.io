@@ -273,6 +273,76 @@ string loopback = IPAddress.Loopback.ToString();
 string broadcast = IPAddress.Broadcast.ToString();
 ```
 
+### IPHostEntry 类
+
+IPHostEntry 类用于封装与某台特定的主机相关的信息。通过这个类的 HostName 属性，可以使用主机名，通过 AddressList 属性返回一个 IPAddress 对象数组。
+
+### Dns 类
+
+Dns 类能够与默认的 DNS 服务器进行通信，以检索 IP 地址。Dns 类有两个重要的静态方法：Resolve()方法和 GetHostByAddress()方法。给 Resolve() 方法提供主机名，Resolve() 方法就可以使用 DNS 服务器获取主机的详细信息，给 GetHostByAddress()方法提供 IP 地址，GetHostByAddress()方法也可以返回主机的详细信息。这两个方法都返回一个 IPhostEntry 对象。
+
+```c#
+IPHostEntry wroxHost = Dns.Resolve("www.wrox.com");
+IPHostEntry wroxHostCopy = Dns.GetHostByAddress("208.215.179.178");
+```
+
+这段代码中，两个 IPHostEntry 对象将包含 wrox.com 服务器的详细信息。
+
+Dns 类与 IPAddress 类和 IPHostEntry 类的不同之处在于：Dns 类实际上可以与服务器进行通信，以获取有关信息: 而 IPAddress 类和 IPHostEntry 类只是包含许多便利属性的简单数据结构，可以访问底层的数据。
+
+### DnsLookup 示例
+
+下面通过查找 DNS 名称的示例来说明 DNS 和 IP 相关的类
+
+该示例应用程序让用户在主文本框中输入 DNS 名称。当用户点击 Resolve 按钮时，这个示例就是用 Dns.Resolve()方法检索 IPHostEntry 引用，并显示主机名和 IP 地址。注意，显示的主机名也许与输入的名称不同，如果一个 DNS 名称仅作为另一个 DNS 名称的代理，就会发生这种情况。
+
+<img src="http://ww2.sinaimg.cn/mw690/006dag38jw1f6zedwxa5sj30da0bamxv.jpg" style="width:70%" />
+
+这些控件分别名为 textBoxInput、btnResolve、txtBoxHostName 和 listboxIPs。
+
+```c#
+private void btnResolve_Click(object sender, EventArgs e)
+{
+	try
+	{
+		IPHostEntry iphost = Dns.GetHostEntry(textBoxInput.Text);
+		foreach (IPAddress ip in iphost.AddressList)
+		{
+			string ipaddress = ip.AddressFamily.ToString();
+			listboxIPs.Items.Add(ipaddress);
+			listboxIPs.Items.Add(" " + ip.ToString());
+		}
+		txtBoxHostName.Text = iphost.HostName;
+	}
+	catch(Exception ex)
+	{
+		MessageBox.Show("Unable to process the request because " +
+			"the following problem occurred:\n"
+			+ ex.Message, "Exception occurred");
+	}
+}
+```
+
+### 较低层的协议
+
+这里介绍一些用于较低层次上进行通信的 .NET 类。System.Net.Socket 命名空间包含一些相关的类。
+
+类 					|用途
+Socket				|这个低层的类用于管理连接。WebRequest、TcpClient 和 UdpClient 等类在内部使用这个类
+NetworkStream		|这个类是从 Stream 派生的，它表示来自网络的数据流
+SmtpClient			|允许通过 SMTP 发送消息(邮件)
+TcpClient			|允许创建和使用 TCP 连接
+TcpListener			|允许监听引入的 TCP 连接请求
+UdpClient			|用于为 UDP 客户创建连接(UDP 是 TCP 的一种替代协议，它没有得到广泛应用，主要用于本地网络)
+
+
+
+
+
+
+
+
+
 
 
 
