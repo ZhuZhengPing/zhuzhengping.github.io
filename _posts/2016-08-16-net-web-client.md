@@ -259,9 +259,19 @@ byte[] address = ipAddress.GetAddressBytes();
 string ipString = ipAddress.ToString();
 ```
 
+在上面的示例中，byte 整形数 address 的值是 IP 地址的二进制表示，字符串 ipAddress 的值为文本 "234.56.78.9"。
 
+IPAddress 类还提供了许多静态的常量字段，以返回特殊的地址。例如，Loopback 地址允许计算机给它自己发送信息，而 Broadcast 地址允许多播到本地网络上。
 
+```c#
+// The following line will set loopback to "127.0.0.1".
+// the loopback address indicates the local host.
+string loopback = IPAddress.Loopback.ToString();
 
+// The following line will set broadcast address to "255.255.255.255"
+// the broadcast address is used to send a message to all machines on the local network.
+string broadcast = IPAddress.Broadcast.ToString();
+```
 
 
 
