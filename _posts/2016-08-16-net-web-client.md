@@ -335,17 +335,263 @@ TcpClient			|允许创建和使用 TCP 连接
 TcpListener			|允许监听引入的 TCP 连接请求
 UdpClient			|用于为 UDP 客户创建连接(UDP 是 TCP 的一种替代协议，它没有得到广泛应用，主要用于本地网络)
 
+FTP 并不是依赖于文本命令的唯一高层协议，HTTP、SMTP、POP和其他协议都基于相似的文本命令。同样，许多现代的图形工具隐藏了命令的传输过程，因此用户一般意识不到这些命令的存在。例如，在 Web 浏览器中输入 URL 和把 Web 请求发送给服务器时，浏览器实际上发给服务器的是一条纯文本的 GET 命令，这条命令的作用与 FTP 的 get 命令相似。此外，浏览器也可以发送 POST 命令，该命令表示浏览器在请求上附有其他数据。
 
+但是，协议本身都不足以实现计算机直接的通信。即使客户和服务器都理解某个协议，如 HTTP,它们仍然不能互相理解，除非另外有协议说明字符是如何传输的，即使用的是什么二进制格式。更进一步说，认真考虑最底层问题，什么电压用于代表二进制数据中的0和1？这些问题都需要通过协议配置和规定他们，因此网络领域的开发人员和硬件工程师通常要查阅协议栈。在列出两个主机进行通信所需要的各种协议和机制时，创建一个协议栈，其中既有高层协议，也有最底层的协议。这种方法利用模块化和分成的方式获得了高效的通信。
 
+### 使用 SmtpClient
 
+SmtpClient 对象可以通过 SMTP 传送邮件消息。使用 SmtpClient 对象的一个简单示例如下：
 
+```c#
+SmtpClient sc = new SmtpClient("mail.mySmtpHost.com");
+sc.Send("evjen@yahoo.com", "editor@wrox.com", "The latest chapter", "Here is the latest.");
+```
 
+在其最简单的形式中，使用了 SmtpClient 对象的一个实例。在这个例子中，该实例还提供 SMTP 服务器的主机，该 SMTP 服务器用来在 Internet 上发送邮件消息。还可以使用 Host 属性完成相同的任务：
 
+```c#
+SmtpClient sc = new SmtpClient();
+sc.Host = "mail.mySmtpHost.com";
+sc.Send("evjen@yahoo.com", "editor@wrox.com", "The latest chapter", "Here is the latest.");
+```
 
+有了 SmtpClient 对象后，就可以调用 Send()方法，提供 From 地址、To 地址、主题以及邮件的消息正文。
 
+在许多情况下，邮件消息都比这里的示例复杂，为此，还可以给 Send() 方法传递一个 MailMessage 对象：
 
+```c#
+SmtpClient sc = new SmtpClient();
+sc.Host = "mail.mySmtpHost.com";
+MailMessage mm = new MailMessage();
+mm.Sender = new MailAddress("evjen@yahoo.com", "Bill Evjen");
+mm.To.Add(new MailAddress("editor@wrox.com", "Paul Reese"));
+mm.To.Add(new MailAddress("marketing@wrox.com", "Wrox Marketing"));
+mm.CC.Add(new MailAddress("publisher@wrox.com", "Barry Pruett"));
+mm.Subject = "The latest chapter";
+mm.Body = "<b>Here you can put a long message</b>";
+mm.IsBodyHtml = true;
+mm.Priority = MailPriority.High;
+sc.Send(mm);
+```
 
+使用 MailMessage 对象可以细调构建邮件消息的方式。我们可以发送 HTML 消息，添加任意多个 To 和 CC 收件人，修改消息的优先级，使用消息编码，以及添加附件。添加附件的功能在下面的代码片段中定义：
 
+```c#
+SmtpClient sc = new SmtpClient();
+sc.Host = "mail.mySmtpHost.com";
+MailMessage mm = new MailMessage();
+mm.Sender = new MailAddress("evjen@yahoo.com", "Bill Evjen");
+mm.To.Add(new MailAddress("editor@wrox.com", "Paul Reese"));
+mm.To.Add(new MailAddress("marketing@wrox.com", "Wrox Marketing"));
+mm.CC.Add(new MailAddress("publisher@wrox.com", "Barry Pruett"));
+mm.Subject = "The latest chapter";
+mm.Body = "<b>Here you can put a long message</b>";
+mm.IsBodyHtml = true;
+mm.Priority = MailPriority.High;
+Attachment att = new Attachment("myExcelResults.zip", MediaTypeNames.Application.Zip);
+mm.Attachments.Add(att);
+sc.Send(mm);
+```
+
+### 使用 TCP 类
+
+传输控制协议(TCP)类为连接和发送两个端点之间的数据提供了简单的方法。端点是IP地址和端口号的组合。已有的协议很好地定义了端口号，例如，HTTP 使用端口 80，SMTP 使用端口 25。Internet 地址编码分配机构把端口号赋予这些已知的服务。除非实现某个已知的服务，否则应选择大于1024的端口号。
+
+### TcpSend 和 TcpReceive 示例
+
+为了说明这两个类的工作原理，需要构建两个应用程序。第一个应用程序是 TcpSend，
+
+<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f700i2xm55j309404pjrk.jpg" />
+
+创建了一个 C# Windows 应用程序，其中的窗体包含两个文本框(txtHost 和 txtPort)，分别用于主机名和端口。该窗体还有一个按钮(btnSend)，单击它可以启动一个连接。
+
+```c#
+private void btnSend_Click(object sender, EventArgs e)
+{
+	TcpClient tcpClient = new TcpClient(txtHost.Text, Int32.Parse(txtPort.Text));
+	NetworkStream ns = tcpClient.GetStream();
+	FileStream fs = File.Open("form2.cs", FileMode.Open);
+
+	int data = fs.ReadByte();
+
+	while (data != -1)
+	{
+		ns.WriteByte((byte)data);
+		data = fs.ReadByte();
+	}
+
+	fs.Close();
+	ns.Close();
+	tcpClient.Close();
+}
+```
+
+这个示例用主机名何端口号创建 TcpClient 类。或者，如果有 IPEndPoint 类的一个实例，就可以把该实例传递给 TcpClient 类的构造函数。在检索到 NetworkStream 类的一个实例后，打开源代码文件，并开始读取字节。与许多二进制流一样，这里也需要将 ReadByte()方法的返回值和-1相比较，以确定是否到达流的末尾。
+
+为了避免应用程序界面的冻结，我们使用一个后台线程来等待，然后从连接中读取
+
+```c#
+public Form2()
+{
+	InitializeComponent();
+	Thread thread = new Thread(new ThreadStart(Listen));
+	thread.Start();
+}
+
+public void Listen()
+{
+	IPAddress localAddr = IPAddress.Parse("127.0.0.1");
+	Int32 port = 2112;
+	TcpListener tcpListener = new TcpListener(localAddr, port);
+	tcpListener.Start();
+
+	TcpClient tcpClient = tcpListener.AcceptTcpClient();
+	NetworkStream ns = tcpClient.GetStream();
+	StreamReader sr = new StreamReader(ns);
+	string result = sr.ReadToEnd();
+	Invoke(new UpdateDisplayDelegate(UpdateDisplay), new object[] { result});
+	tcpClient.Close();
+	tcpListener.Stop();
+}
+
+public void UpdateDisplay(string text)
+{
+	txtDisplay.Text = text;
+}
+
+protected delegate void UpdateDisplayDelegate(string text);
+```
+
+该线程在 Listen()方法中执行，并允许在不暂停界面的情况下阻塞对 AcceptTcpClient() 方法的调用。注意这里把 IP 地址 127.0.0.1 和端口号 2112 硬编码到应用程序中，因此需要从客户端应用程序输入相同的端口号。
+
+### UDP
+
+UDP 是一个几乎没有什么功能的简单协议，且几乎没有什么系统开销。开发人员常常在速度和性能要求比可靠性更高的应用程序中使用 UDP，如视频流。
+
+可以看出，和 TcpClient 类相比，UdpClient 类提供了一个较小、较简单的接口。尽管 TCP 和 UDP 类都在后台使用套接字，但 UdpClient 类不包含返回一个网络流以读写数据的方法。相反，成员函数 Send() 把一个字节数组作为参数，Receive()函数则返回一个字节数组。另外， UDP 是一个无连接的协议，所以可以指定把通信的端点作为 Send()方法和 Receive()方法的一个参数，而不是在前面的构造函数或 Connect()方法中指定。
+
+```c#
+static void Main(string[] args)
+{
+
+	UdpClient udpClient = new UdpClient();
+	string sendMsg = "Hello echo server";
+	byte[] sendBytes = Encoding.ASCII.GetBytes(sendMsg);
+	udpClient.Send(sendBytes, sendBytes.Length, "SomeEchoServer.net", 7);
+	IPEndPoint endPoint = new IPEndPoint(0, 0);
+	byte[] revBytes = udpClient.Receive(ref endPoint);
+	string rcvMessage = Encoding.ASCII.GetString(revBytes, 0, revBytes.Length);
+
+	// should print out "Hello echo server";
+	Console.WriteLine(rcvMessage);
+	Console.ReadKey();
+}
+```
+
+Encoding.ASCII 类常常用于把字符串转化为字节数组，或把字节数组转化为字符串。还要注意，IPEndPoint 应通过引用传递给 Receive() 方法。因为 UDP 不是一个面向连接的协议，对 Reveice()方法的每次调用都会从不同的端点读取数据，所以 Receive()方法会用发送主机的 IP 地址和端口填充该参数。
+
+### Socket 类
+
+Socket 类提供了网络编程中最高级的控制。说明该类简单的方式是用 Socket 类重写 TcpReceive 应用程序。
+
+```c#
+ public void Listen()
+{
+
+	Socket listener = new Socket(AddressFamily.InterNetwork,
+		SocketType.Stream,
+		ProtocolType.Tcp);
+
+	listener.Bind(new IPEndPoint(IPAddress.Any, 2112));
+	listener.Listen(0);
+	Socket socket = listener.Accept();
+	Stream netStream = new NetworkStream(socket); 
+	StreamReader reader = new StreamReader(netStream);
+	string result = reader.ReadToEnd();
+	Invoke(new UpdateDisplayDelegate(UpdateDisplay), new object[] { result});
+	socket.Close();
+	listener.Close();
+}
+```
+
+Socket 类需要再编写几行代码来完成相同的任务。对于初学者，构造函数的参数需要为使用 TCP 协议的流套接字指定 IP 寻址方案。这些参数只是可用于 Socket 类的许多组合之一，TcpClient 类会配置这些设置。接着把侦听器的套接字绑定到一个端口上，开始帧听引入的连接。当引入的请求到达时，就可以使用 Accept() 方法创建一个新的套接字来处理该连接。最后为套接字附加一个 StreamReader 实例来读取引入的数据，其方式与前面大致相同。
+
+Socket 类也包含许多方法，用于异步地接受、连接、发送和接收数据。通过回调委托使用这些方法的方式与前面用 WebRequest 类请求异步页面的方式相同。如果确实需要了解套接字的内部情况，就可以使用 GetSocketOption()方法和 SetSocketOption()方法，他们允许查看和配置各种选项，包括超时、生存期和其他低级选项。
+
+```c#
+static void Main(string[] args)
+{
+
+	Socket listener = new Socket(AddressFamily.InterNetwork,
+		SocketType.Stream,
+		ProtocolType.Tcp);
+
+	listener.Bind(new IPEndPoint(IPAddress.Any, 2112));
+	listener.Listen(10);
+
+	while (true)
+	{
+		Socket socket = listener.Accept();
+		string receivedValue = string.Empty;
+		while (true)
+		{
+			byte[] receivedBytes = new byte[1024];
+			int numBytes = socket.Receive(receivedBytes);
+			Console.WriteLine("Receiving .");
+			receivedValue += Encoding.ASCII.GetString(receivedBytes, 0, numBytes);
+			if (receivedValue.IndexOf("[FINAL]") > -1)
+			{
+				break;
+			}
+		}
+		Console.WriteLine("Received value: {0}", receivedValue);
+		string replyValue = "Message successfully received.";
+		byte[] replyMessage = Encoding.ASCII.GetBytes(replyValue);
+		socket.Send(replyMessage);
+		socket.Shutdown(SocketShutdown.Both);
+		socket.Close();
+	}
+	listener.Close();
+
+	Console.ReadKey();
+}
+```
+
+这个例子使用 Socket 类建立了一个套接字。该套接字使用 TCP 协议，并通过端口 2112 接收从任意 IP 地址引入的消息。把通过打开的套接字接收到的值写入控制台屏幕。这个消费应用程序会继续接收字节，知道接收到[FINAL]字符串为止。
+
+### 构建客户端应用程序
+
+下一步是构建一个客户端应用程序，该应用程序给第一个控制台应用程序发送一条消息。客户端只要遵循该应用程序建立的规则，就可以给服务器控制台应用程序发送任何消息。第一条规则是服务器控制台应用程序只是用特别的协议帧听。本例中的服务器应用程序使用 TCP 协议帧听消息。另一条规则是服务器应用程序只帧听特定的端口，对于本例是端口 2112.最后一条规则是对于任意正在发送的消息，消息的最后一位必须以字符串[FINAL]结尾。
+
+```c#
+static void Main(string[] args)
+{
+	byte[] receivedBytes = new byte[1024];
+	IPHostEntry ipHost = Dns.Resolve("127.0.0.1");
+	IPAddress ipAddress = ipHost.AddressList[0];
+	IPEndPoint ipEndPoint = new IPEndPoint(ipAddress, 2112);
+	Console.WriteLine("Starting: Creating Socket object");
+	Socket sender = new Socket(AddressFamily.InterNetwork,
+		SocketType.Stream,
+		ProtocolType.Tcp);
+
+	sender.Connect(ipEndPoint);
+	Console.WriteLine("Successfully connected to {0}",sender.RemoteEndPoint);
+	string sendingMessage = "Hello World Socket Test";
+	Console.WriteLine("Creating message: Hello World Socket Test");
+	byte[] forwardMessage = Encoding.ASCII.GetBytes(sendingMessage + "[FINAL]");
+	sender.Send(forwardMessage);
+
+	int totalBytesReceived = sender.Receive(receivedBytes);
+	Console.WriteLine("Message provided from server: {0}",Encoding.ASCII.GetString(receivedBytes,0,totalBytesReceived));
+	sender.Shutdown(SocketShutdown.Both);
+	sender.Close();
+	Console.ReadLine();
+}
+```
+
+<img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f70997dfdij30jz0f6jsg.jpg" style="width:100%" />
 
 
 
