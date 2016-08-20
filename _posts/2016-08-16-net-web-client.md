@@ -591,7 +591,153 @@ static void Main(string[] args)
 }
 ```
 
+在这个例子中，使用 localhost 的IP地址和服务器控制台应用程序要求的端口 2112 创建一个 IPEndPoint 对象。这里创建了一个套接字，并调用了 Connect()方法。打开套接字并连接到服务器控制台应用程序的套接字实例后，使用 Send()方法把一个文本字符串发送给服务器应用程序。因为服务器应用程序会返回一条消息，所以使用 Receive()方法获取这条消息(把它放到数组中)。之后，将字节数组转换为一个字符串，并把它显示在控制台应用程序上，最后关闭套接字。
+
 <img src="http://ww4.sinaimg.cn/mw690/006dag38jw1f70997dfdij30jz0f6jsg.jpg" style="width:100%" />
+
+### WebSocket
+
+WebSocket 协议用于完全双工的双向通信。这种通信一般在浏览器和 Web 服务器之间进行，但仅交流那些支持使用 WebSocket 协议的客户端信息。
+
+与浏览器和 Web 服务器使用的请求/响应模型不同，WebSocket 维持一个打开的连接。TCP 发送的是字节流，而 WebSocket 是在服务器和客户端之间来回发送消息。
+
+并不是所有的浏览器和 Web 服务器都支持 WebSocket 协议。目前，Firefox 11.0，Google Chrome 16 和 Internet Explorer 10 提供了这种浏览器支持。对于服务器，带有 ASP.NET 4.5的 IIS 8 提供了低级 WebSocket 支持。
+
+### Chat 示例
+
+WebSocket 端点可以使用任意类型的处理程序或模块来创建。下例使用一个.ashx处理程序作为端点。该示例是一个使用浏览器和 Web 服务器的简单聊天程序，每个客户端或用户都连接到 Web 服务器上，提供其名称，以便在聊天服务器上“注册”，接着就可以在该服务器上注册的其他用户发送简单的文本消息了。
+
+首先是用于浏览器的代码。这是一个非常简单的 HTML 页面，它使用 jQuery 建立 WebSocket
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>WroxChat</title>
+    <script src="jquery-3.1.0.min.js"></script>
+    <script type="text/javascript">
+    $(function () {
+        var name = prompt('what is your name?:');
+        var url = 'ws://localhost/ws.ashx?name=' + name;
+        ws = new WebSocket(url);
+        ws.onopen = function () {
+            $('#message').prepend('Connected <br/>');
+            $('#cmdSend').click(function () {
+                ws.send($('#txtMessage').val());
+                $('#txtMessage').val('');
+            });
+        };
+        ws.onmessage = function (e) {
+            $('#chatMessages').prepend(e.data + '<br/>');
+        };
+        $('#cmdLeave').click(function () {
+            ws.close();
+        });
+        ws.onclose = function () {
+            $('#chatMessages').prepend('Closed <br/>');
+        };
+        ws.onerror = function (e) {
+            $('#chatMessages').prepend('Oops something went wrong');
+        };
+    });
+    </script>
+
+</head>
+<body>
+    <input id="txtMessage" />
+    <input id="cmdSend" type="button" value="Send" />
+    <input id="cmdLeave" type="button" value="Leave" />
+    <br />
+    <div id="chatMessages" />
+</body>
+</html>
+```
+
+这个示例放在 localhost 上。url 变量可以改为驻留该示例的任意有效 URL。
+
+代码行 ws = new WebSocket(url); 建立了浏览器和服务器之间的连接。WebSocket 类触发 onopen 事件时，就定义 cmdSend 单击事件的处理程序，它调用 WebSocket 对象的 Send 方法。
+
+这个示例中处理的其他 WebSocket 事件有 ommessage、onclose和onerror。发送异常时调用 onerror。
+
+在服务器上事件就复杂多了。对于这个示例，需要创建一个简单的 CharUser 对象放在 IList<ChatUser>中。把消息发送给服务器时，它会广播给 IList<ChatUser>列表中的每个用户。
+
+IHttpHandler 完成这个工作。处理 ProcessRequest 方法时，会创建新用户，并把该用户添加到列表中。最后，它调用 ChatUser 对象的 HandleWebSocket 方法。这就完成了在浏览器和服务器之间建立连接的工作。
+
+```c#
+public void ProcessRequest(HttpContext context)
+{
+	if (context.IsWebSocketRequest)
+	{
+		var chatuser = new ChatUser();
+		chatuser.UserName = context.Request.QueryString["name"];
+		ChatApp.AddUser(chatuser);
+		context.AcceptWebSocketRequest(chatuser.HandleWebSocket);
+	}
+}
+```
+
+如上所示，创建了新的 ChatUser,其名称根据来自浏览器的查询参数进行设置，把该用户添加到列表中，再调用 HandleWebSocket 方法。
+
+```c#
+public async Task HandleWebSocket(WebSocketContext wsContext)
+{
+	_context = wsContext;
+	const int maxMessageSize = 1024;
+	byte[] receiveBuffer = new byte[maxMessageSize];
+	WebSocket socket = _context.WebSocket;
+	while (socket.State == WebSocketState.Open)
+	{
+		WebSocketReceiveResult receiveResult = await socket.ReceiveAsync(new ArraySegment<byte>(receiveBuffer), CancellationToken.None);
+		if (receiveResult.MessageType == WebSocketMessageType.Close)
+		{
+			await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, 
+				string.Empty,
+					CancellationToken.None);
+		}
+		else if (receiveResult.MessageType == WebSocketMessageType.Binary)
+		{
+			await socket.CloseAsync(WebSocketCloseStatus.InvalidMessageType,
+				"Cannot accept binary frame",
+				CancellationToken.None);
+		}
+		else
+		{
+			var receivedString = Encoding.UTF8.GetString(receiveBuffer, 0, receiveResult.Count);
+			var echoString = string.Concat(UserName, " said: ", receivedString);
+
+			ArraySegment<byte> outputBuffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(receivedString));
+			ChatApp.BroadcastMessage(echoString);
+		}
+	}
+}
+```
+
+请求到达时，首先需要确保套接字连接是打开的。从传入的 WebSocketContext 对象中获取该套接字，然后检查其 State 属性。
+
+接着，调用 ReceiveAsync 方法，返回 WebSocketReceiveResult 对象。在该对象中可以确定消息是一个关闭消息还是二进制消息。如果发送的是关闭消息，就关闭连接。
+
+ReceiveAsync 调用中的一个参数是 receiveBuffer，它是一个字节数组，要用消息数据来填充。在功能比较全面的聊天程序中，需要确保消息没有超过最大尺寸限制。
+
+限制该处理消息了。因为这是一个字节数组，所以需要把数据转换为文本格式。为此，要使用 Encoding.UTF8.GetString 方法，它会提取字节数组，返回消息的字符串表示。我们把发送消息的用户名和 ChatApp 类的 Broadcast 方法调用连接起来。
+
+```c#
+public async Task SendMessage(string message)
+{
+	if (_context != null && _context.WebSocket.State == WebSocketState.Open)
+	{
+		var outputBuffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(message));
+		await _context.WebSocket.SendAsync(
+			outputBuffer,
+			WebSocketMessageType.Text,
+			true,
+			CancellationToken.None);
+	}
+}
+```
+
+
+
 
 
 
