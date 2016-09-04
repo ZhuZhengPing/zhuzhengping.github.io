@@ -8,7 +8,7 @@
 # Site settings
 title: ZhuZhengPing
 brief-intro: Front-end Dev Engineer
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "https://zhuzhengping.github.io" # the subpath of your site, e.g. /blog
 url: "https://zhuzhengping.github.io/" # the base hostname & protocol for your site
 
 permalink: /:year/:month/:day/:title/
