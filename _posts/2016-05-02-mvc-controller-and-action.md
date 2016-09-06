@@ -70,7 +70,7 @@ TempData				|TempDataDictionary			|临时存储
 
 ### 明白  Action Result 
 
- action  返回一个对象  ActionResult`,而不是直接使用  Response 返回，调用一个视图，或者跳转到另外的 action ，我们演示定义自己的 ActionResult 
+ action  返回一个对象  ActionResult,而不是直接使用  Response 返回，调用一个视图，或者跳转到另外的 action ，我们演示定义自己的 ActionResult 
 
 ```c#
 public class CustomRedirectResult:ActionResult
@@ -194,7 +194,7 @@ public RedirectToRouteResult Redirect() {
 
 ###  TempData  和  ViewBag 
 
- TempData 和 session 比较类似，不同的是 TempData 访问后就被删除了，并且当访问执行后数据就被删除了
+TempData 和 session 比较类似，不同的是 TempData 访问后就被删除了，并且当访问执行后数据就被删除了
 
 ```c#
 public RedirectToRouteResult RedirectToRoute() { 
@@ -216,7 +216,7 @@ public ViewResult Index() {
 
 使用 TempData ，你可以强制它不自动移除， DateTime time = (DateTime)TempData.Peek("Date");  
 
-保持一个临时的值，使用 TempData.Keep("Date")`
+保持一个临时的值，使用 TempData.Keep("Date")
 
 #### 返回http状态信息
 

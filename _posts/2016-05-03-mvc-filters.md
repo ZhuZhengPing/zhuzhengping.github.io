@@ -91,9 +91,9 @@ public ActionResult Index()
 
 ### 使用  Exception filters 
 
-当你运行一个 action 抛出异常后， Exception filters 就会运行,`Exception 会从下面这些地方生成
+当你运行一个 action 抛出异常后， Exception filters 就会运行,Exception 会从下面这些地方生成
 
->* 另外一种 filter  (`authorization`,`action 或者 result filter`)
+>* 另外一种 filter  (authorization,action 或者 result filter)
 >*  action 本身
 >* 当 action result 执行的时候
 
@@ -105,8 +105,8 @@ public ActionResult Index()
 
 名称			|类型				|描述
 Controller		|ControllerBase		|返回控制器对象
-HttpContextBase	|HttpContextBase	|`request 的访问详细以及 response 的详细
-IsChlidAction	|bool				|如果是 child action`,返回true
+HttpContextBase	|HttpContextBase	|request 的访问详细以及 response 的详细
+IsChlidAction	|bool				|如果是 child action,返回true
 RequestContext	|RequestContext		|能够访问 HttpContext 和 Route Data 
 RouteData		|RouteData			|为 Request 提供 Routing data 
 
@@ -116,7 +116,7 @@ RouteData		|RouteData			|为 Request 提供 Routing data
 
 名称			|类型				|描述
 ActionDescriptor|ActionResult		|提供 action 方法的详细信息
-Result			|ActionResult		|`action 方法的 result ，一个 filter 设置这个属性值为 non-null 取消请求
+Result			|ActionResult		|action 方法的 result ，一个 filter 设置这个属性值为 non-null 取消请求
 Exception		|Exception			|未处理的 Exception 
 ExceptionHandled|bool				|如果其它 filter 标记这个 Exception 为已处理，则返回true
 
@@ -222,8 +222,8 @@ public class RangeExceptionAttribute:FilterAttribute,IExceptionFilter
 
 名称			|类型			|描述
 ExceptionType	|Type			|默认值是 System.Exception ，这意味着它能处理所有的 Exception 
-View			|string			|`filter 对应的 View ，如果你不指定一个值，会带有一个默认值 Error 
-Master			|string			|`filter 对应的 View  的模板
+View			|string			|filter 对应的 View ，如果你不指定一个值，会带有一个默认值 Error 
+Master			|string			|filter 对应的 View  的模板
 
 如果要使用 Exception filter ，需要在 Web.config 中启用，添加 customErrors 节点
 
@@ -332,7 +332,7 @@ ActionDescriptor	|ActionDescriptor	|提供 Action 方法的详细信息
 Canceled			|bool				|如果 Action 已经被处理，返回true
 Exception			|Exception			|返回其它 filter 返回的错误或者 Action 返回的错误
 ExceptionHandled	|bool				|如果错误已经被处理，返回true
-Result				|ActionResult		|`Action 方法的结果， filter 设置这个属性为 non-null 来取消请求
+Result				|ActionResult		|Action 方法的结果， filter 设置这个属性为 non-null 来取消请求
 
 ### 使用 Result Filters
 
@@ -361,7 +361,7 @@ public class ProfileResultAttribute : FilterAttribute, IResultFilter
 
 ### 使用系统内置的 Action filter 和 Result filter 
 
-MVC框架包含内置的 Action filter 和 Result filter`,叫做 ActionFilterAttribute 
+MVC框架包含内置的 Action filter 和 Result filter,叫做 ActionFilterAttribute 
 我们重新创建一个 filter 继承抽象类 ActionFilterAttribute ，重写里面的方法
 
 ```c#
@@ -397,7 +397,7 @@ public class ProfileAllAttribute : ActionFilterAttribute
 
 ### 使用其他 Filter 的特性
 
- Controller 已经实现了 IActionFilter`,`IExceptionFilter`,`IResultFilter`,`IAuthorizationFilter ，我们可以在一个 Controller 里面
+ Controller 已经实现了 IActionFilter,IExceptionFilter,IResultFilter,IAuthorizationFilter ，我们可以在一个 Controller 里面
 直接实现这些 Filter 
 
 ```c#
@@ -443,8 +443,8 @@ public class FilterConfig
 
 ###  Filter 执行顺序
 
- filter 根据类型来执行的，一次的循序为:`authorization filters`,`action filters`,`result filters`,当任何 filter 出现错误的时候，
-并且未处理的时候执行 exception filter`,下面创建 SimpleMessageAttribute 做一个示范
+ filter 根据类型来执行的，一次的循序为:authorization filters,action filters,result filters,当任何 filter 出现错误的时候，
+并且未处理的时候执行 exception filter,下面创建 SimpleMessageAttribute 做一个示范
 
 ```c#
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)] 
@@ -463,7 +463,7 @@ public class SimpleMessageAttribute : FilterAttribute, IActionFilter
 }
 ```
 
-当 Action 调用的时候，会执行 OnActionExecuted 和 OnActionExecuting`,设置 AllowMultiple=true 可以多次指定这个 filter 
+当 Action 调用的时候，会执行 OnActionExecuted 和 OnActionExecuting,设置 AllowMultiple=true 可以多次指定这个 filter 
 设置 filter 的 Order 功能指定排序，但是只能设置 OnActionExecuting 的执行次序，全局 filter 最先执行
 
 ```c#
@@ -484,7 +484,7 @@ RequireHttps												|强制使用 https 协议进行操作
 OutputCache													|缓存 action 方法的返回值
 ValidateInput和ValidationAntiForgeryToken，AsyncTimeout 	|授权与安全相关的过滤器
 NoAsyncTimeout												|使用异步的控制器
-ChildActionOnlyAttribute									|一种授权的 filter`,支持 Html.Action 和 Html.RenderAction 
+ChildActionOnlyAttribute									|一种授权的 filter,支持 Html.Action 和 Html.RenderAction 
 
 ### 使用 OutputCache Filter 
 

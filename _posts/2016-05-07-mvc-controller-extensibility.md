@@ -79,7 +79,7 @@ RouteData		|RouteData			|请求所匹配的路由信息
 >*  GetControllerSessionBehavior 方法确认是否帮 controller 保存 session 值
 >*  ReleaseController 在不需要使用 controller 时调用
 
-我们告诉MVC框架在 ControllBuilder 类里使用 IControllerFactory`,需要在
+我们告诉MVC框架在 ControllBuilder 类里使用 IControllerFactory,需要在
  Global.asax.cs 中注册
 
 ```c#
@@ -99,8 +99,8 @@ public class MvcApplication : System.Web.HttpApplication
 
 ### 使用内置的 Controller Factory 
 
-我们已经创建了一个自定义的 Controller Factory`,仅仅是为了演示如何 Controller Factory 如何工作的，
-系统内置的名称为 DefaultControllerFactory`,当  routing system 接收到一个请求， DefaultControllerFactory 
+我们已经创建了一个自定义的 Controller Factory,仅仅是为了演示如何 Controller Factory 如何工作的，
+系统内置的名称为 DefaultControllerFactory,当  routing system 接收到一个请求， DefaultControllerFactory 
 会在 routing data 里面找到 controller 的属性，该 controller 必须符合以下特性
 
 >*  controller 所在的类名必须为public
@@ -178,7 +178,7 @@ GetControllerInstance	|IController		|创建指定的类型
 
 ### 创建自定义的  Action Invoker 
 
-当 controller factory 创建了一个类，MVC框架需要调用这个类的 action`,也就是执行一个
+当 controller factory 创建了一个类，MVC框架需要调用这个类的 action,也就是执行一个
  action invoker 
 
 ```js
@@ -347,7 +347,7 @@ public class CustomControllerFactory : IControllerFactory
 
 ### 使用 DefaultControllerFactory 管理 Session state 
 
-当你使用内置的 controller factory`,你可以使用 SessionState 属性来控制
+当你使用内置的 controller factory,你可以使用 SessionState 属性来控制
  Session state 
 
 ```c#
@@ -373,7 +373,7 @@ asp.net平台底层维护一个拥有.net线程池的客户端用户请求进程
 #### 创建一个异步的控制器
 
 有2种方法创建异步的控制器，一种是实现 System.Web.Mvc.Async.IAsyncController 接口，
-相当于实现了异步的 IController`,异步的 controller 需要4.5框架,我们创建一个这样的示例
+相当于实现了异步的 IController,异步的 controller 需要4.5框架,我们创建一个这样的示例
 
 *创建异步的 Controller *
 
