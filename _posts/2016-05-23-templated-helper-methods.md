@@ -419,7 +419,7 @@ public partial class Person
 
 为了显示自定义模板，我们为 Person 的 role 属性创建一个自定义模板，这个属性类型是一个枚举值类型，MVC框架会在 /Views/Shared/EditorTemplates 下面找模板
 
-* Role.cshtml 文件内容*
+*Role.cshtml 文件内容*
 
 ```html
 @model HelperMethods.Models.Role 
