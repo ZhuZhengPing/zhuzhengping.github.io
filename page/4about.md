@@ -27,7 +27,7 @@ icon: heart
 
 ## 友情链接
 
-[辣鸡代码制造熊](http://codelover.link) \| [Anotherhome](https://www.anotherhome.net) \| [Reverland](http://reverland.org/) \| [ZhiLi](http://lizhipower.github.io/) \| [Simmer](http://simmer-jun.github.io/) \| [awthink](http://awthink.net/) \| [Aralic](http://aralic.github.io/) \| [zchen9](http://www.chen9.info/) \| [wuhuaji](http://wuhuaji.me/) \| [lisheng](http://www.lishengcn.cn/) \| [薛彬XueBin](http://axuebin.com/blog/)
+[辣鸡代码制造熊](http://codelover.link) \|
 
 ## Comments
 
