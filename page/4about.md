@@ -10,7 +10,7 @@ icon: heart
 
 ## 友情链接
 
-[辣鸡代码制造熊](http://codelover.link) 
+[高松阳](https://gaohaoyang.github.io/) 
 
 ## 联系我
 
