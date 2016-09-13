@@ -10,7 +10,7 @@ icon: heart
 
 ## 友情链接
 
-[高松阳](https://gaohaoyang.github.io/) 
+[Sutao.H](http://goback.win/) \| [Hyg](https://gaohaoyang.github.io/)
 
 ## 联系我
 
