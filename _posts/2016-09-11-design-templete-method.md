@@ -37,7 +37,7 @@ author: Zhengping Zhu
 
 下图给出了该练习中涉及的所有类
 
-<img src="" style="width:100%" alt="模板方法" />
+<img src="http://ww3.sinaimg.cn/mw690/006dag38jw1f7u01c0hovj30sc0c70wf.jpg" style="width:100%" alt="模板方法" />
 
 下面开始该练习，向项目中添加一个新类 ReturnAction
 
@@ -69,15 +69,117 @@ namespace Pattern.TempleteMethod
 }
 ```
 
+ReturnOrder 实体表示客户正在办理退货手续的订单。Action 属性确定退货单的类型，PaymentTransactionId 指用来该订单的原始支付，PricePaid 和 PostageCost 分别指订单总价和运费。ProductId 存放退货商品的唯一标识符。最后，设置 AmountToRefund，这是退还给客户的总金额。
 
+在建立领域模型后，可以实现抽象模板方法，它将由具体的缺陷退货和无条件退货子类重写。为了创建模板方法，向项目中添加一个新类 ReturnProcessTemplate
 
+```c#
+namespace Pattern.TempleteMethod
+{
+    public abstract class ReturnProcessTemplete
+    {
+        protected abstract void GenerateReturnTransactionFor(ReturnOrder returnOrder);
+        protected abstract void CalculateRefundFor(ReturnOrder returnOrder);
 
+        public void Process(ReturnOrder returnOrder)
+        {
+            GenerateReturnTransactionFor(returnOrder);
+            CalculateRefundFor(returnOrder);
+        }
+    }
+}
+```
 
+该类以及它的前两个方法均是抽象的，需要由子类实现。第三个方法只在两个抽象方法中调用并传入 ReturnOrder 实体作为参数。
 
+现在可以添加两个模板方法子类。首先向项目中添加一个新类 NoQuibblesReturnProcess
 
+```c#
+namespace Pattern.TempleteMethod
+{
+    public class NoQuibblesReturnProcess:ReturnProcessTemplete
+    {
 
+        protected override void GenerateReturnTransactionFor(ReturnOrder returnOrder)
+        {
+            throw new NotImplementedException();
+        }
 
+        protected override void CalculateRefundFor(ReturnOrder returnOrder)
+        {
+            returnOrder.AmountToRefund = returnOrder.PricePaid;
+        }
+    }
+}
+```
 
+前面曾经提及，NoQuibblesReturnProcess 将商品退还入库，该逻辑位于重写后的 GenerateReturnTransactionFor 方法中。为了使该练习简单，这里并没有包含实现该功能的代码，但通常会在这里用代码来添加一个库存事务，增加退货商品的总库存。
+
+重写的方法 CalculateRefundFor 只是将退货单上的 AmountToRefund 属性设置为商品的原始价格。注意，这里并没有退还邮寄费用。
+
+FaultyReturnProcess 类是第二个继承 ReturnProcessTemplate 的子类。该类负责处理有缺陷退货商品。向项目中添加一个新类 FaultyReturnProcess.
+
+```c#
+namespace Pattern.TempleteMethod
+{
+    public class FaultyReturnProcess:ReturnProcessTemplete
+    {
+        protected override void GenerateReturnTransactionFor(ReturnOrder returnOrder)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void CalculateRefundFor(ReturnOrder returnOrder)
+        {
+            returnOrder.AmountToRefund = returnOrder.PricePaid + returnOrder.PostageCost;
+        }
+    }
+}
+```
+
+重写的 GenerateReturnTransactionFor 方法创建一个返厂单，用于发送缺陷商品以获取退款。同样，处于简洁性考虑，这里没有包含实现该功能的代码。CalculateRefundFor 和 NoQuibblesReturnProcess 的不同之处在于，在返回给客户的货代中包含邮寄费用。
+
+在创建协调退货处理的 Service 类之前，需要某种方式根据退货单的类型来获取正确的处理类。创建一个新类 ReturnProcessFactory
+
+```c#
+namespace Pattern.TempleteMethod
+{
+    public static class ReturnProcessFactory
+    {
+        public static ReturnProcessTemplete CreateFrom(ReturnAction returnAction)
+        {
+            switch (returnAction)
+            {
+                case ReturnAction.FaultyReturn:
+                    return new FaultyReturnProcess();
+                case ReturnAction.NoQuibblesReturn:
+                    return new NoQuibblesReturnProcess();
+                default:
+                    throw new ApplicationException("No Process Template defined for Return Action of " + returnAction.ToString());
+            }
+        }
+    }
+}
+```
+
+Factory 类隐藏了复杂性，不让客户看见，同时确保该逻辑放在一个位置上交由 Factory 类负责
+
+最后，可以向项目中添加 ReturnOrderService 类
+
+```c#
+namespace Pattern.TempleteMethod
+{
+    public class ReturnService
+    {
+        public void Process(ReturnOrder returnOrder)
+        {
+            ReturnProcessTemplete returnProcess = ReturnProcessFactory.CreateFrom(returnOrder.Action);
+
+            returnProcess.Process(returnOrder);
+        }
+    }
+}
+```
 
 
 
