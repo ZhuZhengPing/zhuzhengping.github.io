@@ -71,7 +71,7 @@ class MovieLister...
 
 如果这个类只由我自己使用，一切都没问题。但是，如果我的朋友叹服于这个精彩的功能，也想使用我的程序，那又会怎么样呢？如果他们也把影片清单保存在一个逗号分隔的文本文件中，并且也把这个文件命名为“ movie1.txt ”，那么一切还是没问题。如果他们只是给这个文件改改名，我也可以从一个配置文件获得文件名，这也很容易。但是，如果他们用完全不同的方式——例如SQL 数据库、XML 文件、web service，或者另一种格式的文本文件——来存储影片清单呢？在这种情况下，我们需要用另一个类来获取数据。由于已经定义了MovieFinder接口，我可以不用修改moviesDirectedBy方法。但是，我仍然需要通过某种途径获得合适的MovieFinder实现类的实例。
 
-<img src="http://static.oschina.net/uploads/img/201306/20150625_41cG.gif" alt="依赖注入" />
+<img src="http://martinfowler.com/articles/naive.gif" alt="依赖注入" />
 
 图1展现了这种情况下的依赖关系：MovieLister类既依赖于MovieFinder接口，也依赖于具体的实现类。我们当然希望MovieLister类只依赖于接口，但我们要如何获得一个MovieFinder子类的实例呢？
 
@@ -95,7 +95,7 @@ class MovieLister...
 
 Dependency Injection 模式的基本思想是：用一个单独的对象（装配器）来获得MovieFinder的一个合适的实现，并将其实例赋给MovieLister类的一个字段。这样一来，我们就得到了图2所示的依赖图。
 
-<img src="http://static.oschina.net/uploads/img/201306/20150626_DSlJ.gif" alt="控制反转" />
+<img src="http://martinfowler.com/articles/injector.gif" alt="控制反转" />
 
 图2：引入依赖注入器之后的依赖关系
 
@@ -316,7 +316,7 @@ class IfaceTester...
 
 Service Locator模式背后的基本思想是：有一个对象（即服务定位器）知道如何获得一个应用程序所需的所有服务。也就是说，在我们的例子中，服务定位器应该有一个方法，用于获得一个MovieFinder实例。当然，这不过是把麻烦换了一个样子，我们仍然必须在MovieLister中获得服务定位器，最终得到的依赖关系如图3 所示： 
 
-<img src="http://static.oschina.net/uploads/img/201306/20150627_0rWn.gif" alt="Service Locator" />
+<img src="http://martinfowler.com/articles/locator.gif" alt="Service Locator" />
 
 图3：使用Service Locator 模式之后的依赖关系
 
