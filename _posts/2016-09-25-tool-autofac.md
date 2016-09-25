@@ -14,7 +14,7 @@ author: Zhengping Zhu
 
 Autofac是一款IOC框架，比较于其他的IOC框架，如Spring.NET，Unity，Castle等等所包含的，它很轻量级性能上非常高。
 
-官方网址[http://autofac.org/](http://autofac.org/) 
+官方网址[http://docs.autofac.org/en/latest/](http://docs.autofac.org/en/latest/) 
 
 源码下载地址[https://github.com/autofac/Autofac](https://github.com/autofac/Autofac)
 
