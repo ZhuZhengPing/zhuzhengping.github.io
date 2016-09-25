@@ -148,7 +148,7 @@ Configure the component so that every dependent component or call to Resolve() w
 
 autofac 创建实例方法总结：[http://www.cnblogs.com/manglu/p/4115128.html](http://www.cnblogs.com/manglu/p/4115128.html)
 
-AutoFac使用方法总结:Part I：[http://niuyi.github.io/blog/2012/04/06/autofac-by-unit-test/](http://niuyi.github.io/blog/2012/04/06/autofac-by-unit-test/)
+AutoFac使用方法总结:Part I：[https://niuyi.github.io/blog/2012/04/06/autofac-by-unit-test/](http://niuyi.github.io/blog/2012/04/06/autofac-by-unit-test/)
 
 
 
