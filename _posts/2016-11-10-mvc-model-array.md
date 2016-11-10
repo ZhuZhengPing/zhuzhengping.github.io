@@ -12,7 +12,7 @@ author: Zhengping Zhu
 
 ## 概念
 
-[续《通过实例模拟ASP.NET MVC的Model绑定机制：简单类型+复杂类型]》](http://www.cnblogs.com/artech/archive/2012/05/23/default-model-binding-01.html)基于数组和集合类型的Model绑定机制比较类似，对于绑定参数类型或者参数类型的某个属性为数组或者集合，如果ValueProvider根据对应的Key能够匹配多条数据，那么这些数据最终将会转换为绑定的数组/集合的元素。此外，针对数组/集合的Model绑定还支持基于索引的方式。[源代码从这里下载](http://files.cnblogs.com/artech/S520.rar)[本文已经同步到《How ASP.NET MVC Works?》中](http://www.cnblogs.com/artech/archive/2012/04/10/how-mvc-works.html)
+[续《通过实例模拟ASP.NET MVC的Model绑定机制：简单类型+复杂类型》](http://www.cnblogs.com/artech/archive/2012/05/23/default-model-binding-01.html)基于数组和集合类型的Model绑定机制比较类似，对于绑定参数类型或者参数类型的某个属性为数组或者集合，如果ValueProvider根据对应的Key能够匹配多条数据，那么这些数据最终将会转换为绑定的数组/集合的元素。此外，针对数组/集合的Model绑定还支持基于索引的方式。[源代码从这里下载](http://files.cnblogs.com/artech/S520.rar)本文已经同步到[《How ASP.NET MVC Works?》]中(http://www.cnblogs.com/artech/archive/2012/04/10/how-mvc-works.html)
 
 
 
