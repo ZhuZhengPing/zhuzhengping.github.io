@@ -36,14 +36,14 @@ author: Zhengping Zhu
    {        
 		NameValueCollection dataSource = new NameValueCollection();
 		dataSource.Add("foo", "123");
-        dataSource.Add("foo", "456");
-        dataSource.Add("foo", "789");
-        NameValueCollectionValueProvider valueProvider = new NameValueCollectionValueProvider(dataSource, CultureInfo.InvariantCulture);
+		dataSource.Add("foo", "456");
+		dataSource.Add("foo", "789");
+		NameValueCollectionValueProvider valueProvider = new NameValueCollectionValueProvider(dataSource, CultureInfo.InvariantCulture);
 
-        ValueProviderResult result = valueProvider.GetValue("foo");
-        Response.Write(string.Format("RawValue: {0}<br/>", result.RawValue));
-        Response.Write(string.Format("ConvertTo(typeof(int[])): {0}<br/>", result.ConvertTo(typeof(int[]))));
-        Response.Write(string.Format("ConvertTo(typeof(int)): {0}<br/>", result.ConvertTo(typeof(int))));
+		ValueProviderResult result = valueProvider.GetValue("foo");
+		Response.Write(string.Format("RawValue: {0}<br/>", result.RawValue));
+		Response.Write(string.Format("ConvertTo(typeof(int[])): {0}<br/>", result.ConvertTo(typeof(int[]))));
+		Response.Write(string.Format("ConvertTo(typeof(int)): {0}<br/>", result.ConvertTo(typeof(int))));
      }
 }
 ```
@@ -231,7 +231,7 @@ public ActionResult Index(string[] array);
 <input name="[third]" type="text" value="baz" />
 ```
 
-被提交标单中三个类型为“text”的<input>元素值将会绑定到目标Action方法的字符串参数array。它们通过基于字符串的索引进行命名，而作为索引的字符串通过类型为“hidden”的<input>元素和作为参数绑定的数据一并提交。这些用于定义索引字符串的<input>元素一并命名为“index”。
+被提交标单中三个类型为“text”的`<input>`元素值将会绑定到目标Action方法的字符串参数array。它们通过基于字符串的索引进行命名，而作为索引的字符串通过类型为“hidden”的`<input>`元素和作为参数绑定的数据一并提交。这些用于定义索引字符串的`<input>`元素一并命名为“index”。
 
 现在我们对用于模拟默认Model绑定的自定义DefaultModelBinder进行进一步完善，使之支持基于索引的数组绑定。如下的代码片断所示，我们在用于进行数组绑定的BindArrayModel方法中添加了额外的代码用于提取索引值（整型和字符串类型）列表，并且根据这行索引值生成相应的前缀和对应的Key通过ValueProvider得到针对数组元素的值。得到的值被添加到预先创建的对象列表中并最终成为作为参数值的数组对象的元素。
 
