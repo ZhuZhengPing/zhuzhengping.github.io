@@ -78,50 +78,50 @@ Public void ActionMethod(string[] foo, HttpPostedFileBase[] bar)
 ```c#
 public class DefaultModelBinder
  {
-     //其他成员    
-     public object BindModel(Type parameterType, string prefix)
-     {
-         if (!this.ValueProvider.ContainsPrefix(prefix))
-         {
-             return null;
-         }
-  
-         ModelMetadata modelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => null, parameterType);
-         if (!modelMetadata.IsComplexType)
-         {
-             return this.ValueProvider.GetValue(prefix).ConvertTo(parameterType);
-         }
-         if (parameterType.IsArray)
-         {
-             return BindArrayModel(parameterType, prefix);
-         }
-         object model = CreateModel(parameterType);
-             
-         foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(parameterType))
-         {                
-             string key = string.IsNullOrEmpty(prefix) ? property.Name : prefix + "." + property.Name;
-             property.SetValue(model, BindModel(property.PropertyType, key));
-         }
-         return model;
-     }
-     private object BindArrayModel(Type parameterType, string prefix)
-     {
-         IList list = new List<object>();
-         if (this.ValueProvider.ContainsPrefix(prefix))
-         {
-             IEnumerable enumerable = this.ValueProvider.GetValue(prefix).ConvertTo(parameterType) as IEnumerable;
-             if (null != enumerable)
-             {
-                 foreach (var value in enumerable)
-                 {
-                     list.Add(value);
-                 }
-             }
-         }           
-         Array array = Array.CreateInstance(parameterType.GetElementType(), list.Count);
-         list.CopyTo(array,0);
-         return array;
-     }
+	 //其他成员    
+	 public object BindModel(Type parameterType, string prefix)
+	 {
+		 if (!this.ValueProvider.ContainsPrefix(prefix))
+		 {
+			 return null;
+		 }
+
+		 ModelMetadata modelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => null, parameterType);
+		 if (!modelMetadata.IsComplexType)
+		 {
+			 return this.ValueProvider.GetValue(prefix).ConvertTo(parameterType);
+		 }
+		 if (parameterType.IsArray)
+		 {
+			 return BindArrayModel(parameterType, prefix);
+		 }
+		 object model = CreateModel(parameterType);
+			 
+		 foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(parameterType))
+		 {                
+			 string key = string.IsNullOrEmpty(prefix) ? property.Name : prefix + "." + property.Name;
+			 property.SetValue(model, BindModel(property.PropertyType, key));
+		 }
+		 return model;
+	 }
+	 private object BindArrayModel(Type parameterType, string prefix)
+	 {
+		 IList list = new List<object>();
+		 if (this.ValueProvider.ContainsPrefix(prefix))
+		 {
+			 IEnumerable enumerable = this.ValueProvider.GetValue(prefix).ConvertTo(parameterType) as IEnumerable;
+			 if (null != enumerable)
+			 {
+				 foreach (var value in enumerable)
+				 {
+					 list.Add(value);
+				 }
+			 }
+		 }           
+		 Array array = Array.CreateInstance(parameterType.GetElementType(), list.Count);
+		 list.CopyTo(array,0);
+		 return array;
+	 }
  }
 ```
 
@@ -132,27 +132,27 @@ public class DefaultModelBinder
 ```c#
 public class HomeController : Controller
  {
-    //其他成员
-     private IValueProvider GetValueProvider()
-     {
-         NameValueCollection requestData = new NameValueCollection();
-  
-         requestData.Add("foo", "abc");
-         requestData.Add("foo", "xyz");
-  
-         requestData.Add("bar.baz", "123");
-         requestData.Add("bar.baz", "456");
-  
-         return new NameValueCollectionValueProvider(requestData, CultureInfo.InvariantCulture);
-     }
-  
-     public void Action(string[] foo, Bar bar)
-     {
-         Response.Write("foo: <br/>");
-         Array.ForEach(foo,item=> Response.Write("&nbsp;&nbsp;&nbsp;&nbsp;"+ item + "<br/>"));
-         Response.Write("bar.Baz: <br/>");
-         Array.ForEach(bar.Baz, item => Response.Write("&nbsp;&nbsp;&nbsp;&nbsp;" + item + "<br/>"));
-     }
+	//其他成员
+	private IValueProvider GetValueProvider()
+	{
+	 NameValueCollection requestData = new NameValueCollection();
+
+	 requestData.Add("foo", "abc");
+	 requestData.Add("foo", "xyz");
+
+	 requestData.Add("bar.baz", "123");
+	 requestData.Add("bar.baz", "456");
+
+	 return new NameValueCollectionValueProvider(requestData, CultureInfo.InvariantCulture);
+	}
+
+	public void Action(string[] foo, Bar bar)
+	{
+	 Response.Write("foo: <br/>");
+	 Array.ForEach(foo,item=> Response.Write("&nbsp;&nbsp;&nbsp;&nbsp;"+ item + "<br/>"));
+	 Response.Write("bar.Baz: <br/>");
+	 Array.ForEach(bar.Baz, item => Response.Write("&nbsp;&nbsp;&nbsp;&nbsp;" + item + "<br/>"));
+	}
  }
   
  public class Bar
@@ -238,87 +238,87 @@ public ActionResult Index(string[] array);
 ```c#
 public class DefaultModelBinder
 {
-    //其他成员
-    public object BindModel(Type parameterType, string prefix)
-    {
-        if (!this.ValueProvider.ContainsPrefix(prefix))
-        {
-            return null;
-        }
- 
-        ModelMetadata modelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => null, parameterType);
-        if (!modelMetadata.IsComplexType)
-        {
-            return this.ValueProvider.GetValue(prefix).ConvertTo(parameterType);
-        }
-        if (parameterType.IsArray)
-        {
-            return BindArrayModel(parameterType, prefix);
-        }
-        object model = CreateModel(parameterType);            
-        foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(parameterType))
-        {                
-            string key = string.IsNullOrEmpty(prefix) ? property.Name : prefix + "." + property.Name;
-            property.SetValue(model, BindModel(property.PropertyType, key));
-        }
-        return model;
-    }
- 
-    private object BindArrayModel(Type parameterType, string prefix)
-    {
-        List<object> list = new List<object>();
-        if (!string.IsNullOrEmpty(prefix) && this.ValueProvider.ContainsPrefix(prefix))
-        {
-            IEnumerable enumerable = this.ValueProvider.GetValue(prefix).ConvertTo(parameterType) as IEnumerable;
-            if (null != enumerable)
-            {
-                foreach (var value in enumerable)
-                {
-                    list.Add(value);
-                }
-            }
-        }      
- 
-        bool numericIndex;
-        IEnumerable<string> indexes = GetIndexes(prefix, out numericIndex);
-        foreach (var index in indexes)
-        {
-            string indexPrefix = prefix + "[" + index + "]";
-            if (!this.ValueProvider.ContainsPrefix(indexPrefix) && numericIndex)
-            {
-                break;
-            }
-            list.Add(BindModel(parameterType.GetElementType(), indexPrefix));
-        }
-        object[] array = (object[])Array.CreateInstance(parameterType.GetElementType(), list.Count);
-        list.CopyTo(array);
-        return array;
-    }
-    private IEnumerable<string> GetIndexes(string prefix, out bool numericIndex)
-    { 
-        string key = string.IsNullOrEmpty(prefix)?"index": prefix+"."+"index";
-        ValueProviderResult result = this.ValueProvider.GetValue(key);
-        if (null != result)
-        {
-            string[] indexes = result.ConvertTo(typeof(string[])) as string[];
-            if (null != indexes)
-            {
-                numericIndex = false;
-                return indexes;
-            }
-        }
-        numericIndex = true;
-        return GetZeroBasedIndexes();
-    }
-    private static IEnumerable<string> GetZeroBasedIndexes()
-    {
-        int iteratorVariable0 = 0;
-        while (true)
-        {
-            yield return iteratorVariable0.ToString();
-            iteratorVariable0++;
-        }
-    }    
+	//其他成员
+	public object BindModel(Type parameterType, string prefix)
+	{
+		if (!this.ValueProvider.ContainsPrefix(prefix))
+		{
+			return null;
+		}
+
+		ModelMetadata modelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => null, parameterType);
+		if (!modelMetadata.IsComplexType)
+		{
+			return this.ValueProvider.GetValue(prefix).ConvertTo(parameterType);
+		}
+		if (parameterType.IsArray)
+		{
+			return BindArrayModel(parameterType, prefix);
+		}
+		object model = CreateModel(parameterType);            
+		foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(parameterType))
+		{                
+			string key = string.IsNullOrEmpty(prefix) ? property.Name : prefix + "." + property.Name;
+			property.SetValue(model, BindModel(property.PropertyType, key));
+		}
+		return model;
+	}
+
+	private object BindArrayModel(Type parameterType, string prefix)
+	{
+		List<object> list = new List<object>();
+		if (!string.IsNullOrEmpty(prefix) && this.ValueProvider.ContainsPrefix(prefix))
+		{
+			IEnumerable enumerable = this.ValueProvider.GetValue(prefix).ConvertTo(parameterType) as IEnumerable;
+			if (null != enumerable)
+			{
+				foreach (var value in enumerable)
+				{
+					list.Add(value);
+				}
+			}
+		}      
+
+		bool numericIndex;
+		IEnumerable<string> indexes = GetIndexes(prefix, out numericIndex);
+		foreach (var index in indexes)
+		{
+			string indexPrefix = prefix + "[" + index + "]";
+			if (!this.ValueProvider.ContainsPrefix(indexPrefix) && numericIndex)
+			{
+				break;
+			}
+			list.Add(BindModel(parameterType.GetElementType(), indexPrefix));
+		}
+		object[] array = (object[])Array.CreateInstance(parameterType.GetElementType(), list.Count);
+		list.CopyTo(array);
+		return array;
+	}
+	private IEnumerable<string> GetIndexes(string prefix, out bool numericIndex)
+	{ 
+		string key = string.IsNullOrEmpty(prefix)?"index": prefix+"."+"index";
+		ValueProviderResult result = this.ValueProvider.GetValue(key);
+		if (null != result)
+		{
+			string[] indexes = result.ConvertTo(typeof(string[])) as string[];
+			if (null != indexes)
+			{
+				numericIndex = false;
+				return indexes;
+			}
+		}
+		numericIndex = true;
+		return GetZeroBasedIndexes();
+	}
+	private static IEnumerable<string> GetZeroBasedIndexes()
+	{
+		int iteratorVariable0 = 0;
+		while (true)
+		{
+			yield return iteratorVariable0.ToString();
+			iteratorVariable0++;
+		}
+	}    
 }
 ```
 
@@ -329,31 +329,31 @@ public class DefaultModelBinder
 ```c#
 public class HomeController : Controller
 {    
-    //其他成员
-    private IValueProvider GetValueProvider()
-    {
-        NameValueCollection requestData = new NameValueCollection();
- 
-        requestData.Add("[0].Name", "Foo");
-        requestData.Add("[0].PhoneNo", "123456789");
-        requestData.Add("[0].EmailAddress", "Foo@gmail.com");
- 
-        requestData.Add("[1].Name", "Bar");
-        requestData.Add("[1].PhoneNo", "987654321");
-        requestData.Add("[1].EmailAddress", "Bar@gmail.com");
- 
-        return new NameValueCollectionValueProvider(requestData, CultureInfo.InvariantCulture);
-    }           
- 
-    public void Action(Contact[] contacts)
-    {
-        foreach (Contact contact in contacts)
-        {
-            Response.Write(string.Format("{0}: {1}<br/>", "Name", contact.Name));
-            Response.Write(string.Format("{0}: {1}<br/>", "PhoneNo", contact.PhoneNo));
-            Response.Write(string.Format("{0}: {1}<br/><br/>", "EmailAddress", contact.EmailAddress));
-        }
-    }
+	//其他成员
+	private IValueProvider GetValueProvider()
+	{
+		NameValueCollection requestData = new NameValueCollection();
+
+		requestData.Add("[0].Name", "Foo");
+		requestData.Add("[0].PhoneNo", "123456789");
+		requestData.Add("[0].EmailAddress", "Foo@gmail.com");
+
+		requestData.Add("[1].Name", "Bar");
+		requestData.Add("[1].PhoneNo", "987654321");
+		requestData.Add("[1].EmailAddress", "Bar@gmail.com");
+
+		return new NameValueCollectionValueProvider(requestData, CultureInfo.InvariantCulture);
+	}           
+
+	public void Action(Contact[] contacts)
+	{
+		foreach (Contact contact in contacts)
+		{
+			Response.Write(string.Format("{0}: {1}<br/>", "Name", contact.Name));
+			Response.Write(string.Format("{0}: {1}<br/>", "PhoneNo", contact.PhoneNo));
+			Response.Write(string.Format("{0}: {1}<br/><br/>", "EmailAddress", contact.EmailAddress));
+		}
+	}
 }
 ```
 
@@ -374,23 +374,23 @@ EmailAddress: Bar@gmail.com
 ```c#
 public class HomeController : Controller
 {
-    //其他成员
-    private IValueProvider GetValueProvider()
-    {
-        NameValueCollection requestData = new NameValueCollection();
-        requestData.Add("index", "first");
-        requestData.Add("index", "second");
- 
-        requestData.Add("[first].Name", "Foo");
-        requestData.Add("[first].PhoneNo", "123456789");
-        requestData.Add("[first].EmailAddress", "Foo@gmail.com");
- 
-        requestData.Add("[second].Name", "Bar");
-        requestData.Add("[second].PhoneNo", "987654321");
-        requestData.Add("[second].EmailAddress", "Bar@gmail.com");
- 
-        return new NameValueCollectionValueProvider(requestData, CultureInfo.InvariantCulture);
-    }
+	//其他成员
+	private IValueProvider GetValueProvider()
+	{
+		NameValueCollection requestData = new NameValueCollection();
+		requestData.Add("index", "first");
+		requestData.Add("index", "second");
+
+		requestData.Add("[first].Name", "Foo");
+		requestData.Add("[first].PhoneNo", "123456789");
+		requestData.Add("[first].EmailAddress", "Foo@gmail.com");
+
+		requestData.Add("[second].Name", "Bar");
+		requestData.Add("[second].PhoneNo", "987654321");
+		requestData.Add("[second].EmailAddress", "Bar@gmail.com");
+
+		return new NameValueCollectionValueProvider(requestData, CultureInfo.InvariantCulture);
+	}
 }
 ```
 
