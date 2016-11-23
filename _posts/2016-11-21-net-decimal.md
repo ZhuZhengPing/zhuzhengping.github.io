@@ -127,11 +127,150 @@ static void InvokeMembersOnDynamicData()
 
 ### Microsoft.CSharp.dll 程序集的作用
 
+创建C#项目时，会自动引用一个名为 Microsoft.CSharp.dll 的 .NET 4 程序集，并且只定义了一个命名空间(Microsoft.CSharp.RuntimeBinder)和两个类(RuntimeBinderException，RuntimeBinderInternalCompilerException)，RuntimeBinderException 是最普通的类，如果调用一个不存在的动态数据类型，就会抛出异常(比如调用 toupper()和Foo()方法)。
 
+在调用 C# 的 dynamic 关键字声明的变量的成员时，可以用合适的 try/catch 块处理异常
 
+```c#
+static void InvokeMembersOnDynamicData()
+{
+	dynamic textData1 = "Hello";
+	
+	try{
+		Console.WriteLine(textData1.ToUpper());
+		Console.WriteLine(textData1.toupper());
+		Console.WriteLine(textData1.Foo(10,"ee",DateTime.Now));
+	}catch{
+		Console.WriteLine(ex.Message);
+	}
+}
+```
 
+### dynamic 关键字的作用域
 
+隐式类型数据只能作为一个成员范围内的本地变量。var 关键字不能用于返回值、参数或类/结构的成员。但对于 dynamic 关键字来说，这都不是问题。
 
+```c#
+class VeryDynamicClass
+{
+	// 动态字段
+	private static dynamic myDynamicField;
+
+	// 动态属性
+	private dynamic DynamicProperty { get; set; }
+
+	// 动态返回值类型和动态参数类型
+	public dynamic DynamicMethod(dynamic dynamicParam)
+	{
+		// 动态本地变量
+		dynamic dynamicLocalVar = "Local variable";
+
+		int myInt = 10;
+
+		if (dynamicParam is int)
+		{
+			return dynamicLocalVar;
+		}
+		else
+		{
+			return myInt;
+		}
+	}
+}
+```
+
+### dynamic 关键字的限制
+
+虽然 dynamic 关键字可以定义很多东西，但它使用起来也存在一些限制。在调用一个动态数据的方法时，不能使用 Lambda 表达式和 C# 匿名方法。 例如，即使目标方法的参数确实是一个值为 string 并 返回 void 的委托，可是厦门的代码还是会报错
+
+```c#
+dynamic a = GetDynamicObject();
+
+// 错误！动态数据的方法不能使用 Lambda 表达式
+a.Method(arg => Console.WriteLine(arg));
+```
+
+要避免这个限制，可以直接使用基本的委托。用 dynamic 关键字声明的变量不能用于 LINQ to Object 以及其他 LINQ 技术
+
+```c#
+dynamic a = GetDynamicObject();
+
+// 错误！无法找到动态数据的 Select()扩展方法
+var data = from d in a select d;
+```
+
+### dynamic 关键字的实际用途
+
+动态类型不是强类型，无法进行编译时检查，不能触发智能感知并且无法进行 LINQ 查询。
+
+但是在某些场合，dynamic 关键字可以减少手工输入的代码量。特别是构建一个需要大量使用反射的 .NET 应用程序时，dynamic 关键字可以节省大量打字时间。同样，构建一个需要与 COM 库进行交互的 .NET 应用程序，可以使用 dynamic 简化代码库。
+
+### DLR 的作用
+
+DLR 随着 .NET 4 一起发布，它是作为 CLR 的补充的运行时环境。动态运行时允许动态语言完全在运行时发现类型，而不是进行编译时检查。动态语言运行时提供了下面一些特性。
+
+>* 及其灵活的代码库。在重构时不需要频繁修改数据类型。
+>* 在不同平台和编程语言所创建的对象类型之间进行互操作非常简便。
+>* 可以在运行时为内存中的类型添加或移除成员。
+
+### 使用动态类型简化反射调用
+
+下面是我们基本的反射实现
+
+```c#
+static void CreateUsingLateBinding(Assembly asm)
+{
+	try{
+		// 获取 Minivan 类型的元数据
+		Type miniVan = asm.GetType("CarLibrary.MiniVan");
+		
+		// 在运行时创建 Minivan 类型
+		object obj = Activator.CreateInstance(miniVan);
+		
+		// 获取 TurboBoost 的信息
+		MethodInfo mi = miniVan.GetMethod("TurboBoost");
+		
+		// 调用方法('null'代表没参数)
+		mi.Invoke(obj,null);
+	}catch{
+		Console.WriteLine(ex.Message);
+	}
+}
+```
+
+现在我们使用 C# 的 dynamic 关键字和 DLR 来重写这个方法
+
+```c#
+ static void CreateUsingLateBinding(Assembly asm)
+{
+	try{
+		// 获取 Minivan 类型的元数据
+		Type miniVan = asm.GetType("CarLibrary.MiniVan");
+		
+		// 在运行时创建 Minivan 类型
+		dynamic obj = Activator.CreateInstance(miniVan);
+		obj.TurboBoost();
+	}catch{
+		Console.WriteLine(ex.Message);
+	}
+}
+```
+
+### 使用 dynamic 关键字传递参数
+
+当你需要使用反射调用有参数的方法时，DLR的好处就更加明显了。使用反射调用时，需要将所有参数打包到一个 object 数组中，然后将这个数组传递给 MethodInfo 的 Invoke()方法。
+
+新建一个类库项目 MathLibrary,创建一个 SimpleMath 类
+
+```c#
+public class SimpleMath
+{
+	public int Add(int x, int y)
+	{
+		return x + y;
+	}
+}
+```
 
 
 
