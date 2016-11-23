@@ -272,8 +272,64 @@ public class SimpleMath
 }
 ```
 
+在编译 MathLibrary.dll 程序集时，将其复制一份到控制台应用程序的debug文件夹下。
 
+<img src="http://ww4.sinaimg.cn/mw690/006dag38gw1fa1x8w8eblj30970a6ta3.jpg" alt="dynamic" style="width:50%" />
 
+在控制台应用程序项目的 Program.cs 文件中引用 System.Reflection 命名空间。然后在 Program 类中添加如下方法。
+
+```c#
+private static void AddWithReflection()
+{
+	Assembly asm = Assembly.Load("MathLibrary");
+
+	try
+	{
+		// 获取 SimpleMath 类型的元素
+		Type math = asm.GetType("MathLibrary.SimpleMath");
+
+		// 在运行时创建SimpleMath
+		object obj = Activator.CreateInstance(math);
+
+		// 获取Add方法的信息
+		MethodInfo mi = math.GetMethod("Add");
+
+		// 调用方法(包含参数)
+		object[] args = { 10, 70 };
+		Console.WriteLine("Result is : {0}",mi.Invoke(obj,args));
+	}
+	catch (Exception ex)
+	{
+		Console.WriteLine(ex.Message);
+	}
+}
+```
+
+现在，思考一下使用 dynamic 关键字来简化上述逻辑
+
+```c#
+private static void AddWithDynamic()
+{
+	Assembly asm = Assembly.Load("MathLibrary");
+
+	try
+	{
+		// 获取 SimpleMath 类型的元素
+		Type math = asm.GetType("MathLibrary.SimpleMath");
+
+		// 在运行时创建SimpleMath
+		dynamic obj = Activator.CreateInstance(math);
+
+		Console.WriteLine("Result is : {0}", obj.Add(10,20));
+
+		Console.ReadKey();
+	}
+	catch (Exception ex)
+	{
+		Console.WriteLine(ex.Message);
+	}
+}
+```
 
 
 
