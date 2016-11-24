@@ -105,11 +105,11 @@ div.ajaxLink {
 
 ### 创建基本的 links 和 urls 
 
-* HTML Helper 启用URLs*
+*HTML Helper 启用URLs*
 
 描述						| 示例
  Application-relative URL 	|Url.Content("~/Content/Site.css")输出:<br />  /Content/Site.css 
-跳转到  action/controller 	|Html.ActionLink("My Link","Index","Home")输出:<br />  <a href="/">My Link</a>`
+跳转到  action/controller 	|Html.ActionLink("My Link","Index","Home")输出:<br />  <a href="/">My Link</a>
  action 链接				|Url.Action("GetPeople","People")输出：<br /> /People/GetPeople 
  route url 					|Url.RouteUrl(new{controller="People",action="GetPeople"})输出:<br /> /People/GetPeople 
  route 链接					|Html.RouteUrl("My Link",new{controller="People",action="GetPeople"})输出:<br /> <a href="/People/GetPeople">My Link</a> 
