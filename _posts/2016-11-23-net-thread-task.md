@@ -37,6 +37,166 @@ ParallelLoopResult result = Parallel.For(0,10,i=>{
 Console.WriteLine("Is completed: {0}",result.IsCompleted);
 ```
 
+在 Parallel.For()的方法体中，把索引、任务标识符和线程标识符写入控制台中，从输出可以看出，顺序是打乱的。如果再次运行这个程序，可以看到不同的结果。
+
+```
+0,task: 1, thread: 1
+2,task: 2, thread: 3
+4,task: 3, thread: 4
+6,task: 4, thread: 5
+8,task: 5, thread: 6
+5,task: 3, thread: 4
+7,task: 4, thread: 5
+9,task: 5, thread: 6
+3,task: 2, thread: 3
+1,task: 1, thread: 1
+Is completed: True
+```
+
+在前面的例子中，使用了.NET 4.5中新增的 Thread.Sleep 方法，而不是 Task.Delay 方法。Task.Delay 是一个异步方法，用于释放线程供其他任务使用。下面的代码使用 await 关键字，所以一旦完成延迟，就立即开始调用这些代码。延迟后执行的代码和延迟前执行的代码可以运行在不同的线程中。
+
+```c#
+ParallelLoopResult result = Parallel.For(0, 10, async i =>
+{
+	Console.WriteLine("{0}, task: {1}, thread: {2}", i, Task.CurrentId, Thread.CurrentThread.ManagedThreadId);
+
+	await Task.Delay(1000);
+	Console.WriteLine("{0}, task: {1}, thread: {2}", i, Task.CurrentId, Thread.CurrentThread.ManagedThreadId);
+});
+Console.WriteLine("is completed: {0}", result.IsCompleted);
+```
+
+在输出中可以看到，调用 Thread.Delay 方法后，线程发生了变化。例如，在循环迭代2 在延迟前的线程 ID 为3，在延迟后的线程 ID 为4.在输出中还可以看到，任务不再存在，只有线程留下了，而且这里重用了前面的线程。另外一个重要的方面是，Parallel 类的 For 方法并没有等待延迟，而是直接完成。Parallel 类只等待它创建的任务，而不等待其他后台活动。在延迟后，也有可能完全看不到方法的输出，出现这种情况的原因是主线程结束，所有的后台线程被终止
+
+```
+0,task: 1, thread: 1
+2,task: 2, thread: 3
+4,task: 3, thread: 4
+6,task: 4, thread: 5
+8,task: 5, thread: 6
+5,task: 3, thread: 4
+7,task: 4, thread: 5
+9,task: 5, thread: 6
+3,task: 2, thread: 3
+1,task: 1, thread: 1
+Is completed: True
+5,task: , thread: 6
+6,task: , thread: 6
+7,task: , thread: 6
+3,task: , thread: 6
+8,task: , thread: 6
+4,task: , thread: 6
+0,task: , thread: 6
+9,task: , thread: 6
+2,task: , thread: 6
+1,task: , thread: 6
+```
+
+也可以提前中断 Parallel.For()方法，而不是完成所有迭代。For()方法的一个重载版本接受第3个 Action<int,ParallelLoopState>类型的参数。使用这些参数定义一个方法，就可以调用 ParallelLoopState 和 Break()或Stop()方法，以影响循环的结果。
+
+```c#
+ParallelLoopResult result = Parallel.For(10,40,async(int i,ParallelLoopState pls)=>
+{
+	Console.WriteLine("i: {0} task {1}",i,Task.CurrentId);
+	await Task.Delay(1000);
+	if (i > 15)
+		pls.Break();
+});
+
+Console.WriteLine("Is completed: {0}",result.IsCompleted);
+Console.WriteLine("lowest break iteration: {0}",result.LowestBreakIteration);
+```
+
+应用程序的运行说明，迭代的值大于15时中断，但其他任务可以同时运行，有其他值的任务也可以运行。利用 LowestBreakIteration 属性，可以忽略其他任务的结果。
+
+```
+10 task 1
+24 task 3
+31 task 4
+38 task 5
+17 task 2
+11 task 1
+12 task 1
+13 task 1
+14 task 1
+15 task 1
+16 task 1
+Is completed: False
+lowest break iteration: 16
+```
+
+Parallel.For()方法可能使用几个线程来执行循环。如果需要对每个线程进行初始化，就可以使用 Parallel.For<TLocal>()方法。除了 from 和 to 对应的值之外，For()方法的泛型版本还接受3个委托参数。第一个参数的类型是 Func<TLocal>，因为这里的例子对于 TLocal 使用字符串，所以该方法需要定义为 Func<string>，即返回 string 的方法。这个方法仅对用于执行迭代的每个线程调用一次。
+
+第二个委托参数为循环体定义了委托。在示例中，该参数的类型是 Func<int,ParallelLoopState,string,string>。其中第一个参数是循环迭代，第二个参数 ParallelLoopState 允许停止循环。循环方法通过第三个参数接收返回的值，循环体方法还需要返回一个值，其类型是用泛型 for 参数定义的。
+
+For()方法的最后一个参数指定一个委托 Action<TLocal>，在该示例中，接收一个字符串。这个方法仅对于每个线程调用一次，这是一个线程退出方法。
+
+```c#
+Parallel.For<string>(0, 20, () =>
+{
+	// invoked once for each thread
+	Console.WriteLine("init thread {0}, task {1}", Thread.CurrentThread.ManagedThreadId, Task.CurrentId);
+	return String.Format("t{0}", Thread.CurrentThread.ManagedThreadId);
+}, (i, pls, str1) =>
+{
+	// invoked for each member
+	Console.WriteLine("body i {0} str1 {1} thread {2} task {3}", i, str1, Thread.CurrentThread.ManagedThreadId, Task.CurrentId);
+	Thread.Sleep(10);
+	return String.Format("i {0}", i);
+}, (str1) => 
+{
+	// final action on each thread
+	Console.WriteLine("finally {0}",str1);
+});
+```
+
+运行一次这个程序的结果如下：
+
+```
+body i 10 str1 t11 thread 11 task 3
+init thread 12, task 4
+body i 15 str1 t12 thread 12 task 4
+init thread 13, task 5
+body i 3 str1 t13 thread 13 task 5
+body i 6 str1 i 5 thread 10 task 2
+body i 2 str1 i 1 thread 9 task 1
+body i 16 str1 i 15 thread 12 task 4
+body i 11 str1 i 10 thread 11 task 3
+body i 4 str1 i 3 thread 13 task 5
+body i 8 str1 i 4 thread 13 task 5
+body i 17 str1 i 16 thread 12 task 4
+body i 12 str1 i 11 thread 11 task 3
+body i 7 str1 i 6 thread 10 task 2
+body i 13 str1 i 2 thread 9 task 1
+body i 14 str1 i 13 thread 9 task 1
+body i 18 str1 i 12 thread 11 task 3
+body i 9 str1 i 8 thread 13 task 5
+finally i 17
+finally i 7
+body i 19 str1 i 18 thread 11 task 3
+finally i 14
+finally i 9
+finally i 19
+```
+
+### 使用 Parallel.ForEach()方法循环
+
+Parallel.ForEach()方法遍历实现了 IEnumerable 的集合，其方式类似于 foreach 语句，但以异步方式遍历。这里也没有确定遍历顺序。
+
+```c#
+string[] data = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" };
+ParallelLoopResult result = Parallel.ForEach<string>(data, s => 
+{
+	Console.WriteLine(s);
+});
+```
+
+
+
+
+
+
+
 
 
 
