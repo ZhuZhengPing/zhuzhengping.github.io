@@ -20,7 +20,7 @@ author: Zhengping Zhu
 
 ### 重写和准备示例项目
 
-*`/App_Start/RouteConfig.cs 文件的内容*
+*/App_Start/RouteConfig.cs 文件的内容*
 
 ```c#
 public static void RegisterRoutes(RouteCollection routes)
@@ -178,7 +178,7 @@ div.ajaxLink {
 
 ### 使用MVC  Unobtrusive Ajax 
 
-我们使用 GetPeople action`,创建`/Views/People/GetPeople.cshtml 文件
+我们使用 GetPeople action,创建/Views/People/GetPeople.cshtml 文件
 
 ```html
 @using MvcApplication2.Models
@@ -337,8 +337,8 @@ MVC框架核心支撑 Ajax.BeginForm 表单，携带一个 AjaxOptions 参数，
 
 属性					|描述
 Confirm					|在 Ajax 之前显示 confirm 消息
-HttpMethod				|设置请求方式,`Get 或者 Post 
-InsertionMode			|指定的 html 位置插入数据， InsertionMode enum 有3个选择， InsertAfter,InsertBefore,Replace`(默认的)
+HttpMethod				|设置请求方式,Get 或者 Post 
+InsertionMode			|指定的 html 位置插入数据， InsertionMode enum 有3个选择， InsertAfter,InsertBefore,Replace(默认的)
 LoadingElementId|指定一个 ID ， ajax 请求时将显示
 LoadingElementDuration	|指定动画的持续时间用于显示指定的元素
 UpdateTargetId			|向指定元素插入接收的值
