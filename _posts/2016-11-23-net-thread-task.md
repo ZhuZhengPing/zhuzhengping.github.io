@@ -191,6 +191,61 @@ ParallelLoopResult result = Parallel.ForEach<string>(data, s =>
 });
 ```
 
+如果需要中断循环，可以使用 ForEach()方法的重载版本和 ParallelLoopState 参数。其使用方法与前面的 For()方法相同。ForEach()方法的一个重载版本也可以用于访问索引器，从而获得迭代次数。
+
+```c#
+Parallel.ForEach<string>(data,(s,pls,l)=>{
+	Console.WriteLine("{0} {1}",s,l);
+});
+
+如果多个任务应用并行运行，就可以使用 Parallel.Invoke()方法，它提供了任务并行性模式。Parallel.Invoke()方法可以传递一个 Action 委托数组，在其中指定运行的方法。
+
+```c#
+static void ParallelInvoke()
+{
+	Parallel.Invoke(Foo,Bar);
+}
+
+static void Foo()
+{
+	Console.WriteLine("foo");
+}
+
+static void Bar()
+{
+	Console.WriteLine("bar");
+}
+```
+
+### 任务
+
+为了更好地控制并行动作，可以使用 System.Threading.Task 命名空间中的 Task 类。任务表示应该完成的某个工作单元，这个工作单元可以在单独的线程中运行，也可以以同步的方式启动一个任务，需要等待主调线程。使用任务不仅可以获得一个抽象层，还可以对底层线程进行很多控制。
+
+在安排需要完成的工作时，任务提供了非常大的灵活性。例如，可以定义连续的工作(在一个任务完成后该执行什么工作).这可以根据任务成功与否来区别。另外，还可以在层次结构中安排任务。例如，父任务可以创建新的子任务。这可以创建一种依赖关系，这样，取消父任务，也会取消其子任务。
+
+要启动任务，可以使用 TaskFactory 类或 Task 类的构造函数和 Start()方法。Task类的构造函数在创建任务上很灵活。
+
+
+在启动任务时，会创建 Task 类的一个实例，利用 Action 或 `Action<object>`委托(不带参数或带一个 object 参数),可以指定运行的代码。下面定义的方法带一个参数。在实现代码中，把任务的 ID 和线程的 ID 写入控制台中，并且如果线程来自一个线程池，或者线程是一个后台线程，也要写入相关的信息。把多条消息写入控制台的操作是使用 lock 关键字和 taskMethodLock 同步对象进行同步的。这样，就可以并行调用 TaskMethod,而且多次写入控制台的操作也不会彼此交叉。否则，title可能由一个任务写入，而线程信息由另一个任务写入
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
