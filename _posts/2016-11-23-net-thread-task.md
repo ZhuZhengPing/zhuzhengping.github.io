@@ -197,6 +197,7 @@ ParallelLoopResult result = Parallel.ForEach<string>(data, s =>
 Parallel.ForEach<string>(data,(s,pls,l)=>{
 	Console.WriteLine("{0} {1}",s,l);
 });
+```
 
 如果多个任务应用并行运行，就可以使用 Parallel.Invoke()方法，它提供了任务并行性模式。Parallel.Invoke()方法可以传递一个 Action 委托数组，在其中指定运行的方法。
 
