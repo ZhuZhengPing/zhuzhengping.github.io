@@ -229,23 +229,96 @@ static void Bar()
 
 在启动任务时，会创建 Task 类的一个实例，利用 Action 或 `Action<object>`委托(不带参数或带一个 object 参数),可以指定运行的代码。下面定义的方法带一个参数。在实现代码中，把任务的 ID 和线程的 ID 写入控制台中，并且如果线程来自一个线程池，或者线程是一个后台线程，也要写入相关的信息。把多条消息写入控制台的操作是使用 lock 关键字和 taskMethodLock 同步对象进行同步的。这样，就可以并行调用 TaskMethod,而且多次写入控制台的操作也不会彼此交叉。否则，title可能由一个任务写入，而线程信息由另一个任务写入
 
+```c#
+static object taskMethodLock = new object();
+static void TaskMethod(object title)
+{
+	lock (taskMethodLock)
+	{
+		Console.WriteLine(title);
+		Console.WriteLine("Task id: {0}, thread: {1}", Task.CurrentId == null ? "no task" : Task.CurrentId.ToString(), Thread.CurrentThread.IsThreadPoolThread);
+		Console.WriteLine("is pooled thread: {0}",Thread.CurrentThread.IsThreadPoolThread);
+	}
+}
+```
 
+创建任务的第一种方式是使用实例化的 TaskFactory 类，把 TaskMethod 方法传递给 StartNew 方法，就会立即启动任务。第二种方式是使用 Task 类的静态属性 Factory 来访问 TaskFactory,以及调用 StartNew()方法。第三种方式是使用 Task 类的构造函数。实例化 Task 对象时，任务不会立即执行，而是指定 Created 状态。接着调用 Task 类的 Start()方法。第四种方式是 .NET 4.5新增的，即调用 Task 类的 Run 方法，立即启动任务。
 
+```c#
+static void TasksUsingThreadPool()
+{
+	var tf = new TaskFactory();
+	Task t1 = tf.StartNew(TaskMethod, "using a task factory");
 
+	Task t2 = Task.Factory.StartNew(TaskMethod, "factory via a task");
 
+	Task t3 = new Task(TaskMethod, "using a task constructor and Start");
+	t3.Start();
 
+	Task t4 = Task.Run(() => TaskMethod("using the Run method"));
+}
+```
 
+这些版本返回的输出如下所示。它们都创建一个新任务，并使用线程池中的一个线程
 
+```
+using a task factory
+Task id: 1, thread: True
+is pooled thread: True
 
+factory via a task
+Task id: 2, thread: True
+is pooled thread: True
 
+using a task constructor and Start
+Task id: 3, thread: True
+is pooled thread: True
 
+using the Run method
+Task id: 4, thread: True
+is pooled thread: True
+```
 
+使用 Task 构造函数和 TaskFactory 的 StartNew 方法时，可以传递 TaskCreationOptions 枚举中的值。利用这个创建选项，可以改变任务的行为
 
+任务不一定要使用线程池中的线程，也可以使用其他线程。任务也可以同步，以相同的线程作为主调线程。下面的代码段使用了 Task 类的 RunSynchronously 方法
 
+```c#
+private static void RunSynchronousTask()
+{
+	TaskMethod("just the main thread");
+	var t1 = new Task(TaskMethod, "run sync");
+	t1.RunSynchronously();
+}
+```
 
+这里 TaskMethod 方法首先在主线程上直接调用，然后在新创建的 Task 上调用。主线程是一个前台线程，没有任务 ID，也不是线程池中的线程。调用 RunSynchronously 方法时，会使用相同的线程作为主调线程，但是如果以前没有创建任务，就会创建一个任务
 
+```
+just the main thread
+Task id: no task, thread: False
+is pooled thread: False
 
+run sync
+Task id: 1, thread: False
+is pooled thread: False
+```
 
+如果任务的代码应该长时间运行，就应该使用 TaskCreationOptions.LongRunning 告诉任务调度器创建一个新线程，而不是使用线程池中的线程。此时线程可以不由线程池管理。当线程来自线程池时，任务调度器可以决定等待已经运行的任务完成，然后使用这个线程，而不是在线程池中创建一个新线程。对于长时间运行的线程，任务调度器会立即知道等待它们完成是不正确的。下面的代码创建了一个长时间运行的任务
+
+```c#
+private static void LongRunningTask()
+{
+	var t1 = new Task(TaskMethod, "long running", TaskCreationOptions.LongRunning);
+	t1.Start();
+}
+```
+
+实际上，使用 TaskCreationOptions.LongRunning 选项时，不会使用线程池中的线程，而是会创建一个新线程
+
+### Future-任务的结果
+
+任务结束时，它可以把一些有用的状态信息写到共享对象中。这个共享对象必须是线程安全的。另一个选项是使用返回某个任务的结果。这种任务也叫 future，因为它在将来
 
 
 
