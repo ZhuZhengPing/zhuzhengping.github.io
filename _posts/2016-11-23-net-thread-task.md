@@ -595,6 +595,7 @@ static void Main(string[] args)
 {
 	var t1 = new Thread(ThreadMain);
 	t1.Start();
+	Console.Write("This is the main thread.");
 	Console.ReadKey();
 }
 
@@ -603,6 +604,94 @@ static void ThreadMain()
 	Console.WriteLine("Running in a thread.");
 }
 ```
+
+运行这个程序时，得到两个线程的输出
+
+```
+This is the main thread.
+Running in a thread.
+```
+
+不能保证哪个结果先输出。线程由系统调度，每次哪个线程在前面是不同的。
+
+lambda 表达式可以与 Thread 类一起使用，将线程方法的实现代码传送给 Thread 构造函数的实参
+
+```c#
+static void Main(string[] args)
+{
+	var t1 = new Thread(() => 
+	{
+		Console.WriteLine("running in a thread,id: {0}",Thread.CurrentThread.ManagedThreadId);
+	});
+	t1.Start();
+	Console.WriteLine("This is the main thread,id: {0}",Thread.CurrentThread.ManagedThreadId);
+	Console.ReadKey();
+}
+```
+
+应用程序的输出显示了线程名何ID：
+
+```
+This is the main thread,id: 9
+running in a thread,id: 10
+```
+
+给线程传递数据可以采用两种方式。一种方式是使用带 ParameterizedThreadStart 委托参数的 Thread 构造函数，另一种方式是创建一个自定义类，把线程的方法定义为实例方法，这样就可以初始化实例的数据，之后启动线程。
+
+要给线程传递数据，需要某个存储数据的类或结构。这里定义了包含字符串的 Data 结构，但可以传递任意对象。
+
+```c#
+public struct Data{
+	public string Message;
+}
+```
+
+如果使用了 ParameterizedThreadStart 委托，线程的入口点必须有一个 object 类型的参数，且返回类型为 void.对象可以强制转换为任意数据类型，这里是把消息写入控制台。
+
+```c#
+static void ThreadMainWithParameters(object o){
+	Data d = (Data)o;
+	Console.WriteLine("Running in a thread,received {0}",d.Message);
+}
+```
+
+通过 Thread 类 的构造函数，可以将新的入口点赋予 ThreadMainWithParameters,传递变量 d,以调用 Start()方法。
+
+```c#
+static void Main(){
+	var d = new Data{Message = "Info"};
+	var t2 = new Thread(ThreadMainWithParameters);
+	t2.Start(d);
+}
+```
+
+给新线程传递数据的另一种方式是定义一个类，在其中定义需要的字段，将线程的主方法定义为类的一个实例方法。
+
+```c#
+public class MyThread{
+	private string data;
+	public MyThread(string data){
+		this.data = data;
+	}
+	public void ThreadMain(){
+		Console.WriteLine("Running in a thread, data: {0}",data);
+	}
+}
+```
+
+这样，就可以创建 MyThread 的一个对象，
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
