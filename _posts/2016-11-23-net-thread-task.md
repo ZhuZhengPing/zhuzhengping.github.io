@@ -679,7 +679,14 @@ public class MyThread{
 }
 ```
 
-这样，就可以创建 MyThread 的一个对象，
+这样，就可以创建 MyThread 的一个对象，给 Thread 类的构造函数传递对象和 ThreadMain()方法。线程可以访问数据。
+
+```c#
+var obj = new MyThread("info");
+var t3 = new Thread(obj.ThreadMain);
+t3.Start();
+```
+
 
 
 
