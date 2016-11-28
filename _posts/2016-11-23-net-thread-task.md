@@ -318,18 +318,290 @@ private static void LongRunningTask()
 
 ### Future-任务的结果
 
-任务结束时，它可以把一些有用的状态信息写到共享对象中。这个共享对象必须是线程安全的。另一个选项是使用返回某个任务的结果。这种任务也叫 future，因为它在将来
+任务结束时，它可以把一些有用的状态信息写到共享对象中。这个共享对象必须是线程安全的。另一个选项是使用返回某个任务的结果。这种任务也叫 future，因为它在将返回一个结果。任务返回结果的方法可以声明为任何返回类型。下面的示例方法 TaskWithResult()利用一个元组返回两个 int 值。该方法的输入可以是 void 或 object 类型，如下所示
 
+```c#
+static Tuple<int, int> TaskWithResult(object division)
+{
+	Tuple<int, int> div = (Tuple<int, int>)division;
+	int result = div.Item1 / div.Item2;
+	int reminder = div.Item1 % div.Item2;
+	Console.WriteLine("task creates a result...");
+	return Tuple.Create<int, int>(result, reminder);
+}
+```
 
+定义一个调用 TaskWithResult()方法的任务时，要使用泛型类 Task<TResult>。泛型参数定义了返回类型。通过构造函数，把这个方法传递给 Func 委托，第二个参数定义了输入值。因为这个任务在 object 参数中需要输入两个值，所以还创建了一个元组。接着启动该任务。
 
+```c#
+var t1 = new Task<Tuple<int, int>>(TaskWithResult, Tuple.Create<int, int>(8, 3));
+t1.Start();
+Console.WriteLine(t1.Result);
+t1.Wait();
+Console.WriteLine("result from task: {0} {1}",t1.Result.Item1,t1.Result.Item2);
+```
 
+### 连续的任务
 
+通过任务，可以指定在任务完成后，开始运行另一个特定的任务，任务处理程序或者不带参数，或者带一个参数，而连续处理程序有一个 Task 类型的参数，这里可以访问起始任务相关的信息
 
+```c#
+static void DoOnFirst()
+{
+	Console.WriteLine("doing some task {0}",Task.CurrentId);
+	Thread.Sleep(3000);
+}
 
+static void DoOnSecond(Task t)
+{
+	Console.WriteLine("task {0} finished",t.Id);
+	Console.WriteLine("this task id {0}",Task.CurrentId);
+	Console.WriteLine("do some cleanup");
+	Thread.Sleep(3000);
+}
+```
 
+连续任务通过在任务上调用 ContinueWith()方法来定义。也可以使用 TaskFactory 类来定义。t1.OnContinueWith(DoOnSecond)方法表示，调用 DoOnSecond()方法的新任务在任务 t1 结束时立即启动。在一个任务结束时，可以启动多个任务，连续任务也可以有另一个连续任务，如下面的例子所示
 
+```c#
+Task t1 = new Task(DoOnFirst);
+Task t2 = t1.ContinueWith(DoOnSecond);
+Task t3 = t1.ContinueWith(DoOnSecond);
+Task t4 = t2.ContinueWith(DoOnSecond);
+```
 
+无论前一个任务是如何结束的，前面连续任务总是在前一个任务结束时启动。使用 TaskContinuationOptions 枚举中的值，可以指定，连续任务只有在起始任务成功(或失败)结束时启动。一些可能的值是 OnlyOnFaulted、NotOnFaulted、OnlyOnCanceled、NotOnCanceled 和 OnlyOnRanToCompletion。
 
+```c#
+Task t5 = t1.ContinueWith(DoOnError, TaskContinuationOptions.OnlyOnFaulted);
+```
+
+利用任务连续性，可以在一个任务结束后启动另一个任务。任务也可以构成一个层次结构。一个任务启动一个新任务时，就启动了一个父/子层次结构。
+
+下面的代码段在父任务内部新建一个任务对象并启动任务。创建子任务的代码与创建父任务的代码相同，唯一的区别是这个任务从另一个任务内部创建。
+
+```c#
+static void ParentAndChild()
+{
+	var parent = new Task(ParentTask);
+	parent.Start();
+	Thread.Sleep(2000);
+	Console.WriteLine(parent.Status);
+	Thread.Sleep(4000);
+	Console.WriteLine(parent.Status);
+}
+
+static void ParentTask()
+{
+	Console.WriteLine("task id {0}",Task.CurrentId);
+	var child = new Task(ChildTask);
+	child.Start();
+	Thread.Sleep(1000);
+	Console.WriteLine("parent started child");
+}
+
+static void ChildTask()
+{
+	Console.WriteLine("child");
+	Thread.Sleep(5000);
+	Console.WriteLine("child finished");
+}
+```
+
+### 取消任务
+
+.NET 4.5 包含一个取消架构，允许取消长时间运行任务。每个阻塞调用都应支持这种机制。取消方法接收一个 CancellationToken 参数。这个类定义了 IsCancellationRequested 属性，其中长时间运行的操作可以检查它是否应终止。长时间运行的操作检查取消的其他方式有：取消标记时，使用标记的 WaitHandle 属性，或者使用 Register()方法。Register()方法接受 Action 和 ICancelableOperation 类型的参数。Action 委托应用的方法在取消标记时调用。这类似于 ICancelableOperation 类似的参数。在取消标记时调用 Action 委托引用的方法。
+
+Parallel 类提供了 For()方法的重载版本，在重载版本中，可以传递 ParallelOptions 类型的参数。使用 ParallelOptions 类型，可以传递一个 CancellationToken 参数。CancellationToken 参数通过创建 CancellationTokenSource 来生成。由于 CancellationTokenSource 实现了 ICancelableOperation 接口，因此可以用 CancellationToken 注册，并允许使用 Cancel()方法取消操作。本例没有直接调用 Cancel 方法，而是使用了 .NET 4.5 中的一个新方法 CancelAfter,在500毫秒后取消标记。
+
+在 For()循环的实现代码，Parallel 类验证 CancellationToken 的结果，并取消操作。一旦取消操作，For()方法就抛出一个 OperationCanceledException 类型的异常，这是本例捕获的异常。使用 CancellationToken 可以注册取消操作时的信息。为此，需要调用 Register()方法，并传递一个仔取消操作时调用的委托
+
+```c#
+var cts = new CancellationTokenSource();
+cts.Token.Register(() => Console.WriteLine("*** token canceled"));
+
+// send a cancel after 500 ms
+cts.CancelAfter(500);
+
+try
+{
+	ParallelLoopResult result = Parallel.For(0, 100, new ParallelOptions()
+	{
+		CancellationToken = cts.Token,
+	}, x =>
+	{
+		Console.WriteLine("loop {0} started", x);
+		int sum = 0;
+		for (int i = 0; i < 100; i++)
+		{
+			Thread.Sleep(2);
+			sum += i;
+		}
+		Console.WriteLine("loop {0} finished", x);
+	});
+}
+catch (OperationCanceledException ex)
+{
+	Console.WriteLine(ex.Message);
+}
+```
+
+运行应用程序，会得到如下结果，第0、25、50、75和1次迭代都启动了。这在一个有4个内核 CPU 的系统上运行。通过取消操作，所有其他迭代操作都在启动之前就取消了。
+
+```
+loop 0 started
+loop 25 started
+loop 50 started
+loop 75 started
+loop 1 started
+*** token canceled
+loop 0 finished
+loop 50 finished
+loop 75 finished
+loop 1 finished
+loop 25 finished
+已取消该操作。
+```
+
+同样的取消模式也可以用于任务。首先，新建一个 CancellationTokenSource。如果仅需要取消一个标记，就可以访问 Task.Factory.CancellationToken，以使用默认的取消标记。接着，与前面的代码类似，在500毫秒后取消任务。在循环中执行主要工作的任务通过 TaskFactory 对象接受取消标记。在构造函数中，把取消标记赋予 TaskFactory。
+
+```c#
+static void CancelTask()
+{
+	var cts = new CancellationTokenSource();
+	cts.Token.Register(() => Console.WriteLine("*** task cancelled"));
+
+	// send a cancel after 500 ms
+	cts.CancelAfter(500);
+
+	Task t1 = Task.Run(() => 
+	{
+		Console.WriteLine("in task");
+		for (int i = 0; i < 20; i++)
+		{
+			Thread.Sleep(100);
+			CancellationToken token = cts.Token;
+			if (token.IsCancellationRequested)
+			{
+				Console.WriteLine("cancelling was requested, cancelling from within the task");
+				token.ThrowIfCancellationRequested();
+				break;
+			}
+			Console.WriteLine("in loop");
+		}
+		Console.WriteLine("task finished without cancellation");
+	},cts.Token);
+
+	try
+	{
+		t1.Wait();
+	}
+	catch (AggregateException ex)
+	{
+		Console.WriteLine("exception: {0}, {1}",ex.GetType().Name,ex.Message);
+		foreach (var innerException in ex.InnerExceptions)
+		{
+			Console.WriteLine("inner excepion: {0}, {1}",ex.InnerException.GetType().Name,ex.InnerException.Message);
+		}
+	}
+}
+```
+
+运行应用程序，可以看到任务启动了，运行了几个循环，并获得了取消请求。之后取消任务，并抛出 TaskCanceledException 异常，它是从方法调用 ThrowIfCancellationRequested()中启动的。调用者等等任务时，会捕获 AggregateException 异常，它包含内部异常 TaskCanceledException。例如，如果在一个也被取消的任务中运行 Parallel.For()方法，这就可以用于取消的层次结构。任务的最终状态是 Canceled。
+
+```
+in task
+in loop
+in loop
+in loop
+in loop
+*** task cancelled
+cancelling was requested, cancelling from within the task
+exception: AggregateException, 发生一个或多个错误。
+inner excepion: TaskCanceledException, 已取消一个任务。
+```
+
+### 线程池
+
+创建线程需要时间。如果有不同的短任务要完成，就可以实现创建许多线程，在完成这些任务时发出请求。
+
+不需要自己创建一个这样的列表。该列表由 ThreadPool 类托管。这个类会在需要时增减池中线程的线程数，直到最大的线程数。池中的最大线程数是可配置的。在四核CPU中，默认设置为 1023 个工作线程和 1000个 I/O 线程。也可以指定在创建线程池应立即启动的最小线程数，以及线程池中可用的最大线程数。如果有更多的作业要处理，线程池中线程的个数也到了极限，最新的作业就要排队，且必须等待线程完成其任务。
+
+下面的示例应用程序首先要读取工作线程和 I/O 线程的最大线程数，把这些信息写入控制台中。接着在 for 循环中，调用 ThreadPool.QueueUserWorkItem()方法，传递一个 WaitCallback 类型的委托，把 JobForAThread()方法赋予线程池中的线程。线程池收到这个请求后，就会从池中选择一个线程，来调用该方法。如果线程池还没有运行，就会创建一个线程池，并启动第一个线程。如果线程池已经在运行，且有一个空闲线程来完成该任务，就把该任务传递给这个线程。
+
+```c#
+class Program
+{
+	static void Main(string[] args)
+	{
+		int nWorkerThreads;
+		int nCompletionPortThreads;
+		ThreadPool.GetMaxThreads(out nWorkerThreads, out nCompletionPortThreads);
+		Console.WriteLine("Max worker threads: {0}, I/O completion threads: {1}",nWorkerThreads,nCompletionPortThreads);
+
+		for (int i = 0; i < 5; i++)
+		{
+			ThreadPool.QueueUserWorkItem(JobForAThread);
+		}
+		Thread.Sleep(3000);
+		Console.ReadKey();
+	}
+
+	static void JobForAThread(object state)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			Console.WriteLine("loop {0},running inside pooled thread {1}",i,Thread.CurrentThread.ManagedThreadId);
+			Thread.Sleep(50);
+		}
+	}
+}
+
+运行应用程序时，可以看到 1023 个工作线程和当前设置。5个任务只由4个线程池中的线程处理，读者运行该程序的结果可能与此不同。也可以改变任务的睡眠时间和要处理的任务数，得到完全不同的结果。
+
+```
+Max worker threads: 32767, I/O completion threads: 1000
+loop 0,running inside pooled thread 12
+loop 0,running inside pooled thread 13
+loop 0,running inside pooled thread 11
+loop 0,running inside pooled thread 14
+loop 1,running inside pooled thread 11
+loop 1,running inside pooled thread 14
+loop 1,running inside pooled thread 12
+loop 1,running inside pooled thread 13
+loop 2,running inside pooled thread 12
+loop 2,running inside pooled thread 13
+loop 2,running inside pooled thread 11
+loop 2,running inside pooled thread 14
+loop 0,running inside pooled thread 13
+loop 1,running inside pooled thread 13
+loop 2,running inside pooled thread 13
+```
+
+线程池使用起来很简单，但它有一些限制:
+
+>* 线程池中的所有线程都是后台线程。如果进程的所有前台线程都结束了，所有的后台线程就会停止。不能把入池的线程改为前台线程。
+>* 不能给入池的线程设置优先级或名称。
+>* 对于COM对象，入池的所有线程都是多线程单元线程。许多COM对象都需要单线程单元线程。
+>* 入池的线程只能用于时间较短的任务。如果线程要一直运行(如 Word 的拼写检查器线程),就应使用 Thread 类创建一个线程。
+
+### Thread类
+
+如果需要更多控制，可以使用 Thread 类。该类允许创建前台线程，以及设置线程的优先级。使用 Thread 类可以创建和控制线程。下面的代码是创建和启动一个新线程的简单例子。Thread 类的构造函数重载为接受 ThreadStart 和 ParameterizedThreadStart 类型的委托参数。ThreadStart 委托定义了一个返回类型为 void 的无参数方法。在创建 Thread 对象后，就可以用 Start()方法启动线程
+
+```c#
+static void Main(string[] args)
+{
+	var t1 = new Thread(ThreadMain);
+	t1.Start();
+	Console.ReadKey();
+}
+
+static void ThreadMain()
+{
+	Console.WriteLine("Running in a thread.");
+}
+```
 
 
 
