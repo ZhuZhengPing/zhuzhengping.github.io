@@ -20,7 +20,7 @@ author: Zhengping Zhu
 
 [源码下载地址](https://www.codeproject.com/KB/architecture/479635/DecoratorSampleApp.zip)
 
-
+[转载自 codeproject](https://www.codeproject.com/articles/479635/understandingplusandplusimplementingplusdecoratorp)
 
 
 
