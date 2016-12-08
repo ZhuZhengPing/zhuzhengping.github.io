@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "装饰模式"
-date:   2016-09-18 16:32:18 +0800
+date:   2016-12-06 16:32:18 +0800
 categories: design
 tags: design decorative
 author: Zhengping Zhu
