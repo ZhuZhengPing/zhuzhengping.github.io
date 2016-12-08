@@ -18,6 +18,8 @@ author: Zhengping Zhu
 
 当 stream 只需要某一种加密时，这么做是很有用的，如果要实现多个加密功能动态组合添加到这个类，这可能正是装饰模式使用的场景，GoF将装饰器模式定义为"动态附加功能到对象。装饰器提供了一个灵活的替代子类化扩展功能"
 
+[源码下载地址](https://www.codeproject.com/KB/architecture/479635/DecoratorSampleApp.zip)
+
 
 
 
