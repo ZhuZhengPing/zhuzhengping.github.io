@@ -72,15 +72,15 @@ author: Zhengping Zhu
 
 下面是索引书是如何工作的
 
-<img src="https://www.codeproject.com/KB/database/OptimizeDBUseIndexing/IndexTree.JPG" />
+<img src="https://www.codeproject.com/KB/database/OptimizeDBUseIndexing/IndexTree.JPG"  style="width:750px;"/>
 
 这被称为B +树(Balanced tree).中间节点包含一系列值，并指示SQL引擎在树中搜索特定索引值，从根节点开始，叶节点是包含实际索引值的节点，如果这是一个聚集索引树，叶节点是物理数据页，如果这是非聚集索引树，叶节点包含索引值以及聚集索引键（数据库引擎用来在聚集索引树中查找相应的行）。
 
 在索引树中找到期望值并从那里跳到实际行对于数据库引擎花费极少量的时间，所以，索引通常改进了数据检索操作。
 
-### 请按照以下步骤操作，以确保数据库中的索引正确：
+请按照以下步骤操作，以确保数据库中的索引正确：
 
-
+### 确保数据库中的每个表都有一个主键
 
 
 
