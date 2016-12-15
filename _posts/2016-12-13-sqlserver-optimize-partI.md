@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "SQL Server优化数据访问（使用索引）"
+title:  "SQL Server优化数据访问: PartI(使用索引)"
 date:   2016-12-08 16:32:18 +0800
 categories: sql
 tags: sql
