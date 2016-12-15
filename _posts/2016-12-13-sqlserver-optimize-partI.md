@@ -124,17 +124,87 @@ SELECT SalesDate, SalesPersonID FROM Sales WHERE ProductID = 112
 >3. 对于每个主键（这里为400），SQL Server引擎“查找”到聚集索引树中，以找到相应页面中的实际行位置。
 >4. 对于每个主键，当找到时，SQL Server引擎从相应的行中选择SalesDate和SalesPersonID列值。
 
-请注意在上面的步骤
+请注意在上面的步骤，在生产服务器中生成的执行计划可能和测试服务器中生成的不同，即使表和索引结构相同，这也表明在测试服务器中创建的索引可能会提高测试应用程序中的一些TSQL性能，但在生产数据库中创建相同的索引可能不会在生产应用程序中给您带来任何性能优势，为什么？因为测试环境中的SQL执行计划利用了新创建的索引，从而为您提供更好的性能，但是，由于某种原因，生产服务器中生成的执行计划可能根本不使用新创建的索引（例如，非聚簇索引列在生产服务器数据库中不是“高度”选择性的，这在测试服务器数据库中可能不同）
 
+因此，在创建索引时，我们需要确保索引用来产生更快的结果。但是，我们怎么做呢？答案是，我们必须模拟生产服务器在测试服务器中的负载，然后需要创建适当的索引并测试这些，只有这样，如果新创建的索引提高了测试环境中的性能，这些将很可能提高生产环境中的性能
 
+这应该很难，但幸运的是，我们有一些好的工具来做到这一点。
 
+>1 使用SQL Profiler在生产服务器中捕获跟踪,使用调整模板（我知道，建议不要在生产数据库中使用SQL Profiler，但有时必须在诊断生产中的性能问题时使用它）.如果您不熟悉此工具，或者需要使用SQL Profiler了解有关性能分析和跟踪的更多信息，请阅读[http://msdn.microsoft.com/en-us/library/ms181091.aspx](http://msdn.microsoft.com/en-us/library/ms181091.aspx)。
+>2 使用上一步中生成的跟踪文件在测试数据库服务器中使用Tuning Advisor 创建类似的加载，看看 Tuning Advisor 能给出一些什么建议，你可能会从 Tuning Advisor 获得一些很好的建议（因为Tuning Advisor使用从生产数据库生成的跟踪加载测试数据库，然后尝试生成最佳的索引建议），使用Tuning Advisor工具，您还可以创建它建议的索引，或者如果您需要了解有关使用Tuning Advisor的更多信息，请阅读[http://msdn.microsoft.com/en-us/library/ms166575.aspx](http://msdn.microsoft.com/en-us/library/ms166575.aspx)。
 
+### 第三部：索引碎片整理
 
+您在表中创建了所有适当的索引。或者索引已经存在于您的数据库表中，但是你可能得到良好性能.
 
+有很大的机会发生索引碎片。
 
+#### 什么是索引碎片
 
+索引碎片是索引页由于对数据库中的表的大量插入，更新和删除操作而分裂的情况。如果索引具有高碎片，扫描/寻找索引需要很多时间，或者在执行查询时根本不使用索引（导致表扫描），因此，数据检索操作执行缓慢。
 
+可能发生两种类型的碎片：
 
+>* 内部碎片:发生的原因是索引页中的数据删除/更新操作，最终导致数据分布在数据页中索引稀疏（在页面中创建大量空行）。还导致索引/数据页的增加，增加查询执行时间。
+>* 外部碎片:发生在索引/数据页面中的数据插入/更新操作，最终在文件系统中页面拆分和分配出现不连续的新索引/数据页面，这会降低确定查询结果的性能，数据库服务器不能利用预读操作，因为下一相关数据页不能保证是连续的，因为这些下一页可以在数据文件中的任何地方。
+
+### 如何知道是否发生索引碎片
+
+在数据库中执行以下SQL（以下SQL将在SQL Server 2005或更高版本的数据库中工作）。在以下查询中将数据库名称“AdventureWorks”替换为目标数据库名称
+
+```sql
+SELECT object_name(dt.object_id) Tablename,si.name
+IndexName,dt.avg_fragmentation_in_percent AS
+ExternalFragmentation,dt.avg_page_space_used_in_percent AS
+InternalFragmentation
+FROM
+(
+    SELECT object_id,index_id,avg_fragmentation_in_percent,avg_page_space_used_in_percent
+    FROM sys.dm_db_index_physical_stats (db_id('AdventureWorks'),null,null,null,'DETAILED'
+)
+WHERE index_id <> 0) AS dt INNER JOIN sys.indexes si ON si.object_id=dt.object_id
+AND si.index_id=dt.index_id AND dt.avg_fragmentation_in_percent>10
+AND dt.avg_page_space_used_in_percent<75 ORDER BY avg_fragmentation_in_percent DESC 
+```
+
+上面的查询显示了'AdventureWorks'数据库的索引碎片信息如下：
+
+<img src="https://www.codeproject.com/KB/database/OptimizeDBUseIndexing/IndexFragmentation.JPG" style="width:750px;"/>
+
+分析结果，您可以使用以下规则确定索引碎片发生的位置：
+
+>* ExternalFragmentation值> 10表示对应的索引发生了外部碎片
+>* InternalFragmentation值<75表示发生相应索引的内部碎片
+
+#### 如何碎片整理索引？
+
+#### 你可以通过两种方式做到这一点
+
+1. 重组碎片索引：执行以下命令来执行此操作：
+
+```sql
+ALTER INDEX ALL ON TableName REORGANIZE
+```
+
+2. 重建索引：执行以下命令：
+
+```sql
+ALTER INDEX ALL ON TableName REBUILD WITH (FILLFACTOR=90,ONLINE=ON) 
+```
+
+您还可以使用索引名称而不是上述查询中的“ALL”关键字重建或重组表中的各个索引,您还可以使用SQL Server Management Studio进行索引碎片整理。
+
+<img src="https://www.codeproject.com/KB/database/OptimizeDBUseIndexing/SSMSDefragmentIndex.JPG" style="width:750px;"/>
+
+#### 什么时候重组和什么时候重建索引？
+
+当对应索引的“外部碎片”值在10-15之间且内部碎片值在60-75之间时，应该“重新组织”索引。否则，您应该重建索引
+
+索引重建值得注意的是，在重建特定表的索引时，整个表将被锁定（这在索引重组的情况下不会发生），所以，对于生产数据库中的大表，这种锁定可能不是我们想要的，因为为该表重建索引可能需要几个小时才能完成，幸运的是，在SQL Server 2005中，有一个解决方案。在重建表的索引时，可以将ONLINE选项用作ON（参见上面给出的index rebuild命令），这将重建表的索引，并使表可用于事务。
+
+### 最后的话
+
+在数据库表中的所有合格列上创建一个索引真的很有用处，但是，如果你使用事务数据库（大多数时间进行更新操作的OLTP系统），可能不需要在每个合适的列上建立索引，事实上，在OLTP系统上创建重索引可能会降低整体数据库性能
 
 
 
