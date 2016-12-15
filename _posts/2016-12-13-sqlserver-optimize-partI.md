@@ -130,8 +130,8 @@ SELECT SalesDate, SalesPersonID FROM Sales WHERE ProductID = 112
 
 这应该很难，但幸运的是，我们有一些好的工具来做到这一点。
 
->1 使用SQL Profiler在生产服务器中捕获跟踪,使用调整模板（我知道，建议不要在生产数据库中使用SQL Profiler，但有时必须在诊断生产中的性能问题时使用它）.如果您不熟悉此工具，或者需要使用SQL Profiler了解有关性能分析和跟踪的更多信息，请阅读[http://msdn.microsoft.com/en-us/library/ms181091.aspx](http://msdn.microsoft.com/en-us/library/ms181091.aspx)。
->2 使用上一步中生成的跟踪文件在测试数据库服务器中使用Tuning Advisor 创建类似的加载，看看 Tuning Advisor 能给出一些什么建议，你可能会从 Tuning Advisor 获得一些很好的建议（因为Tuning Advisor使用从生产数据库生成的跟踪加载测试数据库，然后尝试生成最佳的索引建议），使用Tuning Advisor工具，您还可以创建它建议的索引，或者如果您需要了解有关使用Tuning Advisor的更多信息，请阅读[http://msdn.microsoft.com/en-us/library/ms166575.aspx](http://msdn.microsoft.com/en-us/library/ms166575.aspx)。
+>1. 使用SQL Profiler在生产服务器中捕获跟踪,使用调整模板（我知道，建议不要在生产数据库中使用SQL Profiler，但有时必须在诊断生产中的性能问题时使用它）.如果您不熟悉此工具，或者需要使用SQL Profiler了解有关性能分析和跟踪的更多信息，请阅读[http://msdn.microsoft.com/en-us/library/ms181091.aspx](http://msdn.microsoft.com/en-us/library/ms181091.aspx)。
+>2. 使用上一步中生成的跟踪文件在测试数据库服务器中使用Tuning Advisor 创建类似的加载，看看 Tuning Advisor 能给出一些什么建议，你可能会从 Tuning Advisor 获得一些很好的建议（因为Tuning Advisor使用从生产数据库生成的跟踪加载测试数据库，然后尝试生成最佳的索引建议），使用Tuning Advisor工具，您还可以创建它建议的索引，或者如果您需要了解有关使用Tuning Advisor的更多信息，请阅读[http://msdn.microsoft.com/en-us/library/ms166575.aspx](http://msdn.microsoft.com/en-us/library/ms166575.aspx)。
 
 ### 第三部：索引碎片整理
 
