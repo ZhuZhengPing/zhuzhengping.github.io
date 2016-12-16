@@ -314,7 +314,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 }
 ```
 
-我们定义了两个route，分别是 MyRoute 和 MyOtherRoute`,如果我们使用ActionLink:`@Html.ActionLink("Click me", "Index", "Customer")`,输出的URL地址可能会是这样：`<a href="/Customer/Index">Click me</a>`
+我们定义了两个route，分别是 MyRoute 和 MyOtherRoute,如果我们使用ActionLink:`@Html.ActionLink("Click me", "Index", "Customer")`,输出的URL地址可能会是这样：`<a href="/Customer/Index">Click me</a>`
 
 你可以通过 Html.RouteLink 指定一个route，例如：`@Html.RouteLink("Click me", "MyOtherRoute","Index", "Customer")   ，生成的页面为：`<a Length="8" href="/App/Index?Length=5">Click me</a>`
 
