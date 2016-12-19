@@ -391,7 +391,7 @@ public static void RegisterRoutes(RouteCollection routes) {
 
 ### 创建route handler
 
-之前创建的自定义route 使用了 MvcRouteHandler`,可以继承 IRouteHandler 创建自己的route handler，下面创建一个 CustomRouteHandler 来演示
+之前创建的自定义route 使用了 MvcRouteHandler,可以继承 IRouteHandler 创建自己的route handler，下面创建一个 CustomRouteHandler 来演示
 
 ```c#
 public class CustomRouteHandler : IRouteHandler
@@ -418,7 +418,7 @@ public class CustomRouteHandler : IRouteHandler
 
 ```c#
 public static void RegisterRoutes(RouteCollection routes) { 
-     routes.Add(new Route("SayHello", new CustomRouteHandler())); \
+     routes.Add(new Route("SayHello", new CustomRouteHandler())); 
 }
 ```
 
