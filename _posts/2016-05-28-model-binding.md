@@ -147,7 +147,7 @@ public class RouteConfig
 }
 ```
 
-当我们访问 /Home/Index/1 ，URL最后的部分分配到 routing 的 id 属性，当方法参数符合的时候， action invoker 使用 routing 信息来调用 index action 方法， ControllerActionInvoker 为默认的 action invoker`,依赖 model 绑定生成的数据来调用 action , model 绑定在 IModelBinder 定义
+当我们访问 /Home/Index/1 ，URL最后的部分分配到 routing 的 id 属性，当方法参数符合的时候， action invoker 使用 routing 信息来调用 index action 方法， ControllerActionInvoker 为默认的 action invoker,依赖 model 绑定生成的数据来调用 action , model 绑定在 IModelBinder 定义
 
 ```c#
 namespace System.Web.Mvc { 
