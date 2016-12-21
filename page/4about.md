@@ -16,6 +16,7 @@ icon: heart
 
 * GitHub：[ZhuZhengPing](https://github.com/ZhuZhengPing)
 * email：zhuzhengpin.g@163.com
+* QQ: 414885298
 
 ## 捐助 donate
 
