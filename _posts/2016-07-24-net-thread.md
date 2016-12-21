@@ -65,7 +65,7 @@ static void ExtractCurrentThreadContext()
 
 ### 委托的异步性 BeginInvoke()和EndInvoke()方法
 
-```
+```c#
 public sealed class BinaryOp: System.MulticastDelegate
 {
 ...
