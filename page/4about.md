@@ -21,11 +21,11 @@ icon: heart
 
 您也可以捐助我喝杯咖啡！感谢！
 
-支付宝
+<b>支付宝</b>
 
-<img src="http://ww2.sinaimg.cn/mw690/006dag38gw1faykvuk1bmj306k06jwf9.jpg" />
+<img src="http://ww2.sinaimg.cn/mw690/006dag38gw1faykvuk1bmj306k06jwf9.jpg" style="margin-bottom:20px;" />
 
-微信
+<b>微信</b>
 
 <img src="http://ww1.sinaimg.cn/mw690/006dag38gw1faykv4eaqrj306r06ngmc.jpg" />
 
