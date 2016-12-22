@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "SQL Server优化数据访问: Part III(高级索引)"
+title:  "SQL Server优化数据访问: Part III(高级索引和反标准化)"
 date:   2016-12-20 16:32:18 +0800
 categories: sql
 tags: sql
