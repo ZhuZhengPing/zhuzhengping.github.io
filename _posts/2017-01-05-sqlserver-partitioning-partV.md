@@ -152,26 +152,23 @@ The 3<sup>rd</sup> partition should go into the â€˜2001' file group
 The 4<sup>th</sup> partition should go into the â€˜2002' file group
 ```
 
+<b>4. 在表上应用分区</b>
 
+可以使用DROP INDEX语句删除聚簇索引，假设PK_Orders是表的主键，请使用以下命令删除主键，这将最终从表中删除聚集索引：
 
+```sql
+ALTER TABLE Orders DROP CONSTRAINT
+PK_Orders
+```
 
+可以在分区方案上创建索引，如下所示：
 
+```sql
+CREATE UNIQUE CLUSTERED INDEX PK_Orders ON Orders(OrderDate) ON
+OrderDatePScheme (OrderDate)
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+假设OrderDate列值在表中是唯一的,该表将根据指定的分区方案（OrderDatePScheme）进行分区,其内部使用分区功能将表分割成4个不同文件组中的4个较小部分。
 
 
 
