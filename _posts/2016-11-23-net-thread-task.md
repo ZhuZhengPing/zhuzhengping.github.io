@@ -687,6 +687,162 @@ var t3 = new Thread(obj.ThreadMain);
 t3.Start();
 ```
 
+#### 后台线程
+
+只要有一个前台线程在运行，应用程序的进程就在运行。如果多个前台线程在运行，而 Main()方法结束了，应用程序的进程就仍然是激活的，直到所有前台线程完成其任务为止。
+
+在默认情况下，用 Thread 类创建的线程是前台线程。线程池中的线程总是后台线程。
+
+在用 Thread 类创建线程时，可以设置 IsBackground 属性，以确定该线程是前台线程还是后台线程。Main()方法将线程 t1 的 IsBackground 属性设置为 false(默认值).在启动新线程后，主线程就把结束消息写入控制台中。新线程会写入启动消息和结束消息，在这个过程中它要睡眠3秒。在新线程会完成其工作前，这3秒会有利于主线程结束。
+
+```c#
+class Program
+{
+	static void Main()
+	{
+		var t1 = new Thread(ThreadMain)
+		{
+			Name="MyNewThread",
+			IsBackground = false
+		};
+		t1.Start();
+		Console.WriteLine("Main thread ending now.");
+	}
+	
+	static void ThreadMain()
+	{
+		Console.WriteLine("Thread {0} started",Thread.CurrentThread.Name);
+		Thread.Sleep(3000);
+		Console.WriteLine("Thread {0} completed",Thread.CurrentThread.Name);
+	}
+}
+```
+
+尽管主线程会提前完成其工作，但在启动应用程序时，会看到写入控制台的完成消息。原因是新线程也是一个前台线程。
+
+```
+Main thread ending now.
+Thread MyNewThread1 started
+Thread MyNewThread1 completed
+```
+
+如果将用来启动新线程的 IsBackground 属性改为 true，显示在控制台上的结果就会不同。在控制台上，可以看到相同的结果(新线程的启动消息)，但没有结束消息。如果线程没有正常结束，就有可能看不到启动消息。
+
+```
+Main thread ending now.
+Thread MyNewThread1 started
+```
+
+后台线程非常适合于完成后台任务。例如，如果关闭 Word 应用程序，拼写检查器继续运行其进程就没有意义了。在关闭应用程序时，拼写检查器线程就可以关闭。但是，组织 Outlook 小西裤的线程应一直是激活的，知道关闭 Outlook，它才结束。
+
+#### 线程的优先级
+
+前面提到，线程由操作系统调度。给线程指定优先级，就可以影响调度顺序。在改变优先级之前，必须理解线程调度器。操作系统根据优先级来调度线程。调度优先级最高的线程以在 CPU 上运行。线程如果在等待资源，它就会停止运行，并释放CPU。
+
+线程必须等待时有几个原因，例如，响应睡眠指令、等待磁盘I/O的完成，等待网络包的到达等。如果线程不是主动释放CPU，线程调度器就会抢占该线程。线程有一个时间量，这意味着它可以持续使用CPU，直到这个时间到达(这是指没有更高优先级的线程时).如果优先级相同的多个线程等待使用 CPU，线程调度器就会使用一个循环调度规则，将 CPU 逐个交给线程使用。如果线程被其他线程抢占，它就会排在队列的最后。
+
+只有优先级相同的多个线程在运行，才用的上时间量和循环规则。优先级是动态的。如果线程是 CPU 密集型的(一直需要CPU，且不等到资源)，其优先级就降低为用该线程定义的基本优先级。如果线程在等待资源，它的优先级会提高。由于优先级的提高，线程很有可能在下次等待结束时获得CPU。
+
+在Thread类中，可以设置Priority属性，以影响线程的基本优先级。Priority属性需要ThreadPriority枚举定义的一个值。定义的级别有Highest、AboveNormal、Normal、BelowNormal和Lowest。
+
+#### 控制线程
+
+调用 Thread 对象的 Start()方法，可以创建线程。但是，在调用 Start() 方法后，新线程扔不是出于 Running 状态，而是处于 Unstarted 状态。只要操作系统的线程调度器选择了要运行的线程，线程就会改为 Running 状态。读取 Thread.ThreadState 属性，就可以获得线程的当前状态。
+
+使用 Thread.Sleep()方法，会使线程处于 WaitSleepJoin 状态，在等待 Sleep()方法定义的时间段后，线程就会再次被唤醒。
+
+要停止另一个线程，可以调用 Thread.Abort()方法。调用这个方法时，会在接到终止命令的线程中抛出一个 ThreadAbortException 类型的异常。用一个处理程序捕获这个异常，线程可以在结束前完成一些清理工作。如果调用了 Thread.ResetAbort，线程还有机会在接收到 ThreadAbortException 异常后继续运行。如果线程没有重置终止，接收到终止请求的线程的状态就从 AbortRequested 改为 Aborted。
+
+如果需要等待线程的结束，就可以调用 Thread.Join()方法。Thread.Join()方法会停止当前线程，并把它设置为 WaitSleepJoin 状态，直到加入的线程完成为止。
+
+### 线程问题
+
+用多个线程编程并不容易。在启动访问相同数据的多个线程时，会间歇性地遇到难以发现的问题。如果使用任务、并行LINQ或Parallel类，也会遇到这些问题。为了避免这些问题，必须特别注意同步问题和多个线程可能发生的其他问题。下面探讨与线程相关的问题：争用条件和死锁。
+
+#### 争用条件
+
+如果两个或多个线程访问相同的对象，并且对共享状态的访问没有同步，就会出现争用条件。为了说明争用条件，下面的例子定义一个 StateObject 类，它包含一个 int 字段和一个 ChangeState()方法。在 ChangeState()方法的实现代码中，验证状态变量是否包含5.如果它包含，就递增其值。下一条语句是 Trace.Assert，它立刻验证 state 现在是否包含6.
+
+在给包含5的变量递增了1后，可能认为该变量的值就是6.但事实不一定是这样。例如，如果一个线程刚刚执行完If(state == 5)语句，它就被其他线程抢占，调度器运行另一个线程。第二个线程现在进入 if 体,因为 state 的值扔是5，所以将它递增到6.第一个线程现在再次被调度，在下一条语句中，state 递增到7.这时就发生了争用条件，并显示断言消息
+
+```c#
+public class StateObject
+{
+	private int state = 5;
+	public void ChangeState(int loop)
+	{
+		if (state == 5)
+		{
+			state++;
+			Trace.Assert(state == 6, "Race condition occurred after " + loop + " loops");
+		}
+		state = 5;
+	}
+}
+```
+
+下面通过给任务定义一个方法来验证这一点。SampleTask 类的 RaceCondition()方法将一个 StateObject 类作为其参数。在一个无限 while 循环中，调用 ChangeState()方法。变量i仅用于显示断言消息中的循环次数。
+
+```c#
+public class SampleTask
+{
+	public void RaceCondition(object o)
+	{
+		Trace.Assert(o is StateObject, "o must be of type StateObject");
+		StateObject state = o as StateObject;
+
+		int i = 0;
+		while (true)
+		{
+			state.ChangeState(i++);
+		}
+	}
+}
+```
+
+在程序的main()方法中，新建了一个StateObject对象，它由所有任务共享。通过使用传递给Task的Run方法的Lambda表达式调用 RaceCondition 方法来创建 Task 对象。然后，主线程等待用户输入。但是，由于可能出现争用，所以程序很有可能在读取用户输入前就挂起
+
+```c#
+static void RaceConditions()
+{
+	var state = new StateObject();
+	for (int i = 0; i < 2; i++)
+	{
+		Task.Run(() => new SampleTask().RaceCondition(state));
+	}
+}
+```
+
+启动程序，就会出现争用条件。出现第一个争用条件要取决于系统以及将程序构建为发布版本还是调试版本。如果构建为发布版本，该问题出现次数就会比较多，因为代码被优化了。如果系统中有多个CPU或使用双核/四核CPU，其中多个线程可以同时运行，则该问题也会比单核CPU出现次数多。在单核CPU中，因为线程调度是抢占式的，也会出现这种问题，只是没这么频繁。
+
+<img src="http://ww1.sinaimg.cn/mw690/006dag38jw1fba8u3zur6j30dz0gqq7y.jpg" />
+
+要避免该问题，可以锁定共享的对象。这可以在线程中完成：用下面的 lock 语句锁定在线程中共享的 state 变量。只有一个线程能在锁定块中处理共享的 state 对象。由于这个对象在所有的线程之间共享，因此如果一个线程锁定了 state，另一个线程就必须等待该锁定解除。一旦接受锁定，线程就拥有该锁定，直到该锁定块的末尾才解除锁定。如果改变 state 变量引用的对象的每个线程都使用一个锁定，就不会出现争用条件。
+
+```c#
+public class SampleTask{
+	public void RaceCondition(object o){
+		Trace.Assert(o is StateObject,"o must be of type StateObject");
+		StateObject state = o as StateObject;
+		
+		int i =0;
+		while(true){
+			lock(state){
+				state.ChangeState(i++);
+			}
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
