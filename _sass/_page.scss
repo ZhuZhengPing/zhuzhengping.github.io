@@ -8,7 +8,7 @@
     *zoom: 1;
 }
 .page {
-    width: 90%;
+    width: 1200px;
     box-sizing: border-box;
     margin: 0 auto;
     // word-break: break-all;
@@ -144,7 +144,7 @@
 }
 @media screen and (max-width:1200px) and (min-width: 770px) {
     .page {
-        width: 90%;
+        width: 1200px;
     }
 }
 @media screen and (max-width: 770px) {
