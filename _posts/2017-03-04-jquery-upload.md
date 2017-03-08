@@ -313,7 +313,7 @@ Index视图代码:
 
 此实例在显示出异步上传图片的同时并弹出自定义传输的参数。本实例[下载地址](http://files.cnblogs.com/kissdodog/MVCAJAXUpload.zip)
 
-2013年1月28日，今天调试过程中发现一个问题，就是作为文件域(<input type="file">)必须要有name属性，如果没有name属性，上传之后服务器是获取不到图片的。如：正确的写法是<input type="file" id="file1" name="file1" />
+2013年1月28日，今天调试过程中发现一个问题，就是作为文件域 `<input type=file>`必须要有name属性，如果没有name属性，上传之后服务器是获取不到图片的。如：正确的写法是`<input type=file id=file1 name=file1 />`
 
 2013年1月28日，最经典的错误终于找到原因所在了。Object function (a,b){return new e.fn.init(a,b,h)} has no method 'handleError'，这个是google浏览器报的错误，非常经典， 不知道是我的版本问题还是真正存在的问题。这个问题的根源经过N次上传才找到问题的根本所在。答案是：dataType参数一定要大写。如：dataType: 'HTML'。
 
