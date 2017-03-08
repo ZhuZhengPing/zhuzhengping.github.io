@@ -53,16 +53,11 @@ options参数说明：
 
 错误提示:
 
-1，SyntaxError: missing ; before statement错误
-　　如果出现这个错误就需要检查url路径是否可以访问
-2，SyntaxError: syntax error错误
-　　如果出现这个错误就需要检查处理提交操作的服务器后台处理程序是否存在语法错误
-3，SyntaxError: invalid property id错误
-　　如果出现这个错误就需要检查文本域属性ID是否存在
-4，SyntaxError: missing } in XML expression错误
-　　如果出现这个错误就需要检查文件name是否一致或不存在
-5，其它自定义错误
-　　大家可使用变量$error直接打印的方法检查各参数是否正确，比起上面这些无效的错误提示还是方便很多。
+>1. SyntaxError: missing ; before statement错误 如果出现这个错误就需要检查url路径是否可以访问
+>2. SyntaxError: syntax error错误 如果出现这个错误就需要检查处理提交操作的服务器后台处理程序是否存在语法错误
+>3. SyntaxError: invalid property id错误 如果出现这个错误就需要检查文本域属性ID是否存在
+>4. SyntaxError: missing } in XML expression错误 如果出现这个错误就需要检查文件name是否一致或不存在
+>5. 其它自定义错误 大家可使用变量$error直接打印的方法检查各参数是否正确，比起上面这些无效的错误提示还是方便很多。
 
 使用方法：
 
