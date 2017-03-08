@@ -42,14 +42,14 @@ ajaxFileUpload是一个异步上传文件的jQuery插件
 
 options参数说明：
 
-1、url　　　　　　　　　　  上传处理程序地址。　　
-2，fileElementId　　　　　  需要上传的文件域的ID，即<input type="file">的ID。
-3，secureuri　　　　　　　 是否启用安全提交，默认为false。 
-4，dataType　　　　　　　 服务器返回的数据类型。可以为xml,script,json,html。如果不填写，jQuery会自动判断。
-5，success　　　　　　　　提交成功后自动执行的处理函数，参数data就是服务器返回的数据。
-6，error　　　　　　　　　 提交失败自动执行的处理函数。
-7，data	　　　　　　　　　 自定义参数。这个东西比较有用，当有数据是与上传的图片相关的时候，这个东西就要用到了。
-8, type	　　　　　　　　　  当要提交自定义参数时，这个参数要设置成post
+|  url　　　　　　　　　|　  上传处理程序地址。　　
+|  fileElementId　　　　|　  需要上传的文件域的ID，即<input type="file">的ID。
+|  secureuri　　　　　　|　 是否启用安全提交，默认为false。 
+|  dataType　　　　　　 |　 服务器返回的数据类型。可以为xml,script,json,html。如果不填写，jQuery会自动判断。
+|  success　　　　　　　|　提交成功后自动执行的处理函数，参数data就是服务器返回的数据。
+|  error　　　　　　　　|　 提交失败自动执行的处理函数。
+|  data	　　　　　　　　|　 自定义参数。这个东西比较有用，当有数据是与上传的图片相关的时候，这个东西就要用到了。
+|  type	　　　　　　　　|　  当要提交自定义参数时，这个参数要设置成post
 
 错误提示:
 
