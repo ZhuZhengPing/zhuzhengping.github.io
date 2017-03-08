@@ -28,6 +28,16 @@ ajaxFileUpload是一个异步上传文件的jQuery插件
 
 传一个不知道什么版本的上来，以后不用到处找了。
 
+
+
+
+
+
+
+
+
+
+
 语法：$.ajaxFileUpload([options])
 
 options参数说明：
