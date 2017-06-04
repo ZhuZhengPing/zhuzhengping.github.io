@@ -2,8 +2,8 @@
 layout: post
 title:  "电脑常用快捷键"
 date:   2017-03-28 16:32:18 +0800
-categories: 快捷键
-tags: 财务
+categories: 财务
+tags: 快捷键
 author: Zhengping Zhu
 ---
 
