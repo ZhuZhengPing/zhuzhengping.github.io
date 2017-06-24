@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "泛型委托使用变体"
-date:   2016-06-24 16:32:18 +0800
+date:   2017-06-24 16:32:18 +0800
 categories: .net
 tags: .net 委托
 author: Zhengping Zhu
