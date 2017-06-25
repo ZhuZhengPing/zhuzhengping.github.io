@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "泛型委托使用变体"
+title:  "深入理解 C# 协变和逆变"
 date:   2017-06-25 16:32:18 +0800
 categories: .net
 tags: .net 泛型
@@ -22,9 +22,9 @@ msdn 解释如下：
 
 直白的理解：
 
-<font color:'red'>“协变”->”和谐的变”->”很自然的变化”->string->object :协变。</font>
+“协变”->”和谐的变”->”很自然的变化”->string->object :协变。
 
-<font color:'red'>“逆变”->”逆常的变”->”不正常的变化”->object->string 逆变。</font>
+“逆变”->”逆常的变”->”不正常的变化”->object->string 逆变。
 
 上面是个人对协变和逆变的理解，比起记住那些派生，类型，原始指定,更大，更小之类的词语，个人认为要容易点。
 
@@ -57,9 +57,7 @@ public static void Main()
 
 因为Dog继承自Animal，所以Animal aAnimal = aDog; aDog 会隐式的转变为Animal.
 
-但是List<Dog> 不继承List<Animal> 所以出现下面的提示：
-
-<img src="http://images.cnblogs.com/cnblogs_com/LoveJenny/201203/201203130817114381.png" />
+但是List<Dog> 不继承List<Animal> 
 
 如果想要转换的话，应该使用下面的代码：
 
@@ -73,11 +71,9 @@ List<Animal> lstAnimal2 = lstDogs.Select(d => (Animal)d).ToList();
 
 <img src="http://images.cnblogs.com/cnblogs_com/LoveJenny/201203/201203130817127346.png" style="display:block;" />
 
-<img src="http://images.cnblogs.com/cnblogs_com/LoveJenny/201203/201203130817139232.png" style="display:block;" />
-
 协变的英文是：“covariant”，逆变的英文是：“Contravariant”
 
-<font color="red">为什么Microsoft选择的是”Out” 和”In” 作为特性而不是它们呢？</font>
+为什么Microsoft选择的是”Out” 和”In” 作为特性而不是它们呢？
 
 我个人的理解：
 
@@ -87,15 +83,7 @@ out: 输出(作为结果),in:输入(作为参数)
 
 所以如果有一个泛型参数标记为out,则代表它是用来输出的，只能作为结果返回，而如果有一个泛型参数标记为in,则代表它是用来输入的，也就是它只能作为参数。
 
-目前out 和in 关键字只能在接口和委托中使用，微软使用out 和 in 标记的接口和委托大致如下：
-
-<img src="http://images.cnblogs.com/cnblogs_com/LoveJenny/201203/201203130817137771.png" style="display:block;" />
-
-<img src="http://images.cnblogs.com/cnblogs_com/LoveJenny/201203/201203130817146309.png" style="display:block;" />
-
-先看下第一个`IEnumerable<T>`
-
-<img src="http://images.cnblogs.com/cnblogs_com/LoveJenny/201203/201203130817141575.png" style="display:block;" />
+目前out 和in 关键字只能在接口和委托中使用，微软使用out 和 in 
 
 和刚开始说的一样，T 用out 标记，所以T代表了输出，也就是只能作为结果返回。
 
@@ -113,9 +101,7 @@ public static void Main()
 }
 ```
 
-因为T只能做结果返回，所以T不会被修改， 编译器就可以推断下面的语句强制转换合法，所以`IEnumerable<Animal> someAnimals = someDogs;`可以通过编译器的检查，反编译代码如下：
-
-<img src="http://images.cnblogs.com/cnblogs_com/LoveJenny/201203/201203130817151194.png" style="display:block;" />
+因为T只能做结果返回，所以T不会被修改， 编译器就可以推断下面的语句强制转换合法，所以`IEnumerable<Animal> someAnimals = someDogs;`可以通过编译器的检查，
 
 虽然通过了C#编译器的检查，但是il 并不知道协变和逆变，还是得乖乖的强制转换。
 
@@ -199,10 +185,6 @@ public class MyList<T> : IMyList<T>
 }
 ```
 
-编译：
-
-<img src="http://images.cnblogs.com/cnblogs_com/LoveJenny/201203/201203130817164442.png" style="display:none;" />
-
 因为T被out修饰，所以T只能作为参数。
 
 同样修改两个类如下：
@@ -229,10 +211,6 @@ public class MyList<T> : IMyList<T>
 ```
 
 这一次使用in关键字。
-
-编译：
-
-<img src="http://images.cnblogs.com/cnblogs_com/LoveJenny/201203/201203130817168836.png" style="display:none;" />
 
 因为用in关键字标记，所以T只能被使用，不能作为返回值。
  
