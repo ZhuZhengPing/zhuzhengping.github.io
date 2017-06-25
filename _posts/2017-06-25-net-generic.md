@@ -72,9 +72,7 @@ List<Animal> lstAnimal2 = lstDogs.Select(d => (Animal)d).ToList();
 
 可以看到一个lstDogs 变成lstAnimal 是多么复杂的操作了。
 
-正因如此，所以微软新增了两个关键字：Out,In,下面是他们的msdn解释：
-
-<img src="http://images.cnblogs.com/cnblogs_com/LoveJenny/201203/201203130817127346.png" style="display:block;" />
+正因如此，所以微软新增了两个关键字：Out,In,
 
 协变的英文是：“covariant”，逆变的英文是：“Contravariant”
 
