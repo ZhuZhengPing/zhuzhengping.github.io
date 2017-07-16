@@ -40,7 +40,7 @@ AutoResetEvent 也可以同 staticWaitAll 和 WaitAny 方法一起使用。
 #### 注意
 
 >* 与 AutoResetEvent 类不同的是，EventWaitHandle 类提供对已命名的系统同步事件的访问。
->* 应用到此类型或成员的 HostProtectionAttribute 特性具有以下 Resources 属性值：Synchronization | ExternalThreading。HostProtectionAttribute 不影响桌面应用程序（桌面应用程序一般通过双击图标、键入命令或在浏览器中输入 URL 启动）。有关更多信息，请参见 HostProtectionAttribute 类或 SQL Server 编程和宿主保护特性。
+>* 应用到此类型或成员的 HostProtectionAttribute 特性具有以下 Resources 属性值：Synchronization  ExternalThreading。HostProtectionAttribute 不影响桌面应用程序（桌面应用程序一般通过双击图标、键入命令或在浏览器中输入 URL 启动）。有关更多信息，请参见 HostProtectionAttribute 类或 SQL Server 编程和宿主保护特性。
 
 #### 示例
 
