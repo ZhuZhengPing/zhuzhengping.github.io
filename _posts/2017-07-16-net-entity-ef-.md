@@ -2,7 +2,7 @@
 layout: post
 title:  "在Entity Framework 4.0中使用 Repository 和 Unit of Work 模式 "
 date:   2017-07-16 16:32:18 +0800
-categories: .net
+categories: ef
 tags: .net ef
 author: Zhengping Zhu
 ---
