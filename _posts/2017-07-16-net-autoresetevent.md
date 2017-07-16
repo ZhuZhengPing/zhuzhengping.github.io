@@ -191,6 +191,67 @@ public sealed class AClass
 }
 ```
 
+#### AutoResetEvent 构造函数
+
+用一个指示是否将初始状态设置为终止的布尔值初始化 AutoResetEvent 类的新实例。
+
+下面的示例使用 AutoResetEvent 同步两个线程的活动。 第一个线程为应用程序线程，用于执行 Main。 它将值写入受保护的资源，即名为 number 的 static（在 Visual Basic 中为 Shared）字段。 第二个线程执行静态 ThreadProc 方法，此方法读取由 Main 写入的值。
+
+ThreadProc 方法等待 AutoResetEvent。 当 Main 在 AutoResetEvent 中调用 Set 方法时，ThreadProc 方法将读取一个值。 AutoResetEvent 立即重置，因此 ThreadProc 方法将再次等待。
+
+程序逻辑可确保 ThreadProc 方法永远不会两次读取同一个值。 它并不确保 ThreadProc 方法将读取由 Main 写入的每一个值。 要确保这一点，则要求具有第二个 AutoResetEvent 锁定
+
+在每一次写入操作之后，需要调用 Thread.Sleep 方法才能生成 Main，以便第二个线程可以执行。 否则，在单处理器计算机上，Main 将在任意两个读取操作之间写入许多值。
+
+```c#
+using System;
+using System.Threading;
+
+namespace AutoResetEvent_Examples
+{
+	class MyMainClass
+	{
+		//Initially not signaled.
+      const int numIterations = 100;
+      static AutoResetEvent myResetEvent = new AutoResetEvent(false);
+      static int number;
+
+      static void Main()
+		{
+         //Create and start the reader thread.
+         Thread myReaderThread = new Thread(new ThreadStart(MyReadThreadProc));
+         myReaderThread.Name = "ReaderThread";
+         myReaderThread.Start();
+
+         for(int i = 1; i <= numIterations; i++)
+         {
+            Console.WriteLine("Writer thread writing value: {0}", i);
+            number = i;
+
+            //Signal that a value has been written.
+            myResetEvent.Set();
+
+            //Give the Reader thread an opportunity to act.
+            Thread.Sleep(1);
+         }
+
+         //Terminate the reader thread.
+         myReaderThread.Abort();
+      }
+
+      static void MyReadThreadProc()
+      {
+         while(true)
+         {
+            //The value will not be read until the writer has written
+            // at least once since the last read.
+            myResetEvent.WaitOne();
+            Console.WriteLine("{0} reading value: {1}", Thread.CurrentThread.Name, number);
+         }
+      }
+	}
+}
+```
 
 
 
