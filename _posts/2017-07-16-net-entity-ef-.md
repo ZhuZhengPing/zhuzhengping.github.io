@@ -198,7 +198,7 @@ public class CustomerRepository : ICustomerRepository{
 
 就这么简单！现在，我们有了一个对IUnitOfWork友好的repository，你甚至可以使用基于IUnitOfWork的上下文来协调跨越多个repository的工作。下面是一个将订单加到数据库的例子，需要多个repository的工作来查询数据，最终将记录保存回数据库中去：
 
-```C#
+```c#
 IUnitOfWork unitOfWork = new NorthwindContext();
 CustomerRepository customerRepository = new CustomerRepository(unitOfWork);
 Customer customer = customerRepository.GetCustomerById("ALFKI");
