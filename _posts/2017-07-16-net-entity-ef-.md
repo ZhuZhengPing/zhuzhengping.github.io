@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "深入理解 C# 协变和逆变"
+title:  "在Entity Framework 4.0中使用 Repository 和 Unit of Work 模式 "
 date:   2017-07-16 16:32:18 +0800
 categories: .net
 tags: .net ef
