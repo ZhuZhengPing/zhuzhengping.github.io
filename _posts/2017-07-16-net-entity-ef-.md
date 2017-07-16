@@ -199,15 +199,15 @@ public class CustomerRepository : ICustomerRepository{
 就这么简单！现在，我们有了一个对IUnitOfWork友好的repository，你甚至可以使用基于IUnitOfWork的上下文来协调跨越多个repository的工作。下面是一个将订单加到数据库的例子，需要多个repository的工作来查询数据，最终将记录保存回数据库中去：
 
 ```c#
-IUnitOfWork unitOfWork = new NorthwindContext();
-CustomerRepository customerRepository = new CustomerRepository(unitOfWork);
-Customer customer = customerRepository.GetCustomerById("ALFKI");
-ProductRepository productRepository = new ProductRepository(unitOfWork);
-Product product = productRepository.GetById(1);
-OrderRepository orderRepository = new OrderRepository(unitOfWork);
-Order order = new Order(customer); order.AddNewOrderDetail(product, 1);            
-orderRepository.AddOrder(order);
-unitOfWork.Save();
+	IUnitOfWork unitOfWork = new NorthwindContext();
+	CustomerRepository customerRepository = new CustomerRepository(unitOfWork);
+	Customer customer = customerRepository.GetCustomerById("ALFKI");
+	ProductRepository productRepository = new ProductRepository(unitOfWork);
+	Product product = productRepository.GetById(1);
+	OrderRepository orderRepository = new OrderRepository(unitOfWork);
+	Order order = new Order(customer); order.AddNewOrderDetail(product, 1);            
+	orderRepository.AddOrder(order);
+	unitOfWork.Save();
 ```
 
 非常有趣地看到，为了在Entity Framework之上使用Repository 和 Unit of Work模式来访问数据，我们要编写的代码是如此地少。Entity Framework的LINQ支持以及原装的Unit of Work功能使得在Entity Framework之上建立repository简单之极。
