@@ -1,0 +1,1023 @@
+---
+layout: post
+title:  "javascript中的匿名函数和闭包和BOM"
+date:   2016-05-13 17:40:54 +0800
+categories:  javascript	
+tags: javascript bom
+author: Zhengping Zhu
+---
+
+* content
+{:toc}
+
+本章讲的是使用javascript中的匿名函数和闭包和 BOM
+
+
+
+
+
+## 匿名函数和闭包
+
+**匿名函数**
+
+**普通函数**
+
+```js
+//函数名是box	
+function box() {								
+	return 'Lee';
+}
+```
+
+**匿名函数**
+
+```js
+//匿名函数，会报错
+function () {								
+	return 'Lee';
+}
+```
+
+**通过表达式自我执行**
+
+```js
+//封装成表达式
+(function box() {							
+	alert('Lee');
+//()表示执行函数，并且传参
+})();										
+```
+
+**把匿名函数赋值给变量**
+
+```js
+//将匿名函数赋给变量
+var box = function () {						
+	return 'Lee';
+};
+//调用方式和函数调用相似
+alert(box());								
+```
+
+**函数里的匿名函数**
+
+```js
+function box () {
+	//函数里的匿名函数，产生闭包
+	return function () {						
+		return 'Lee';
+	}
+}
+//调用匿名函数
+alert(box()());								
+```
+
+### 闭包
+
+闭包是指有权访问另一个函数作用域中的变量的函数，创建闭包的常见的方式，就是在一个函数内部创建另一个函数，通过另一个函数访问这个函数的局部变量。
+
+**通过闭包可以返回局部变量**
+
+```js
+function box() {
+	var user = 'Lee';
+	//通过匿名函数返回box()局部变量
+	return function () {						
+		return user;
+	};
+}
+//通过box()()来直接调用匿名函数返回值
+alert(box()());								
+
+var b = box();
+//另一种调用匿名函数返回值
+alert(b());									
+```
+
+使用闭包有一个优点，也是它的缺点：就是可以把局部变量驻留在内存中，可以避免使用全局变量。(全局变量污染导致应用程序不可预测性，每个模块都可调用必将引来灾难，所以推荐使用私有的，封装的局部变量)。
+
+**通过全局变量来累加**
+
+```js
+//全局变量
+var age = 100;								
+function box() {
+	//模块级可以调用全局变量，进行累加
+	age ++;								
+}
+//执行函数，累加了
+box();	
+//输出全局变量								
+alert(age);								
+```
+
+**通过局部变量无法实现累加**
+
+```js
+function box() {
+	var age = 100;
+	//累加
+	age ++;								
+	return age;
+}
+
+//101
+alert(box());
+//101，无法实现，因为又被初始化了								
+alert(box());								
+```
+
+**通过闭包可以实现局部变量的累加**
+
+```js
+function box() {
+	var age = 100;
+	return function () {
+		age ++;
+		return age;
+	}
+}
+//获得函数
+var b = box();	
+//调用匿名函数							
+alert(b());	
+//第二次调用匿名函数，实现累加								
+alert(b());									
+```
+
+PS：由于闭包里作用域返回的局部变量资源不会被立刻销毁回收，所以可能会占用更多的内存。过度使用闭包会导致性能下降，建议在非常有必要的时候才使用闭包。
+
+作用域链的机制导致一个问题，在循环中里的匿名函数取得的任何变量都是最后一个值。
+
+**循环里包含匿名函数**
+
+```js
+function box() {
+	var arr = [];
+
+	for (var i = 0; i < 5; i++) {
+		arr[i] = function () {
+			return i;
+		};
+	}
+	return arr;
+}
+
+//得到函数数组
+var b = box();	
+//得到函数集合长度							
+alert(b.length);								
+for (var i = 0; i < b.length; i++) {
+	//输出每个函数的值，都是最后一个值
+	alert(b[i]());							
+}
+```
+
+上面的例子输出的结果都是5，也就是循环后得到的最大的i值。因为b[i]调用的是匿名函数，匿名函数并没有自我执行，等到调用的时候，box()已执行完毕，i早已变成5，所以最终的结果就是5个5。
+
+**循环里包含匿名函数-改1，自我执行匿名函数**
+
+```js
+function box() {
+	var arr = [];
+
+	for (var i = 0; i < 5; i++) {
+		//自我执行
+		arr[i] = (function (num) {			
+			return num;
+		//并且传参
+		})(i);							
+	}
+	return arr;
+}
+
+var b = box();					
+for (var i = 0; i < b.length; i++) {
+	//这里返回的是数组，直接打印即可
+	alert(b[i]);							
+}
+```
+
+改1中，我们让匿名函数进行自我执行，导致最终返回给a[i]的是数组而不是函数了。最终导致b[0]-b[4]中保留了0,1,2,3,4的值。
+
+**循环里包含匿名函数-改2，匿名函数下再做个匿名函数**
+
+```js
+function box() {
+	var arr = [];
+
+	for (var i = 0; i < 5; i++) {
+		arr[i] = (function (num) {
+			//直接返回值，改2变成返回函数
+			return function () {
+				//原理和改1一样
+				return num;				
+			}
+		})(i);
+	}
+	return arr;
+}
+
+var b = box();					
+for (var i = 0; i < b.length; i++) {
+	//这里通过b[i]()函数调用即可
+	alert(b[i]());							
+}
+```
+
+改1和改2中，我们通过匿名函数自我执行，立即把结果赋值给a[i]。每一个i，是调用方通过按值传递的，所以最终返回的都是指定的递增的i。而不是box()函数里的i。
+
+### 关于this对象
+
+```js
+var user = 'The Window';
+
+var obj = {
+	user : 'The Object',
+	getUserFunction : function () {
+		//闭包不属于obj，里面的this指向window
+		return function () {					
+			return this.user;
+		};
+	}
+};
+
+//The window
+alert(obj.getUserFunction()());				
+```
+
+**可以强制指向某个对象**
+
+```js
+//The Object
+alert(obj.getUserFunction().call(obj));			
+```
+
+**也可以从上一个作用域中得到对象**
+
+```js
+getUserFunction : function () {
+	//从对象的方法里得对象
+	var that = this;							
+	return function () {
+		return that.user;
+	};
+}
+```
+
+### 内存泄漏
+
+由于IE的JScript对象和DOM对象使用不同的垃圾收集方式，因此闭包在IE中会导致一些问题。就是内存泄漏的问题，也就是无法销毁驻留在内存中的元素。以下代码有两个知识点还没有学习到，一个是DOM，一个是事件。
+
+```js
+function box() {
+		//oDiv用完之后一直驻留在内存
+	var oDiv = document.getElementById('oDiv');
+	oDiv.onclick = function () {
+		//这里用oDiv导致内存泄漏
+		alert(oDiv.innerHTML);					
+	};
+}
+box();
+```
+
+**那么在最后应该将oDiv解除引用来避免内存泄漏。**
+
+```js
+function box() {
+	var oDiv = document.getElementById('oDiv');	
+var text = oDiv.innerHTML;
+	oDiv.onclick = function () {
+		alert(text);					
+	};
+	//解除引用
+oDiv = null;								
+}
+```
+
+PS：如果并没有使用解除引用，那么需要等到浏览器关闭才得以释放。
+
+### 模仿块级作用域
+
+**JavaScript没有块级作用域的概念。**
+
+```js
+function box(count) {
+	for (var i=0; i<count; i++) {}
+	//i不会因为离开了for块就失效
+	alert(i);								
+}
+box(2);
+
+function box(count) {
+	for (var i=0; i<count; i++) {}
+	//就算重新声明，也不会前面的值
+	var i;								
+	alert(i);
+}
+box(2);
+```
+
+以上两个例子，说明JavaScript没有块级语句的作用域，if () {} for () {}等没有作用域，如果有，出了这个范围i就应该被销毁了。就算重新声明同一个变量也不会改变它的值。
+
+JavaScript不会提醒你是否多次声明了同一个变量；遇到这种情况，它只会对后续的声明视而不见(如果初始化了，当然还会执行的)。使用模仿块级作用域可避免这个问题。
+
+**模仿块级作用域(私有作用域)**
+
+```js
+(function () {
+	//这里是块级作用域
+})();
+```
+
+**使用块级作用域(私有作用域)改写**
+
+```js
+function box(count) {
+	(function () {
+		for (var i = 0; i<count; i++) {}
+	})();
+	//报错，无法访问
+	alert(i);								
+}
+box(2);
+```
+
+使用了块级作用域(私有作用域)后，匿名函数中定义的任何变量，都会在执行结束时被销毁。这种技术经常在全局作用域中被用在函数外部，从而限制向全局作用域中添加过多的变量和函数。一般来说，我们都应该尽可能少向全局作用域中添加变量和函数。在大型项目中，多人开发的时候，过多的全局变量和函数很容易导致命名冲突，引起灾难性的后果。如果采用块级作用域(私有作用域)，每个开发者既可以使用自己的变量，又不必担心搞乱全局作用域。
+
+```js
+(function () {
+	var box = [1,2,3,4];
+	//box出来就不认识了
+	alert(box);							
+})();
+```
+
+在全局作用域中使用块级作用域可以减少闭包占用的内存问题，因为没有指向匿名函数的引用。只要函数执行完毕，就可以立即销毁其作用域链了。
+
+### 私有变量
+
+avaScript没有私有属性的概念；所有的对象属性都是公有的。不过，却有一个私有变量的概念。任何在函数中定义的变量，都可以认为是私有变量，因为不能在函数的外部访问这些变量。
+
+```js
+function box() {
+	//私有变量，外部无法访问
+	var age = 100;							
+}
+```
+
+而通过函数内部创建一个闭包，那么闭包通过自己的作用域链也可以访问这些变量。而利用这一点，可以创建用于访问私有变量的公有方法。
+
+```js
+function Box() {
+	//私有变量
+	var age = 100;	
+	//私有函数
+	function run() {						
+		return '运行中...';
+	}
+	//对外公共的特权方法
+	this.get = function () {					
+		return age + run();
+	};
+}
+
+var box = new Box();
+alert(box.get());
+```
+
+**可以通过构造方法传参来访问私有变量。**
+
+```js
+function Person(value) {
+	//这句其实可以省略
+	var user = value;						
+	this.getUser = function () {
+		return user;
+	};
+	this.setUser = function (value) {
+		user = value;
+	};
+}
+```
+
+但是对象的方法，在多次调用的时候，会多次创建。可以使用静态私有变量来避免这个问题。
+
+### 静态私有变量
+
+通过块级作用域(私有作用域)中定义私有变量或函数，同样可以创建对外公共的特权方法。
+
+```js
+(function () {
+	var age = 100;
+	function run() {
+		return '运行中...';
+	}
+	//构造方法
+	Box = function () {};	
+	//原型方法
+	Box.prototype.go = function () {			
+		return age + run();
+	};
+})();
+
+
+var box = new Box();
+alert(box.go());
+```
+
+上面的对象声明，采用的是Box = function () {} 而不是function Box() {} 因为如果用后面这种，就变成私有函数了，无法在全局访问到了，所以使用了前面这种。
+
+```js
+(function () {
+	var user = '';
+	Person = function (value) {				
+		user = value;
+	};
+	Person.prototype.getUser = function () {
+		return user;
+	};
+	Person.prototype.setUser = function (value) {
+		user = value;
+	}
+})();
+```
+
+使用了prototype导致方法共享了，而user也就变成静态属性了。(所谓静态属性，即共享于不同对象中的属性)。
+
+### 模块模式
+
+之前采用的都是构造函数的方式来创建私有变量和特权方法。那么对象字面量方式就采用模块模式来创建。
+
+```js
+//字面量对象，也是单例对象
+var box = {		
+	//这是公有属性，将要改成私有						
+	age : 100,
+	//这时公有函数，将要改成私有
+	run : function () {						
+		return '运行中...';
+	};
+};
+```
+
+**私有化变量和函数：**
+
+```js
+var box = function () {
+	var age = 100;
+	function run() {
+		return '运行中...';
+}
+	//直接返回对象
+	return {								
+		go : function () {
+			return age + run();
+		}
+};
+}();
+```
+
+**上面的直接返回对象的例子，也可以这么写：**
+
+```js
+var box = function () {
+	var age = 100;
+	function run() {
+		return '运行中...';
+	}
+	//创建字面量对象
+	var obj =  {										
+		go : function () {
+			return age + run();
+		}
+	};
+	//返回这个对象
+	return obj;							
+}();
+```
+
+字面量的对象声明，其实在设计模式中可以看作是一种单例模式，所谓单例模式，就是永远保持对象的一个实例。
+
+**增强的模块模式，这种模式适合返回自定义对象，也就是构造函数。**
+
+```js
+function Desk() {};
+var box = function () {
+	var age = 100;
+	function run() {
+		return '运行中...';
+	}
+	//可以实例化特定的对象
+	var desk = new Desk();					
+	desk.go = function () {
+		return age + run();
+	};
+	return desk;
+}();
+alert(box.go());
+```
+
+## BOM
+
+**window对象**
+
+BOM的核心对象是window，它表示浏览器的一个实例。window对象处于JavaScript结构的最顶层，对于每个打开的窗口，系统都会自动为其定义 window 对象。
+
+<img src="http://ww1.sinaimg.cn/mw690/b3165907gw1f45o7xhpbej20dq05jt8u.jpg" width="70%"/>
+
+### 对象的属性和方法 
+
+window对象有一系列的属性，这些属性本身也是对象。
+
+**window对象的属性**
+
+属性 					|		含义 
+closed					|		当窗口关闭时为真 
+defaultStatus			|		窗口底部状态栏显示的默认状态消息 
+document				|		窗口中当前显示的文档对象 
+frames					|		窗口中的框架对象数组 
+history					|		保存有窗口最近加载的URL 
+length					|		窗口中的框架数 
+location				|		当前窗口的URL 
+name					|		窗口名 
+offscreenBuffering		|		用于绘制新窗口内容并在完成后复制已存在的内容，控制屏幕更新 
+opener					|		打开当前窗口的窗口 
+parent					|		指向包含另一个窗口的窗口（由框架使用） 
+screen					|		显示屏幕相关信息，如高度、宽度（以像素为单位） 
+self					|		指示当前窗口。 
+status					|		描述由用户交互导致的状态栏的临时消息 
+top						|		包含特定窗口的最顶层窗口（由框架使用） 
+window					|		指示当前窗口，与self等效 
+
+**window对象的方法**
+
+方法												|	功能
+alert(text)											|	创建一个警告对话框，显示一条信息
+blur()												|	将焦点从窗口移除
+clearInterval(interval)								|	清除之前设置的定时器间隔
+clearTimeOut(timer)									|	清除之前设置的超时
+close()												|	关闭窗口
+confirm()											|	创建一个需要用户确认的对话框
+focus()												|	将焦点移至窗口
+open(url,name,[options])							|	打开一个新窗口并返回新window对象
+prompt(text,defaultInput)							|	创建一个对话框要求用户输入信息
+scroll(x,y)											|	在窗口中滚动到一个像素点的位置
+setInterval(expression,milliseconds)				|	经过指定时间间隔计算一个表达式
+setInterval(function,millisenconds,[arguments])		|	经过指定时间间隔后调用一个函数
+setTimeout(expression,milliseconds)					|	在定时器超过后计算一个表达式
+setTimeout(expression,milliseconds,[arguments])		|	在定时器超过时后计算一个函数
+print()												|	调出打印对话框
+find()												|	调出查找对话框
+
+window下的属性和方法，可以使用window.属性、window.方法()或者直接属性、方法()的方式调用。例如：window.alert()和alert()是一个意思。
+
+###  系统对话框
+
+浏览器通过alert()、confirm()和prompt()方法可以调用系统对话框向用户显示信息。系统对话框与浏览器中显示的网页没有关系，也不包含HTML。
+
+**弹出警告**
+
+```js
+//直接弹出警告
+alert('Lee');								
+```
+
+**确定和取消**
+
+```js
+//这里按哪个都无效	
+confirm('请确定或者取消');
+//confirm本身有返回值						
+if (confirm('请确定或者取消')) {
+	//按确定返回true
+	alert('您按了确定！');					
+} else {
+	//按取消返回false
+	alert('您按了取消！');					
+}
+```
+
+**输入提示框**
+
+```js
+//两个参数，一个提示，一个值
+var num = prompt('请输入一个数字', 0);	
+//返回值可以得到	
+alert(num);								
+```
+
+**调出打印及查找对话框**
+
+```js
+//打印
+print();
+//查找									
+find();									
+
+//浏览器底部状态栏初始默认值
+defaultStatus = '状态栏默认文本';	
+//浏览器底部状态栏设置值			
+status='状态栏文本';						
+```
+
+### 新建窗口
+
+使用window.open()方法可以导航到一个特定的URL，也可以打开一个新的浏览器窗口。它可以接受四个参数：1.要加载的URL；2.窗口的名称或窗口目标；3.一个特性字符串；4.一个表示新页面是否取代浏览器记录中当前加载页面的布尔值。
+
+```js
+//新建页面并打开百度
+open('http://www.baidu.com');	
+//新建页面并命名窗口并打开百度			
+open('http://www.baidu.com','baidu');
+//在本页窗口打开百度,_blank是新建			
+open('http://www.baidu.com','_parent');			
+```
+
+PS：不命名会每次打开新窗口，命名的第一次打开新窗口，之后在这个窗口中加载。窗口目标是提供页面的打开的方式，比如本页面，还是新建。
+
+**第三字符串参数**
+
+设置		|		值			|		说明
+width		|		数值		|		新窗口的宽度。不能小于100
+height		|		数值		|		新窗口的高度。不能小于100
+top			|		数值		|		新窗口的Y坐标。不能是负值
+left		|		数值		|		新窗口的X坐标。不能是负值
+location	|		yes或no		|		是否在浏览器窗口中显示地址栏。不同浏览器默认值不同
+menubar		|		yes或no		|		是否在浏览器窗口显示菜单栏。默认为no
+resizable	|		yes或no		|		是否可以通过拖动浏览器窗口的边框改变大小。默认为no
+scrollbars	|		yes或no		|		如果内容在页面中显示不下，是否允许滚动。默认为no
+status		|		yes或no		|		是否在浏览器窗口中显示状态栏。默认为no
+toolbar		|		yes或no		|		是否在浏览器窗口中显示工具栏。默认为no
+fullscreen	|		yes或no		|		浏览器窗口是否最大化，仅限IE
+
+**第三参数字符串**
+
+```js
+open('http://www.baidu.com','baidu','width=400,height=400,top=200,left=200,toolbar=yes');
+```
+
+**open本身返回window对象**
+
+```js
+var box = open();
+//可以指定弹出的窗口执行alert();
+box.alert('');								
+```
+
+**子窗口操作父窗口**
+
+```js
+document.onclick = function () {
+	opener.document.write('子窗口让我输出的！');
+}
+```
+
+### 3.窗口的位置和大小
+
+用来确定和修改window对象位置的属性和方法有很多。IE、Safari、Opera和Chrome都提供了screenLeft和screenTop属性，分别用于表示窗口相对于屏幕左边和上边的位置。Firefox则在screenX和screenY属性中提供相同的窗口位置信息，Safari和Chrome也同时支持这两个属性。
+
+**确定窗口的位置,IE支持**
+
+```js
+//IE支持
+alert(screenLeft);		
+//IE显示number，不支持的显示undefined					
+alert(typeof screenLeft);						
+```
+
+**确定窗口的位置,Firefox支持**
+
+```js
+//Firefox支持
+alert(screenX);		
+//Firefox显示number,不支持的同上						
+alert(typeof screenX);						
+```
+
+PS：screenX属性IE浏览器不认识，直接alert(screenX)，screenX会当作一个为声明的变量，导致不执行。那么必须将它将至为window属性才能显示为初始化变量应有的值，所以应该写成：alert(window.screenX)。
+
+**跨浏览器的方法**
+
+```js
+var leftX = (typeof screenLeft == 'number') ? screenLeft : screenX;
+var topY = (typeof screenTop == 'number') ? screenTop : screenY;
+```
+
+窗口页面大小，Firefox、Safari、Opera和Chrome均为此提供了4个属性：innerWidth和innerHeight，返回浏览器窗口本身的尺寸；outerWidth和outerHeight，返回浏览器窗口本身及边框的尺寸。
+
+```js
+//页面长度
+alert(innerWidth);		
+//页面高度					
+alert(innerHeight);	
+//页面长度+边框						
+alert(outerWidth);	
+//页面高度+边框						
+alert(outerHeight);							
+```
+
+PS：在Chrome中，innerWidth=outerWidth、innerHeight=outerHeight；
+
+PS：IE没有提供当前浏览器窗口尺寸的属性；不过，在后面的DOM课程中有提供相关的方法。
+
+在IE以及Firefox、Safari、Opera和Chrome中，document.documentElement.clientWidth和document.documentElement.clientHeight中保存了页面窗口的信息。
+
+PS：在IE6中，这些属性必须在标准模式下才有效；如果是怪异模式，就必须通过document.body.clientWidth和document.body.clientHeight取得相同的信息。
+
+**如果是Firefox浏览器，直接使用innerWidth和innerHeight**
+
+```js
+//这里要加window，因为IE会无效
+var width = window.innerWidth;				
+var height = window.innerHeight;
+
+if (typeof width != 'number') {	
+	//如果是IE，就使用document
+	if (document.compatMode == 'CSS1Compat') {
+		width = document.documentElement.clientWidth;
+		height = document.documentElement.clientHeight;
+	} else {
+		//非标准模式使用body
+		width = document.body.clientWidth;	
+		height = document.body.clientHeight;
+	}
+}
+```
+
+PS：以上方法可以通过不同浏览器取得各自的浏览器窗口页面可视部分的大小。document.compatMode可以确定页面是否处于标准模式，如果返回CSS1Compat即标准模式。
+
+**调整浏览器位置**
+
+```js
+//IE有效，移动到0,0坐标
+moveTo(0,0);
+//IE有效，向下和右分别移动10像素								
+moveBy(10,10);							
+```
+
+**调整浏览器大小**
+
+```js
+//IE有效，调正大小
+resizeTo(200,200);	
+//IE有效，扩展收缩大小						
+resizeBy(200,200);							
+```
+
+PS：由于此类方法被浏览器禁用较多，用处不大。
+
+### 间歇调用和超时调用
+
+JavaScript是单线程语言，但它允许通过设置超时值和间歇时间值来调度代码在特定的时刻执行。前者在指定的时间过后执行代码，而后者则是每隔指定的时间就执行一次代码。
+
+超时调用需要使用window对象的setTimeout()方法，它接受两个参数：要执行的代码和毫秒数的超时时间。
+
+```js
+//不建议直接使用字符串
+setTimeout("alert('Lee')", 1000);				
+
+function box() {
+	alert('Lee');
+}
+//直接传入函数名即可
+setTimeout(box, 1000);						
+
+//推荐做法
+setTimeout(function () {						
+	alert('Lee');
+}, 1000);
+```
+
+PS：直接使用函数传入的方法，扩展性好，性能更佳。
+
+调用setTimeout()之后，该方法会返回一个数值ID，表示超时调用。这个超时调用的ID是计划执行代码的唯一标识符，可以通过它来取消超时调用。
+
+要取消尚未执行的超时调用计划，可以调用clearTimeout()方法并将相应的超时调用ID作为参数传递给它。
+
+```js
+var box = setTimeout(function () {
+	//把超时调用的ID复制给box
+	alert('Lee');
+}, 1000);
+
+//把ID传入，取消超时调用
+clearTimeout(box);							
+```
+
+间歇调用与超时调用类似，只不过它会按照指定的时间间隔重复执行代码，直至间歇调用被取消或者页面被卸载。设置间歇调用的方法是setInterval()，它接受的参数与setTimeout()相同：要执行的代码和每次执行之前需要等待的毫秒数。
+
+```js
+//重复不停执行
+setInterval(function () {						
+	alert('Lee');
+}, 1000);
+```
+
+取消间歇调用方法和取消超时调用类似，使用clearInterval()方法。但取消间歇调用的重要性要远远高于取消超时调用，因为在不加干涉的情况下，间歇调用将会一直执行到页面关闭。
+
+```js
+//获取间歇调用的ID
+var box = setInterval(function () {				
+	alert('Lee');
+}, 1000);
+
+//取消间歇调用
+clearInterval(box);							
+```
+
+但上面的代码是没有意义的，我们需要一个能设置5秒的定时器，需要如下代码：
+
+```js
+//设置起始秒
+var num = 0;	
+//设置最终秒							
+var max = 5;								
+
+//间歇调用
+setInterval(function () {	
+	//递增num					
+	num++;
+	//如果得到5秒	
+	if (num == max) {
+		//取消间歇调用，this表示方法本身
+		clearInterval(this);					
+		alert('5秒后弹窗！');			
+	}	
+	//1秒
+}, 1000);									
+```
+
+一般认为，使用超时调用来模拟间歇调用是一种最佳模式。在开发环境下，很少使用真正的间歇调用，因为需要根据情况来取消ID，并且可能造成同步的一些问题，我们建议不使用间歇调用，而去使用超时调用。
+
+```js
+var num = 0;
+var max = 5;
+function box() {
+	num++;
+	if (num == max) {
+		alert('5秒后结束！');
+	} else {
+		setTimeout(box, 1000);
+	}
+}
+//执行定时器
+setTimeout(box, 1000);						
+```
+
+PS：在使用超时调用时，没必要跟踪超时调用ID，因为每次执行代码之后，如果不再设置另一次超时调用，调用就会自行停止。
+
+### location对象
+
+location是BOM对象之一，它提供了与当前窗口中加载的文档有关的信息，还提供了一些导航功能。事实上，location对象是window对象的属性，也是document对象的属性；所以window.location和document.location等效。
+
+```js
+//获取当前的URL
+alert(location);								
+```
+
+**location对象的属性**
+
+属性			|	描述的URL内容
+hash			|	如果该部分存在，表示锚点部分
+host			|	主机名：端口号
+hostname		|	主机名
+href			|	整个URL
+pathname		|	路径名
+port			|	端口号
+protocol		|	协议部分
+search			|	查询字符串
+
+**location对象的方法**
+
+方法			|		功能
+assign()		|		跳转到指定页面，与href等效
+reload()		|		重载当前URL
+repalce()		|		用新的URL替换当前页面
+
+```js
+//设置#后的字符串，并跳转
+location.hash = '#1';
+//获取#后的字符串						
+alert(location.hash);						
+
+//设置端口号，并跳转
+location.port = 8888;
+//获取当前端口号，						
+alert(location.port);							
+
+//设置主机名，并跳转
+location.hostname = 'Lee';
+//获取当前主机名，					
+alert(location.hostname);					
+
+//设置当前路径，并跳转
+location.pathname = 'Lee';
+//获取当前路径					
+alert(location.pathname);					
+
+//设置协议，没有跳转
+location.protocal = 'ftp:';	
+//获取当前协议					
+alert(location.protocol);						
+
+//设置?后的字符串，并跳转
+location.search = '?id=5';	
+//获取?后的字符串				
+alert(location.search);						
+
+//设置跳转的URL，并跳转
+location.href = 'http://www.baidu.com';		
+//获取当前的URL	
+alert(location.href);							
+```
+
+在Web开发中，我们经常需要获取诸如?id=5&search=ok这种类型的URL的键值对，那么通过location，我们可以写一个函数，来一一获取。
+
+```js
+function getArgs() {
+//创建一个存放键值对的数组
+	var args = [];				
+//去除?号			
+	var qs = location.search.length > 0 ? location.search.substring(1) : '';
+//按&字符串拆分数组
+	var items = qs.split('&');
+	var item = null, name = null, value = null;
+//遍历
+	for (var i = 0; i < items.length; i++) {
+		item = items[i].split('=');
+		name = item[0];
+		value = item[1];
+//把键值对存放到数组中去
+		args[name] = value;
+	}
+	return args;
+}
+
+var args = getArgs();
+alert(args['id']);
+alert(args['search']);
+
+//跳转到指定的URL
+location.assign('http://www.baidu.com');		
+
+//最有效的重新加载，有可能从缓存加载
+location.reload();		
+//强制加载，从服务器源头重新加载					
+location.reload(true);						
+
+//可以避免产生跳转前的历史记录
+location.replace('http://www.baidu.com');		
+```
+
+### 三．history对象
+
+history对象是window对象的属性，它保存着用户上网的记录，从窗口被打开的那一刻算起。
+
+**history对象的属性**
+
+属性		|	描述URL中的哪部分
+length		|	history对象中的记录数
+
+**history对象的方法**
+
+方法			|	功能
+back()			|	前往浏览器历史条目前一个URL，类似后退
+forward()		|	前往浏览器历史条目下一个URL，类似前进
+go(num)			|	浏览器在history对象中向前或向后
+
+```js
+//跳转到前一个URL
+function back() {							
+	history.back();	
+}
+
+//跳转到下一个URL
+function forward() {						
+	history.forward();
+}
+
+//跳转指定历史记录的URL
+function go(num) {							
+	history.go(num);
+}
+```
+
+PS：可以通过判断history.length == 0，得到是否有历史记录。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
