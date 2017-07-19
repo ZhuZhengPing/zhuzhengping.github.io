@@ -294,7 +294,125 @@ static void ReflectAttributesUsingLateBinding()
 }
 ```
 
+#### 检测定制特性时不创建从 Attribute 派生的对象
+
+```c#
+namespace ConsoleApplication1
+{
+    [assembly: CLSCompliant(true)]
+    [Serializable]
+    [DefaultMemberAttribute("Main")]
+    [DebuggerDisplayAttribute("Richter", Name = "Jeff", Target = typeof(Program))]
+    class Program
+    {
+
+        [Conditional("Debug")]
+        [Conditional("Release")]
+        public void DoSomething() { }
+
+        public Program() { }
+
+        [CLSCompliant(true)]
+        [STAThread]
+        public static void Main(string[] args)
+        {
+            // 显示应用于这个类型的特性
+            ShowAttributes(typeof(Program));
+
+            var members = from m in typeof(Program).GetTypeInfo().DeclaredMembers.OfType<MethodBase>()
+                          where m.IsPublic
+                          select m;
+
+            foreach (MethodInfo member in members)
+            {
+                ShowAttributes(member);
+            }
+        }
+
+        public static void ShowAttributes(MemberInfo attributeTarget)
+        {
+            IList<CustomAttributeData> attributes = CustomAttributeData.GetCustomAttributes(attributeTarget);
+            Console.WriteLine("Attributes applied to {0}: {1}",attributeTarget.Name,(attributes.Count==0?"None":string.Empty));
+
+            foreach (CustomAttributeData attribute in attributes)
+            {
+                Type t = attribute.Constructor.DeclaringType;
+                Console.WriteLine(" {0}",t.ToString());
+                Console.WriteLine(" Contructor called={0}",attribute.Constructor);
+                IList<CustomAttributeTypedArgument> posArgs = attribute.ConstructorArguments;
+                Console.WriteLine(" Positional arguments passed to constructor:"+((posArgs.Count==0)?"None":string.Empty));
+                foreach (CustomAttributeTypedArgument pa in posArgs)
+                {
+                    Console.WriteLine("  Type={0}, Value={1}",pa.ArgumentType,pa.Value);
+                }
+
+                IList<CustomAttributeNamedArgument> namedArgs = attribute.NamedArguments;
+                Console.WriteLine(" Named arguments set after construction:" + ((namedArgs.Count==0)?"None":string.Empty));
+                foreach (CustomAttributeNamedArgument na in namedArgs)
+                {
+                    Console.WriteLine("   Name={0},Type={1},Value={2}",na.MemberInfo.Name,na.TypedValue.ArgumentType,na.TypedValue.Value);
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine();
+        }
+    }
+}
+```
+
+输出如下
+
+```
+Attributes applied to Program:
+ System.SerializableAttribute
+ Contructor called=Void .ctor()
+ Positional arguments passed to constructor:None
+ Named arguments set after construction:None
+
+ System.Reflection.DefaultMemberAttribute
+ Contructor called=Void .ctor(System.String)
+ Positional arguments passed to constructor:
+  Type=System.String, Value=Main
+ Named arguments set after construction:None
+
+ System.Diagnostics.DebuggerDisplayAttribute
+ Contructor called=Void .ctor(System.String)
+ Positional arguments passed to constructor:
+  Type=System.String, Value=Richter
+ Named arguments set after construction:
+   Name=Name,Type=System.String,Value=Jeff
+   Name=Target,Type=System.Type,Value=ConsoleApplication1.Program
 
 
+Attributes applied to DoSomething:
+ System.Diagnostics.ConditionalAttribute
+ Contructor called=Void .ctor(System.String)
+ Positional arguments passed to constructor:
+  Type=System.String, Value=Debug
+ Named arguments set after construction:None
 
+ System.Diagnostics.ConditionalAttribute
+ Contructor called=Void .ctor(System.String)
+ Positional arguments passed to constructor:
+  Type=System.String, Value=Release
+ Named arguments set after construction:None
+
+
+Attributes applied to Main:
+ System.STAThreadAttribute
+ Contructor called=Void .ctor()
+ Positional arguments passed to constructor:None
+ Named arguments set after construction:None
+
+ System.CLSCompliantAttribute
+ Contructor called=Void .ctor(Boolean)
+ Positional arguments passed to constructor:
+  Type=System.Boolean, Value=True
+ Named arguments set after construction:None
+
+
+Attributes applied to ShowAttributes: None
+
+
+```
 
