@@ -575,4 +575,109 @@ parent.ContinueWith(p => {
 parent.Start();
 ```
 
+### Parallel 的静态 For,ForEach 和 Invoke 方法
+
+用 Parallel 类的 For 方法，用多个线程池辅助完成工作：
+
+```c#
+ // 线程池的线程并行处理工作
+ Parallel.For(0,1000,i=>DoWork(i));
+```
+
+也可并行执行多个方法
+
+```c#
+ // 线程池的线程并行执行方法
+ Parallel.Invoke(
+	()=>Method1(),
+	()=>Method2(),
+	()=>Method3());
+```
+
+Parallel 的方法本身也有开销；委托对象必须分配，而针对每个工作项都要调用一次这些委托。如果有大量可由多个线程处理的工作项，那么也许能获得性能的提升。另外，如果每一项都涉及大量工作，那么通过委托来调用所产生的性能损失是可以忽略不计的。
+
+Parallel 的 For,ForEach 和 Invoke 方法都提供了接受一个 ParallelOptions 对象的重载版本。
+
+```c#
+public class ParallelOptions
+{
+	//     初始化 System.Threading.Tasks.ParallelOptions 类的新实例。
+	public ParallelOptions();
+
+	//     获取或设置与此 System.Threading.Tasks.ParallelOptions 实例关联的 System.Threading.CancellationToken。
+	//
+	// 返回结果: 
+	//     与此实例关联的标记。
+	public CancellationToken CancellationToken { get; set; }
+	
+	//     获取或设置此 ParallelOptions 实例所允许的最大并行度。
+	//
+	// 返回结果: 
+	//     一个表示最大并行度的整数。
+	//
+	// 异常: 
+	//   System.ArgumentOutOfRangeException:
+	//     当此 System.Threading.Tasks.ParallelOptions.MaxDegreeOfParallelism 设置为 0 或小于
+	//     -1 的某个值时引发的异常。
+	public int MaxDegreeOfParallelism { get; set; }
+	
+	//     获取或设置与此 System.Threading.Tasks.ParallelOptions 实例关联的 System.Threading.Tasks.TaskScheduler。
+	//     将此属性设置为 null，以指示应使用当前计划程序。
+	//
+	// 返回结果: 
+	//     与此实例关联的任务计划程序。
+	public TaskScheduler TaskScheduler { get; set; }
+}
+```
+
+以下代码演示如何利用这三个委托计算一个目录中的所有文件的字节长度
+
+```c#
+private static Int64 DirectoryBytes(string path, string searchPattern, SearchOption searchOption)
+{
+	var files = Directory.EnumerateFiles(path, searchPattern, searchOption);
+	Int64 masterTotal = 0;
+
+	ParallelLoopResult result = Parallel.ForEach<string, Int64>(
+			files,
+			() => { // localInit: 每个任务开始之前调用一次 
+				// 每个任务开始之前，总计值都初始化为0
+				return 0;  // 将 taskLocalTotal 初始值设为0
+			},(file,loopState,index,taskLocalTotal)=>{ // body:每个工作调用一次
+				// 获得这个文件的大小，把它添加到这个任务的累加值上
+				Int64 fileLength = 0;
+				FileStream fs = null;
+				try
+				{
+					fs = File.OpenRead(file);
+					fileLength = fs.Length;
+				}
+				catch (IOException)
+				{
+				}
+				finally
+				{
+					if (fs != null) fs.Dispose();
+				}
+				return taskLocalTotal + fileLength;
+			},taskLocalTotal=>{ // localFinally:每个任务完成时调用一次
+				// 将这个任务的总计值(taskLocalTotal)加到总的总计值上
+				Interlocked.Add(ref masterTotal, taskLocalTotal);
+			}
+		);
+	return masterTotal;
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
