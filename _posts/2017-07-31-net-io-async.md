@@ -157,7 +157,8 @@ private  struct  StateMachine  :  IAsyncstateMachine {
 						//调用MethodlAsync并获得它的awaiter
 						awaiterTypel = MethodlAsync().GetAwaiter();
 						if (!awaiterTypel.IsCorr.pleted) {
-							m_state = 0; II MethodlAsync要以异步方式完成 m_awaiterTypel = awaiterTypel; //保存awaiter以便将來返回
+							m_state = 0; // MethodlAsync要以异步方式完成 
+							m_awaiterTypel = awaiterTypel; //保存awaiter以便将來返回
 							
 							//告诉awaiter在.操作完成时调用MoveNext
 							m_builder.AwaitUnsafeOnCompleted(ref awaiterTypel, ref this); //上述代码调用awaiterTypel的OnCompleted，它会在被等待的仟务上 
