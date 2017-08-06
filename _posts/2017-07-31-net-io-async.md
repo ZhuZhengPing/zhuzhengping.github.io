@@ -127,7 +127,7 @@ private  struct  StateMachine  :  IAsyncstateMachine {
 	public Int32 m_state;
 	
 	//实参和局部变量现在成了字段 
-	public Int32 m一argument, m_local, m_x;
+	public Int32 m_argument, m_local, m_x;
 	public Typel m_resultTypel;
 	public Type2 m_resultType2;
 	
