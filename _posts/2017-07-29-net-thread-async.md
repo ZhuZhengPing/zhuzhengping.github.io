@@ -669,11 +669,37 @@ private static Int64 DirectoryBytes(string path, string searchPattern, SearchOpt
 }
 ```
 
+### 并行语言集成查询(PLINQ)
 
+静态 System.Linq.ParallelEnumeralbe 类实现了 PLINQ 的所有功能，要让自己的 LINQ to Ojbect 查询调用这些方法的并行版本，必须将自己的顺序查询转换成并行查询，这是用 ParallelEnumeralbe 的 AsParallel 扩展方法来实现的
 
+```c#
+ public static ParallelQuery<TSource> AsParallel<TSource>(this IEnumerable<TSource> source)
+ public static ParallelQuery AsParallel(this IEnumerable source)
+```
 
+下面是将顺序查询换成并行查询的例子
 
+```c#
+private static void ObsoleteMethods(Assembly assembly)
+{
+	var query = from type in assembly.GetExportedTypes().AsParallel()
+				from method in type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+				let obsoleteAttrType = typeof(ObsoleteAttribute)
+				where Attribute.IsDefined(method, obsoleteAttrType)
+				orderby type.FullName
+				let obsoleteAttrObj = (ObsoleteAttribute)Attribute.GetCustomAttribute(method, obsoleteAttrType)
+				select string.Format("Type={0}\nMethod={1}\nMessage={2}\n", type.FullName, method.ToString(), obsoleteAttrObj.Message);
 
+	// 显示结果
+	foreach (var result in query)
+	{
+		Console.WriteLine(result);
+	}
+}
+```		
+
+由于 PLINQ 用多个线程处理数据项，所以数据项被并发处理，结果被无序地返回。如果需要让 PLINQ 保持数据项的顺序，可调用 ParallelEnumeralbe 的 AsOrdered 方法。调用这个方法时，线程会组成处理数据项。然后，这些组被合并回去，同时保持顺序。
 
 
 
