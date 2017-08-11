@@ -103,7 +103,7 @@ private static async Task<string> MyMethodAsync(Int32 argument){
 ```c#
 // AsyncstateMach;Lne特性指出这.是一个异步方法(对使用反射的工具有用
 // 类型指出实现状态机的是哪个结构
-[DebuggerStepThrough,  AsyncStateMachine(typeof IStateMachi1le))]
+[DebuggerStepThrough,  AsyncStateMachine(typeof(StateMachine))]
 private static Task<String> MyMethodAsync(Int32 argument)  {
 	// 创建状态机实例并初始化
 	StateMachine stateMachine= new StateMachine(){
@@ -111,121 +111,134 @@ private static Task<String> MyMethodAsync(Int32 argument)  {
 		//状态机访问 builder来设置 Task完成/异常
 		m_builder= AsyncTaskMethodBuilder<String>.Create(),
 		m_state = -1,                 //初始化状.态机位置
-		m_argment = argurnent//将实参持贝到状态机字段
+		m_argument = argument//将实参持贝到状态机字段
 	};
 	
 	//  开始执行状态机
-	stateMachine.m_builder.Start(ref  stateMachine) ;
+	stateMachine.m_builder.Start(ref stateMachine) ;
 	return  stateMachine.m_builder.Task;  //返回状态机的Task
 }
 
 //这是状态机结构
-[CompilerGenerated,  StructLayout(LayoutKind.Auto)]
-private  struct  StateMachine  :  IAsyncstateMachine {
-	//代表状态机builder(Task)及其位置的字段
-	public AsyncTaskMethodBuilder<String> m_builder; 
-	public Int32 m_state;
-	
-	//实参和局部变量现在成了字段 
-	public Int32 m_argument, m_local, m_x;
-	public Typel m_resultTypel;
-	public Type2 m_resultType2;
-	
+[CompilerGenerated, StructLayout(LayoutKind.Auto)]
+private struct StateMachine : IAsyncStateMachine
+{
+    //代表状态机builder(Task)及其位置的字段
+    public AsyncTaskMethodBuilder<String> m_builder;
+    public Int32 m_state;
+
+    //实参和局部变量现在成了字段 
+    public Int32 m_argument, m_local, m_x;
+    public Typel m_resultTypel;
+    public Type2 m_resultType2;
+
     //每个awaiter类型一个字段。
     //任何时候这些字段只有一个是重要的，那个字段引用最近执行的、以异步方式完成的await 
-	private TaskAwaiter<Typel> m_awaiterTypel;
-	private TaskAwaiter<Type2> m_awaiterType2;
+    private TaskAwaiter<Typel> m_awaiterTypel;
+    private TaskAwaiter<Type2> m_awaiterType2;
 
-	//这是状态机方法本身
-	void IAsyncStateMachine.MoveNext() {
-		String result = null; // Task 的结果值
-		
-		//编译器插入try块来确保状态机的任务完成
-		try {
-			Boolean executeFinally = true; //先假设逻辑上离开try块
-			if (m_state == -1) {	      //如果第一次在状态机方法中，
-				m_local = m_argument;	     //原始方法就从头开始执行
-			}
-		
-			//原始代码中的try块
-			try {
-				TaskAwaiter<Typel> awaiterTypel;
-				TaskAwaiter<Type2> awaiterType2;
-				
-				switch (m_state) {
-					case -1: //幵始执行try块中的代码'
-						//调用MethodlAsync并获得它的awaiter
-						awaiterTypel = MethodlAsync().GetAwaiter();
-						if (!awaiterTypel.IsCorr.pleted) {
-							m_state = 0; // MethodlAsync要以异步方式完成 
-							m_awaiterTypel = awaiterTypel; //保存awaiter以便将來返回
-							
-							//告诉awaiter在.操作完成时调用MoveNext
-							m_builder.AwaitUnsafeOnCompleted(ref awaiterTypel, ref this); //上述代码调用awaiterTypel的OnCompleted，它会在被等待的仟务上 
-							// 调用 ContinueWith (t => MoveNext ()。.
-							//仟务完成后，ontinueWith任务调用MoveNext
-							
-							executeFinally = false; // 逻辑上不离开 try 块 
-							return; //线程返回至调用者
-						}
-						// MethodlAsync以同步方式完成了 
-						break;
-						
-					case 0: // MethodlAsync以异步方式完成了
-						awaiterTypel = m_awaiterTypel; // 恢复最新的 awaiter
-						break;
-						
-					case 1: // Method2Async以异步方式完成了
-						awaiterType2 = m_awaiterType2; // 恢复最新办勺 awaiter 
-						goto ForLoopEpilog;
-				}
-				
-				//在第一个await后，我们捕捉结果并扁动for循环
-				m_resultTypel = awaiterTypel.GetResult () ; // 获取 awaiter 的结果
-				ForLoopPrologue:
-					m_x = 0; // for循环初始化
-					goto ForLoopBody; // 跳到 for 循环主体
-				
-				ForLoopEpilog:
-					m_resultType2 = awaiterType2.GetResult(); 
-					m_x++;//每次循环迭代都递增x 
-					// 直通到for循环主体
-					
-				ForLoopBody:
-					if (m_x < 3) { // for 循环测试
-						//调用Method2Async并获取它的awaiter
-						awaiterType2 = Method2Async().GetAwaiter();
-						if (!awaiterType2.IsCompleted){
-							m_state = 1;	// Method2Async要以异步方式完成
-							m_awaiterType2 = awaiterType2; // 保存 awaiter 以便将来返回
-							
-							//告诉awaiter在操作完成时调用MoveNext
-							m_builder.AwaitUnsafeOnCompleted(ref awaiterType2, ref this); 
-							execute Finally = false; // 逻辑上不离开 try 块 
-							return; //线程返回至调用者
-						}
-							// Method2Async以同步方式完成了
-						goto ForLoopEpilog;//以同步方式完成就再次循环
-					}
-			}
-			catch (Exception) {
-				Console.WriteLine ("Catch"};
-			}
-			finally {
-				//只要线程物理上离幵try就会执行finally。
-				//我们希望在线程逻辑上离开try时才执行这些代码 
-				if (executeFinally) {
-					Console.WriteLine ("Finally");
-				}
-			}
-			result = "Done"; //这是最终从异步函数返回的东西
-		}
-		catch (Exception exception) {
-			//未处理的异常：通过设置异常来完成状态机的Task m_builder.SetException(exception); return;
-		}
-		//无异常：通过返回结果來完成状态机的Task 
-		m _builder.SetResult(result);
-	} 	
+    //这是状态机方法本身
+    void IAsyncStateMachine.MoveNext()
+    {
+        String result = null; // Task 的结果值
+
+        //编译器插入try块来确保状态机的任务完成
+        try
+        {
+            Boolean executeFinally = true; //先假设逻辑上离开try块
+            if (m_state == -1)
+            {	      //如果第一次在状态机方法中，
+                m_local = m_argument;	     //原始方法就从头开始执行
+            }
+
+            //原始代码中的try块
+            try
+            {
+                TaskAwaiter<Typel> awaiterTypel;
+                TaskAwaiter<Type2> awaiterType2;
+
+                switch (m_state)
+                {
+                    case -1: //幵始执行try块中的代码'
+                        //调用MethodlAsync并获得它的awaiter
+                        awaiterTypel = MethodlAsync().GetAwaiter();
+                        if (!awaiterTypel.IsCompleted)
+                        {
+                            m_state = 0; // MethodlAsync要以异步方式完成 
+                            m_awaiterTypel = awaiterTypel; //保存awaiter以便将來返回
+
+                            //告诉awaiter在.操作完成时调用MoveNext
+                            m_builder.AwaitUnsafeOnCompleted(ref awaiterTypel, ref this); //上述代码调用awaiterTypel的OnCompleted，它会在被等待的仟务上 
+                            // 调用 ContinueWith (t => MoveNext ()。.
+                            //仟务完成后，ontinueWith任务调用MoveNext
+
+                            executeFinally = false; // 逻辑上不离开 try 块 
+                            return; //线程返回至调用者
+                        }
+                        // MethodlAsync以同步方式完成了 
+                        break;
+
+                    case 0: // MethodlAsync以异步方式完成了
+                        awaiterTypel = m_awaiterTypel; // 恢复最新的 awaiter
+                        break;
+
+                    case 1: // Method2Async以异步方式完成了
+                        awaiterType2 = m_awaiterType2; // 恢复最新办勺 awaiter 
+                        goto ForLoopEpilog;
+                }
+
+                //在第一个await后，我们捕捉结果并扁动for循环
+                m_resultTypel = awaiterTypel.GetResult(); // 获取 awaiter 的结果
+            ForLoopPrologue:
+                m_x = 0; // for循环初始化
+                goto ForLoopBody; // 跳到 for 循环主体
+
+                ForLoopEpilog:
+                m_resultType2 = awaiterType2.GetResult();
+                m_x++;//每次循环迭代都递增x 
+            // 直通到for循环主体
+
+                ForLoopBody:
+                if (m_x < 3)
+                { // for 循环测试
+                    //调用Method2Async并获取它的awaiter
+                    awaiterType2 = Method2Async().GetAwaiter();
+                    if (!awaiterType2.IsCompleted)
+                    {
+                        m_state = 1;	// Method2Async要以异步方式完成
+                        m_awaiterType2 = awaiterType2; // 保存 awaiter 以便将来返回
+
+                        //告诉awaiter在操作完成时调用MoveNext
+                        m_builder.AwaitUnsafeOnCompleted(ref awaiterType2, ref this);
+                        executeFinally = false; // 逻辑上不离开 try 块 
+                        return; //线程返回至调用者
+                    }
+                    // Method2Async以同步方式完成了
+                    goto ForLoopEpilog;//以同步方式完成就再次循环
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Catch");
+            }
+            finally
+            {
+                //只要线程物理上离幵try就会执行finally。
+                //我们希望在线程逻辑上离开try时才执行这些代码 
+                if (executeFinally)
+                {
+                    Console.WriteLine("Finally");
+                }
+            }
+            result = "Done"; //这是最终从异步函数返回的东西
+        }
+        catch (Exception exception)
+        {
+            //未处理的异常：通过设置异常来完成状态机的Task m_builder.SetException(exception); return;
+        }
+        //无异常：通过返回结果來完成状态机的Task 
+        m_builder.SetResult(result);
+    }
 }
 ```
 							
@@ -234,61 +247,68 @@ private  struct  StateMachine  :  IAsyncstateMachine {
 状态机获得awaiter后，会查询其IsCompleted属性。如果操作己经以同步方式完成了，属性将返回true,而作为一项优化措施，状态机将继续执行并调用awaiter的GetResult方法。 该方法要么抛出异常(操作失败)，要么返回结果(操作成功)。状态机继续执行以处理结果。
 
  如果操作以异步方式完成，IsCompleted将返回false。状态机调用awaiter的OnCompleted
-方法并向它传递一个委托(引用状态机的MoveNext方法)。现在，状态机允许它的线程回到 原地以执行其他代码。将来某个时候，封装了底层任务的awaiter会在完成时调用委托以执 行MoveNext。可根据状态机中的字段知道如何到达代码中的正确位置，使方法能从它当初 离开时的位置继续。这时，代码调用awaiter的GetResull方法。执行将从这里继续，以便 对结果进行处理。
+方法并向它传递一个委托(引用状态机的MoveNext方法)。现在，状态机允许它的线程回到 原地以执行其他代码。将来某个时候，封装了底层任务的awaiter会在完成时调用委托以执 行MoveNext。可根据状态机中的字段知道如何到达代码中的正确位置，使方法能从它当初 离开时的位置继续。这时，代码调用awaiter的GetResult方法。执行将从这里继续，以便 对结果进行处理。
 这便是异步函数的工作原理.开发人员可用它轻松地写出不阻寒的代码.
 
 ### 异步函数扩展性
 
 在扩展性方面，能用Task对象包装一个将来完成的操作，就可以用await操作符来等待该 操作。
-用一个类型(Task)来表示各种异步操作对编码有利，因为可以实现组合操作(比如 Task的Whenll和WhenAny方法)和其他有用的操作。本章后面会演示如何用Task包装 一个CancellationToken,在等待异步操作的同时利用超时和取消功能。
+用一个类型(Task)来表示各种异步操作对编码有利，因为可以实现组合操作(比如 Task的WhenAll和WhenAny方法)和其他有用的操作。本章后面会演示如何用Task包装 一个CancellationToken,在等待异步操作的同时利用超时和取消功能。
 
 我想和你分享另外一个例子。下面是我的TaskLogger类，可用它显示尚未完成的异步操 作。这在调试时特别有用，尤其是当应用程序因为错误的请求或者未响应的服务器而挂起 的时候。
 
 ```c#
-public static class TaskLogger (
+public static class TaskLogger
+{
 	public enum TaskLogLevel { None, Pending }
 	public static TaskLogLevel LogLevel { get; set; }
-	
-	public sealed class TaskLogEntry {
+
+	public sealed class TaskLogEntry
+	{
 		public Task Task { get; internal set; }
 		public String Tag { get; internal set; }
-		public DateTime LogTime { get; internal set; } 
-		public String CallerMemberName { get; internal set; } 
+		public DateTime LogTime { get; internal set; }
+		public String CallerMemberName { get; internal set; }
 		public String CallerFilePath { get; internal set; }
 		public Int32 CallerLineNumber { get; internal set; }
-		public override string ToString(){
+		public override string ToString()
+		{
 			return String.Format("LogTime=10), Tag={1}f Member={2}, File={3}({4})",
 			LogTime, Tag ?? "(none)", CallerMemberName, CallerFilePath, CallerLineNumber);
 		}
 	}
 	private static readonly ConcurrentDictionary<Task, TaskLogEntry> s_log = new ConcurrentDictionary<Task, TaskLogEntry>();
-	public static IEnumerabie<TaskLogEntry> GetLogEntries() { 
+	public static IEnumerable<TaskLogEntry> GetLogEntries()
+	{
 		return s_log.Values;
 	}
 
-	public static Task<TResult> Log<TResuIt>(this Task<TResult> task, String tag = null, 
-	[CallerMemberName] String callerMemberMame = null,
-	[CallerFilePath] String CallerFilePath = null,
-	[CallerLineNumber] Int32 CallerLineNumber = -1){
+	public static Task<TResult> Log<TResult>(this Task<TResult> task, String tag = null,
+	[CallerMemberName] String callerMemberName = null,
+	[CallerFilePath] String callerFilePath = null,
+	[CallerLineNumber] Int32 callerLineNumber = -1)
+	{
 		return (Task<TResult>)
-			Log((Task)task, tag, cai1erMemberNamer CallerFilePath, CallerLineNumber);
+			Log((Task)task, tag, callerMemberName, callerFilePath, callerLineNumber);
 	}
-	
-	public static Task Log(this Task task, String tag = null, 
-		[CallerMemberName] String callerMemberName = null, 
-		[CallerFilePath] String CallerFilePath = null, 
-		[CallerLineNumber] Int32 CallerLineNumber = -1) {
-			if (LogLevel == TaskLogLevel.None) return task; 
-			var logEntry = new TaskLogEntry {
-				Task = task,
-				LogTime = DateTime.Now,
-				Tag = tag,
-				CallerMemberName = callerMemberName,
-				CallerFilePath = callerFilePath,
-				CallerLineNuinber = callerLineNumber
+
+	public static Task Log(this Task task, String tag = null,
+		[CallerMemberName] String callerMemberName = null,
+		[CallerFilePath] String callerFilePath = null,
+		[CallerLineNumber] Int32 callerLineNumber = -1)
+	{
+		if (LogLevel == TaskLogLevel.None) return task;
+		var logEntry = new TaskLogEntry
+		{
+			Task = task,
+			LogTime = DateTime.Now,
+			Tag = tag,
+			CallerMemberName = callerMemberName,
+			CallerFilePath = callerFilePath,
+			CallerLineNumber = callerLineNumber
 		};
 		s_log[task] = logEntry;
-		task.ContinueWith(t => { TaskLogEntry entry; s_log.TryRemove(t, out entry); }, 	TaskContinuationOptions.ExecuteSynchronously); 
+		task.ContinueWith(t => { TaskLogEntry entry; s_log.TryRemove(t, out entry); }, TaskContinuationOptions.ExecuteSynchronously);
 		return task;
 	}
 }
@@ -297,25 +317,31 @@ public static class TaskLogger (
 以下代码演示了如何使用该类。
 
 ```c#
-public static async Task Go() {
+public static async Task Go()
+{
 	#if DEBUG
-		//使用TaskLoggei:会影响内存和性能，所以只在调试生成中启用它 Tas kLogger.LogLevel = TaskLogger.TaskLogLevel.Pending; 
+	//使用TaskLoggei:会影响内存和性能，所以只在调试生成中启用它 
+	TaskLogger.LogLevel = TaskLogger.TaskLogLevel.Pending; 
 	#endif
+
 	//初始化为3个任务：为了测试TaslcLogger,我们显式控制其持续时间 
 	var tasks = new List<Task> {
 		Task.Delay(2000).Log("2s op"),
-		Task.Delay(5000).Log(M5s op"),
+		Task.Delay(5000).Log("M5s op"),
 		Task.Delay(6000).Log("6s op")
-	);
-	try {
-		//等待全部任务，但在3秒后取消；只有一个任务能按时完成 //注意：WithCancellation扩展方法将在本章稍后进行描述 
-		await Task.WhenAli(tasks).WithCancellation(new CancellationTokenSource(3000).Token);
-	)
-	catch (OperationCanceledException) { }
-		//查询logger哪些任务尚未完成，按照从等待时间最长到最短的顺序排序 
-		foreach (var op in TaskLogger.GetLogEntries().OrderBy(tie => tie.LogTime)) 
-			Console.WriteLine(op);
+	};
+
+	try
+	{
+		//等待全部任务，但在3秒后取消；只有一个任务能按时完成 
+		//注意：WithCancellation扩展方法将在本章稍后进行描述 
+		await Task.WhenAll(tasks).WithCancellation(new CancellationTokenSource(3000).Token);
 	}
+	catch (OperationCanceledException) { }
+	//查询logger哪些任务尚未完成，按照从等待时间最长到最短的顺序排序 
+	foreach (var op in TaskLogger.GetLogEntries().OrderBy(tie => tie.LogTime))
+		Console.WriteLine(op);
+}
 ```
 
 在我的机器上生成并运行上述代码得到以下结果。
