@@ -20,11 +20,17 @@ author: Zhengping Zhu
  
 #### 路径
 
-> 返回父文件夹时，路径加上`../`，例如`../elixir.html`
-> 进入子文件夹时，路径加上子文件夹名称,例如`lounge/elixir.html`
+>* 返回父文件夹时，路径加上`../`(从里面找出来)，例如`../elixir.html`
+>* 进入子文件夹时，路径加上子文件夹名称(从外面找进克),例如`lounge/elixir.html`
+ 
+ 
+
  
  
  
+ 
+
+### 
  
  
  
