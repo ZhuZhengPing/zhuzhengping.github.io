@@ -10,7 +10,7 @@ author: Zhengping Zhu
 * content
 {:toc}
 
-### a 标签[块元素/内联元素]
+### a 标签 <b style="font-weight: normal;font-size: 17px;">(块元素/内联元素)</b>
 
 `a标签`：超链接，`href`：指定链接的目标文件，`文字`：对于这个链接，浏览器会显示文本"文字"，单击这个文字时，用户将被带往"elixir.html"页面
 
@@ -30,7 +30,7 @@ author: Zhengping Zhu
  
  
 
-### h1,h2,h3,h4,h5,h6 标签[块元素]
+### h1,h2,h3,h4,h5,h6 标签<b style="font-weight: normal;font-size: 17px;">(块元素)</b>
  
 `h1-h6`:一级标题到六级标题
 
@@ -38,7 +38,7 @@ author: Zhengping Zhu
 <h1>一级标题</h1>
 ```
 
-### p 标签[块元素]
+### p 标签 <b style="font-weight: normal;font-size: 17px;">(块元素)</b>
 
 段落
 
@@ -46,11 +46,11 @@ author: Zhengping Zhu
 <p>段落</p>
 ```
 
-### img 标签[内联元素]
+### img 标签 <b style="font-weight: normal;font-size: 17px;">(内联元素)</b>
 
 `img` ：图像，`src`：
  
-### q 标签[内联元素]
+### q 标签 <b style="font-weight: normal;font-size: 17px;">(内联元素)</b>
 
 每个引用都要用到一个`<q>`开始标记和一个`</q>`结束标记包围。生成双引号`""`。很短的引用。不需要换行，是内联元素。
 
@@ -59,7 +59,7 @@ author: Zhengping Zhu
 <q>双引号</q>
 ```
 
-### blockquote 标签[块元素]
+### blockquote 标签 <b style="font-weight: normal;font-size: 17px;">(块元素)</b>
 
 不会生成双引号。很长的引用。换行，是块元素。
 
@@ -80,7 +80,7 @@ author: Zhengping Zhu
 <br>
 ```
 
-### ol 标签[块元素]
+### ol 标签 <b style="font-weight: normal;font-size: 17px;">(块元素)</b>
 
 有序列表
 
@@ -92,7 +92,7 @@ author: Zhengping Zhu
 </ol>
 ```
 
-### ul 标签[块元素]
+### ul 标签 <b style="font-weight: normal;font-size: 17px;">(块元素)</b>
 
 无序列表
 
@@ -104,7 +104,7 @@ author: Zhengping Zhu
 </ul>
 ```
 
-### em 标签 <b style="font-size:12px">内联元素</b>
+### em 标签 <b style="font-weight: normal;font-size: 17px;">(内联元素)</b>
 
 斜体强调
 
