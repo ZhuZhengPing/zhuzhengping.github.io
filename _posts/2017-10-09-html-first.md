@@ -131,7 +131,15 @@ author: Zhengping Zhu
 <!doctype html>
 ```
 
+### meta 标签
 
+`meta`：告诉浏览器关于页面的一些信息，只能加在`head`里面，`charset`：指定字符编码，`utf-8`：是unicode系列中的一个编码，这个系列还有很多编码，web页面中就是"utf-8"编码
+
+```html
+<head>
+	<meta charset="utf-8">
+</head>
+```
 
 
 
