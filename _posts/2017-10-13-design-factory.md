@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "简单工厂模式"
+title:  "工厂模式"
 date:   2017-10-13 16:32:18 +0800
 categories: design
 tags: design factory
