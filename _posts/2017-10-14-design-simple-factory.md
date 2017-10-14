@@ -203,7 +203,7 @@ public class FoodSimpleFactory
 
 简单工厂模式又叫静态方法模式（因为工厂类都定义了一个静态方法），由一个工厂类根据传入的参数决定创建出哪一种产品类的实例（通俗点表达：通过客户下的订单来负责烧那种菜）。简单工厂模式的UML图如下：
 
-<img src="http://wx3.sinaimg.cn/mw690/006dag38gy1fki1t1nzqhj30py09pglr.jpg" style="display:block;" />
+<img src="http://wx3.sinaimg.cn/mw690/006dag38gy1fki1t1nzqhj30py09pglr.jpg" style="display:block;width:100%;" />
 
 ### .NET中简单工厂模式的实现
 
