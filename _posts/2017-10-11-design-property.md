@@ -102,6 +102,20 @@ public class ConcretePrototype : MonkeyKingPrototype
 
 ### UML图
 
+<img src="" style="display:block;width:100%" />
+
+### 原型模式的优缺点
+
+
+
+
+
+
+
+
+
+
+
 
 
 

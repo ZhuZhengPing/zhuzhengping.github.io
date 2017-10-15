@@ -1,8 +1,17 @@
 
 <div id="uyan_frame"></div>
 <script type="text/javascript">
-	var script = document.createElement("script");
-    script.src = "http://v2.uyan.cc/code/uyan.js?uid=2146549";
-	document.head.appendChild(script);
+	var ready; // Where to store the function
+
+    ready = function() {
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = 'http://v2.uyan.cc/code/uyan.js?uid=2146549';
+      document.body.appendChild(script);
+    };
+
+	$(function(){
+		ready();
+	});
   </script>
 
