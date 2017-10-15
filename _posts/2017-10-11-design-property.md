@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "原型模式"
-date:   2017-10-12 16:32:18 +0800
+date:   2017-10-11 16:32:18 +0800
 categories: design
 tags: design factory
 author: Zhengping Zhu
