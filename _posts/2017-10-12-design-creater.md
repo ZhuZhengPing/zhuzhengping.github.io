@@ -185,7 +185,7 @@ namespace 设计模式之建造者模式
 
 上面代码中都有详细的注释代码，这里就不过多解释，大家可以参考代码和注释来与现实生活中的例子做对比，下图展示了上面代码的运行结果：
 
-<img src="" style="display:block;width:100%;" />
+<img src="http://wx4.sinaimg.cn/mw690/006dag38gy1fkio3drff2j30iv04dmx5.jpg" style="display:block;width:100%;" />
 
 ### UML图
 
@@ -195,7 +195,7 @@ namespace 设计模式之建造者模式
 
 建造者模式使得建造代码与表示代码的分离，可以使客户端不必知道产品内部组成的细节，从而降低了客户端与具体产品之间的耦合度，下面通过类图来帮助大家更好地理清建造者模式中类之间的关系。
 
-<img src="" style="display:block;width:100%;" />
+<img src="http://wx1.sinaimg.cn/mw690/006dag38gy1fkio3dmdjjj30l50bf3yt.jpg" style="display:block;width:100%;" />
 
 ### 建造者模式的分析
 
