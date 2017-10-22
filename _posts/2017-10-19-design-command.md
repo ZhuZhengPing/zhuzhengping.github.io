@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "模板方法模式"
+title:  "命令模式"
 date:   2017-10-19 16:32:18 +0800
 categories: design
 tags: design factory
