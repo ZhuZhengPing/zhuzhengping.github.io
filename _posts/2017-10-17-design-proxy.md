@@ -102,7 +102,7 @@ public class Friend:Person
 
 ### UML图
 
-<img src='http://wx3.sinaimg.cn/mw690/006dag38gy1fkq6bl2cb6j30hx094weq.jpg' style="display:block;width:550px;margin:0 auto;" />
+<img src='http://wx3.sinaimg.cn/mw690/006dag38gy1fkq6bl2cb6j30hx094weq.jpg' style="display:block;width:600px;margin:0 auto;" />
 
 #### 模式角色
 

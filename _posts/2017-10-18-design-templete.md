@@ -99,6 +99,37 @@ public class ChineseCabbage : Vegetabel
 }
 ```
 
+### UML图
+
+<img src='http://wx1.sinaimg.cn/mw690/006dag38gy1fkqq2yxjqvj30f20afwep.jpg' style="display:block;width:600px;margin:0 auto;" />
+
+#### 模板方法模式中涉及了两个角色
+
+>* 抽象模板角色（Vegetable扮演这个角色）：定义了一个或多个抽象操作，以便让子类实现，这些抽象操作称为基本操作。
+>* 具体模板角色（ChineseCabbage和Spinach扮演这个角色）：实现父类所定义的一个或多个抽象方法。
+
+### 模板方法的优缺点
+
+#### 优点
+
+>* 实现了代码复用
+>* 能够灵活应对子步骤的变化，符合开放-封闭原则
+
+#### 缺点
+
+>* 因为引入了一个抽象类，如果具体实现过多的话，需要用户或开发人员需要花更多的时间去理清类之间的关系
+
+*附：在.NET中模板方法的应用也很多，例如我们在开发自定义的Web控件或WinForm控件时，我们只需要重写某个控件的部分方法。*
+
+
+
+
+
+
+
+
+
+
 
 
 
