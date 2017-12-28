@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "状态模式"
-date:   2017-12-22 16:32:18 +0800
+date:   2017-12-28 16:32:18 +0800
 categories: design
 tags: design
 author: Zhengping Zhu
