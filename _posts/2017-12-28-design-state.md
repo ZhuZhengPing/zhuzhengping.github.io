@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "CSS入门"
+title:  "状态模式"
 date:   2017-12-22 16:32:18 +0800
-categories: XHTML
-tags: css
+categories: design
+tags: design
 author: Zhengping Zhu
 ---
 
