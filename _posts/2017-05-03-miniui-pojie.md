@@ -1253,9 +1253,298 @@ document.write('<script src="' + bootPATH + 'miniui/miniui.3.4.js" type="text/ja
 
 ```
 
+### MiniUIBaseCss
+
+```css
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, dl, dt, dd, ul, ol, li, pre, form, fieldset, legend, button, input, textarea, th, td { margin: 0; padding: 0; }
+h1, h2, h3, h4, h5, h6 { font-size: 100%; font-weight: normal;}
+table{border-collapse: collapse;border-spacing: 0;}
+fieldset, img{border: 0;}
+abbr, acronym{border: 0;}
+address, caption, cite, code, dfn, em, strong, th, var {font-style: normal;font-weight: normal;}
+input, select, textarea { -webkit-tap-highlight-color: rgba(0,0,0,0);  border-radius: 0; }
+input, img { vertical-align: middle;outline: none;}
+body { color: #505050; font-family: "Microsoft YaHei"; display: block;}
+
+/*::-webkit-scrollbar {width: 0.05rem; height: 1rem;-webkit-transition:1s;}*/  width: 0.05rem; 会影响下拉框的滚动条，故注释掉 2017-07-19 wuf
+::-webkit-scrollbar {height: 1rem;-webkit-transition:1s;}
+::-webkit-scrollbar-thumb {background-color: #DEDFE7;background-clip: padding-box;min-height: 0.28rem;}/*#a7afb4*/
+::-webkit-scrollbar-thumb:hover {background-color: #888;background-clip: padding-box; min-height: 0.28rem;}/*#525252*/
+::-webkit-scrollbar-track-piece {background-color: #F5F5F5;}/*ccd0d2,e0e4e6*/
+ul, ol, li { list-style: none;}
+@font-face {font-family: 'iconfont';
+    src: url('../icon/iconfont.eot'); /* IE9*/
+    src: url('../icon/iconfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('../icon/iconfont.woff') format('woff'), /* chrome、firefox */
+    url('../icon/iconfont.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+    url('../icon/iconfont.svg#iconfont') format('svg'); /* iOS 4.1- */
+}
+a:link{text-decoration: none;}
+a:visited{text-decoration: none;}
+a:hover{text-decoration: none;}
+body,html{
+    width:100%;
+    height:100%;
+}
+#detailForm{
+    padding:2px;
+    line-height: 30px;
+}
+#detailForm>ul>li>span{
+    display: inline-block;
+    width:120px;
+    text-align: right;
+    padding-right: 10px;
+}
+#detailForm ul li {
+    float: left;
+    line-height: 30px;
+    width: 280px;
+}
+#advanceSearchControl{
+    display:none;
+    margin-top:10px;
+}
+#baseSearchControl{
+    display:inline;
+    margin-top:10px;
+}
+#baseSearchControl>label,#baseSearchControl>span,#advanceSearchControl>label,#advanceSearchControl span,#searchForm>a{
+    margin-bottom:5px;
+}
+#searchForm>a{
+    margin-left:8px;
+}
+#baseSearchControl>label,#advanceSearchControl>label{
+    vertical-align: bottom;
+    display: inline-block !important;
+    text-align: right;
+    padding-left: 5px;
+}
+#searchForm{
+    display:inline-block;
+}
+.dbclick{
+    position: relative;
+    margin-top: 5px;
+    overflow:hidden;
+    padding-top:0 !important;
+}
+.mini-layout-region-body {
+    overflow:hidden !important;
+}
+ .mini-buttonedit-up {
+    display:none !important;
+}
+.mini-buttonedit-down {
+    display:none !important;
+}
+.mini-grid-rows-view{
+    width:99.99% !important;
+}
+.Delete_Button{
+    padding:0 8px;
+}
+#AdvanceButtons{
+    border-bottom: 1px solid #f5f5f5;
+    padding: 6px 0 6px 10px;
+}
+#AdvanceButtons a{
+    margin-left:5px;
+}
+
+#searchForm{
+    /*margin-left:15px;*/
+    padding-top:11px;
+}
+
+#searchForm label{
+    margin-left:10px;
+    vertical-align:middle;
+}
+```
+
+### base.js
+
+```js
+//加    
+function floatAdd(arg1, arg2) {
+    var r1, r2, m;
+    try { r1 = arg1.toString().split(".")[1].length } catch (e) { r1 = 0 }
+    try { r2 = arg2.toString().split(".")[1].length } catch (e) { r2 = 0 }
+    m = Math.pow(10, Math.max(r1, r2));
+    return (arg1 * m + arg2 * m) / m;
+}
+
+//减    
+function floatSub(arg1, arg2) {
+    var r1, r2, m, n;
+    try { r1 = arg1.toString().split(".")[1].length } catch (e) { r1 = 0 }
+    try { r2 = arg2.toString().split(".")[1].length } catch (e) { r2 = 0 }
+    m = Math.pow(10, Math.max(r1, r2));
+    //动态控制精度长度    
+    n = (r1 >= r2) ? r1 : r2;
+    return ((arg1 * m - arg2 * m) / m).toFixed(n);
+}
+
+//乘    
+function floatMul(arg1, arg2) {
+    var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
+    try { m += s1.split(".")[1].length } catch (e) { }
+    try { m += s2.split(".")[1].length } catch (e) { }
+    return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m);
+}
 
 
+//除   
+function floatDiv(arg1, arg2) {
+    var t1 = 0, t2 = 0, r1, r2;
+    try { t1 = arg1.toString().split(".")[1].length } catch (e) { }
+    try { t2 = arg2.toString().split(".")[1].length } catch (e) { }
 
+    r1 = Number(arg1.toString().replace(".", ""));
+
+    r2 = Number(arg2.toString().replace(".", ""));
+    return (r1 / r2) * Math.pow(10, t2 - t1);
+}
+
+// 根据项目加载楼栋名称
+// element:miniui combox 控件
+// build:miniui 楼栋控件ID
+// floor 楼栋
+function onProjectChanged(element, build, floor) {
+    // 清空楼栋
+    if (floor) {
+        mini.get("txtFloorID").setData(null)
+    }
+    mini.get(build).setUrl("/HouseManage/GetBuildingList?id=" + element.value);
+}
+
+
+function onBuildingChanged(element, build) {
+    mini.get(build).setData(null)
+    if (element.value && element.value.length >= 36) {
+        mini.get(build).setUrl("/HouseManage/GetFloorList?id=" + element.value);
+    }
+}
+
+// 月初
+function getMonthBegin(date) {
+    if (!date) {
+        date = new Date();
+    }
+    if (typeof date == "string") {
+        date = new Date(date);
+    }
+    date.setDate(1);
+    return date;
+}
+
+// 月末
+function getMonthEnd(date) {
+    if (!date) {
+        date = new Date();
+    }
+    if (typeof date == "string") {
+        date = new Date(date);
+    }
+    date.setDate(1);
+    date.setMonth(date.getMonth() + 1);
+    date.setDate(0);
+    return date;
+}
+
+// 已审核，未审核
+function toStatus(e) {
+    if (e.row.Status == 1) {
+        return "已审核";
+    } else if (e.row.Status == -1) {
+        return "<span style='color:gray;'>已作废</span>";
+    }
+    else {
+        return "<span style='color:red;'>未审核</span>";
+    }
+}
+
+// 反审核提示
+// recode:需要反审核的数据
+// type:反审核类型（1：临时收费，2：停车费，3：水电费）
+function noAudit(ids, type, callback) {
+
+    // 需要反审核的ID
+    var _ids = '';
+    var _type = type;
+    _callback = callback;
+
+    // 如果是数组，则循环取出ID
+    if (typeof ids == 'object') {
+        var businessIds = [];
+        for (var i = 0; i < ids.length;i++) {
+            businessIds.push(ids[i].ID);
+        }
+        if (businessIds.length == 0) {
+            mini.alert("未找到反审核数据！");
+            return;
+        }
+        _ids = businessIds.join(",");
+    } else {
+        _ids = ids;
+    }
+
+    mini.mask({
+        el: document.body,
+        cls: 'mini-mask-loading',
+        html: '加载中...'
+    });
+
+    // 反审核验证
+    $.post("/Common/NoAuditCheck", {
+        ids: _ids,
+        type: _type
+    }, function (d) {
+
+        mini.unmask();
+
+        if (d == 88) {
+            mini.alert("有已收款应收，不能反审核！");
+        } else if (d == 80) {
+            mini.alert("有已挂起应收，不能反审核！");
+        } else if (d == 77) {
+            mini.alert("有费用调整应收，不能反审核！");
+        } else if (d == 66) {
+            mini.confirm("已打印过收费通知单，是否反审核？", '提示', function () {
+                $.post("/Common/NoAuditExec", {
+                    ids: _ids,
+                    type: _type
+                }, function (d) {
+                    _callback(d);
+                });
+            });
+        } else if (d == 60) {
+            mini.alert("已上传至EAS系统，不能反审核！");
+        } else if (d == 55) {
+            mini.confirm("有已托收应收，是否反审核？", '提示', function () {
+                $.post("/Common/NoAuditExec", {
+                    ids: _ids,
+                    type: _type
+                }, function (d) {
+                    _callback(d);
+                });
+            });
+        } else if (d == 44) {
+            mini.alert("退场后不能反审核！");
+        } else {
+            $.post("/Common/NoAuditExec", {
+                ids: _ids,
+                type: _type
+            }, function (d) {
+                _callback(d);
+            });
+        }
+
+    });
+}
+```
 
 
 
