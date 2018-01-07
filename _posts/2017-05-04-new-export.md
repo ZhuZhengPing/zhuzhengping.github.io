@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "miniui"
-date:   2017-05-03 16:32:18 +0800
-categories: miniui
-tags: miniui
+title:  "导入导出"
+date:   2017-05-04 16:32:18 +0800
+categories: .net
+tags: .net
 author: Zhengping Zhu
 ---
 
