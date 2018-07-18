@@ -131,7 +131,7 @@ public ActionResult Error()
 
 ### 比较：ViewModel Vs ViewData Vs ViewBag Vs TempData Vs Session
 
-#					|ViewModel								|ViewData									|ViewBag							|TempData						|Session
+					|ViewModel								|ViewData									|ViewBag							|TempData						|Session
 1					|它是一个类，它特定用于渲染视图的模型	|是一个从ViewDataDictionary派生的键值字典	|是动态属性。它是ViewData的封装		|是一个从TempDataDictionary派生的键值字典|是一个从TempDataDictionary派生的键值字典。
 2					|强类型类，所以不需要类型转换			|非强类型，复杂数据需要类型转换		|类型转换不是必须的	|非强类型，复杂数据需要类型转换	|非强类型，复杂数据需要类型转换并检查空值
 3					|仅呈现视图所需的模型数据。				|在控制器和视图之间传递数据。		|在控制器和视图之间传递数据。|在请求之间传递数据。即将数据从一个控制器传递到另一个控制器。|用于在访问网站的用户期间存储少量数据
