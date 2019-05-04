@@ -132,7 +132,7 @@ private void getExportExcel(HttpContext context)
 
 如此最简单的导出功能就完成了
 
-### excel导入
+### 导入
 
 导入功能要使用 jquery 插件 ajaxfileupload，文件类型的文本框导入时，每次都需要清空文件文本框，否则的话无法第二次导入。js代码为
 
