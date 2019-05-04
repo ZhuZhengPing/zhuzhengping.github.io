@@ -12,7 +12,7 @@ author: Zhengping Zhu
 
 ## 概念
 
-做项目时经常会用到 excel 导入导出，今天花了点时间整理了一下代码，excel没有增加任何样式，看起来比较丑，
+做项目时经常会用到 excel 导入导出，今天花了点时间整理了一下代码，亲测是可用的，excel没有增加任何样式，看起来比较丑，
 如果你也有同样的项目需求，或者是想参考一下代码，请点击下面的链接下载
 
 <a href='http://47.112.115.26/file/excelImportExport.rar' style='display:block'>示例代码下载</a>
