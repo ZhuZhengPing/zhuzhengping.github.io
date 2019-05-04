@@ -57,7 +57,7 @@ excerpt_separator: "\n\n\n\n"
 gems: [jekyll-paginate]
 paginate: 5
 
-gitment:
+gitment: 
   enable: true
   owner: ZhuZhengPing
   repo: zhuzhengping.github.io
