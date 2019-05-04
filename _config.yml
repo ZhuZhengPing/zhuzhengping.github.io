@@ -59,7 +59,8 @@ paginate: 5
 
 gitment:
 enable: true
-repo: ZhuZhengPing/zhuzhengping.github.io
+owner: ZhuZhengPing
+repo: zhuzhengping.github.io
 ClientID: 6793c3bade436e5e9926
 ClientSecret: 1db74c06b10ce0477f677f6d39f120a91bbcc052
 lazy: true
