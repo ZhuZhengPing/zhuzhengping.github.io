@@ -391,7 +391,24 @@ public ActionResult TestFileUpload()
 }
 ```
 
+另外 苹果手机上传图片时，莫名会出现旋转，所以这里需要处理一下
 
+```c#
+foreach(var p in image.PropertyItems)
+            {
+                if (p.Id == 0x112)
+                {
+                    var rft = p.Value[0] == 6 ? RotateFlipType.Rotate90FlipNone
+                            : p.Value[0] == 3 ? RotateFlipType.Rotate180FlipNone
+                            : p.Value[0] == 8 ? RotateFlipType.Rotate270FlipNone
+                            : p.Value[0] == 1 ? RotateFlipType.RotateNoneFlipNone
+                            : RotateFlipType.RotateNoneFlipNone;
+                    p.Value[0] = 0;  //旋转属性值设置为不旋转
+                    image.SetPropertyItem(p); //回拷进图片流
+                    image.RotateFlip(rft);
+                }
+}
+```
 
 
 
