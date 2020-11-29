@@ -10,9 +10,33 @@ author: Zhengping Zhu
 * content
 {:toc}
 
-### 概念
+## 概念
 
 在进行多线程开发的过程中，多个线程抢占同一资源，经常会出现串数据的情况，使用`synchronized`能有效进行数据同步
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```java
 package SynchronizedPackage;
