@@ -57,7 +57,7 @@ class Producer implements Runnable{
 			}else {
 				msg.set("小高", "猥琐第一人");
 			}
-		}
+		} 
 	}
 }
 class Consumer implements Runnable{
