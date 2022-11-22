@@ -1,0 +1,20 @@
+
+<div id="uyan_frame"></div>
+<div id="gitmentContainer"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+    var gitment = new Gitment({
+	    id: location.href,
+        owner: 'ZhuZhengPing',
+        repo: 'zhuzhengping.github.io',
+        oauth: {
+            client_id: '6793c3bade436e5e9926',
+            client_secret: '1db74c06b10ce0477f677f6d39f120a91bbcc052',
+        },
+    });
+    gitment.render('gitmentContainer')
+</script>
+
+
+ 
