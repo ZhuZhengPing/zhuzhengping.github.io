@@ -3,18 +3,16 @@ layout: post
 title:  "下拉刷新"
 date:   2022-08-29 16:32:18 +0800
 categories: javascript
-tags: refresh
+tags: javascript
 author: Zhengping Zhu
 ---
 
 * content
 {:toc}
 
-## 学习要点
+# 学习要点
 
->* 移动端下拉刷新
-
-
+移动端下拉刷新
 
 
 
@@ -34,7 +32,9 @@ author: Zhengping Zhu
 
 
 
-### javascript代码
+
+
+# javascript代码
 
 ```javascript
 (function(app) {
@@ -151,7 +151,7 @@ author: Zhengping Zhu
 })(window)
 ```
 
-### css代码
+# css代码
 ```css
 .pull-refresh-block {
     position: fixed;
@@ -271,7 +271,7 @@ author: Zhengping Zhu
 ```
 
 
-### 调用方式
+# 调用方式
 
 ```javascript
 <script type="text/javascript">

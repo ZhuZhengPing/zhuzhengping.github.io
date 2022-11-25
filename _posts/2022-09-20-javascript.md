@@ -1,6 +1,6 @@
 ﻿---
 layout: post
-title:  "javascript"
+title:  "es6"
 date:   2022-08-28 16:32:18 +0800
 categories: javascript
 tags: javascript
@@ -10,9 +10,9 @@ author: Zhengping Zhu
 * content
 {:toc}
 
-## 学习要点
+# 学习要点
 
->* javascript 讲义
+javascript 讲义
 
 
 

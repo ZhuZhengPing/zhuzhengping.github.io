@@ -3,16 +3,16 @@ layout: post
 title:  "左拉返回"
 date:   2022-08-30 16:32:18 +0800
 categories: javascript
-tags: back
+tags: javascript
 author: Zhengping Zhu
 ---
 
 * content
 {:toc}
 
-## 学习要点
+# 学习要点
 
->* 左拉后退
+左拉后退
 
 注意，这个控件如果设置到body上，一定要把body的高度设置为100%，要不然会触发不了
 
@@ -36,7 +36,7 @@ author: Zhengping Zhu
 
 
 
-### javascript代码
+# javascript代码
 
 ```javascript
 ;
@@ -116,7 +116,7 @@ author: Zhengping Zhu
 
 ```
 
-### css代码
+# css代码
 ```css
 body #back-view {
 	position: fixed;
@@ -146,7 +146,7 @@ body #back-view i {
 ```
 
 
-### 调用方式
+# 调用方式
 
 ```javascript
 registerSlideBack(document.body, function () {
