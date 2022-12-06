@@ -1,6 +1,6 @@
 ﻿---
 layout: post
-title:  "es6"
+title:  "javascript"
 date:   2022-08-28 16:32:18 +0800
 categories: javascript
 tags: javascript
